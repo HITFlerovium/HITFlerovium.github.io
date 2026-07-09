@@ -27,14 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # 极其关键！强制拉取 PaperMod 主题源码
+          submodules: recursive  # 强制拉取 PaperMod 主题源码
           fetch-depth: 0
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Setup Hugo
-        uses: actions/setup-hugo@v1
+        uses: peaceiris/actions-hugo@v3   # <--- 就是这里修复了正确的插件名称
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
