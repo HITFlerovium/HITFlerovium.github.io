@@ -1,0 +1,136 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sfml-and-visual-studio">SFML and Visual Studio</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This tutorial is the first one you should read if you're using SFML with the Visual Studio IDE (Visual C++ compiler).
+It will explain how to configure your SFML projects.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a href="../cmake/">CMake template</a> is the recommended way to get started with SFML.</p>
+</div>
+<h2 id="installing-sfml">Installing SFML</h2>
+<p>First, you must download the SFML SDK from the <a href="../../../../download/" title="Go to the download page">download page</a>.</p>
+<p>You can then unpack the SFML archive wherever you like.
+Copying headers and libraries to your installation of Visual Studio is not recommended, it's better to keep libraries in their own separate location, especially if you intend to use several versions of the same library, or several compilers.</p>
+<h2 id="creating-and-configuring-an-sfml-project">Creating and configuring an SFML project</h2>
+<p>The first thing to do is choose what kind of project to create.
+It is recommended to select "Empty Project".
+The dialog window offers a few other options to customize the project: select "Console application" or "Windows application" only if you know how to use pre-compiled headers.</p>
+<p>For the purpose of this tutorial, you should create a <code>main.cpp</code> file and add it to the project, so that we have access to the C++ settings (otherwise Visual Studio doesn't know which language you're going to use for this project).
+We'll explain what to put inside later.</p>
+<p>First we need to configure the compiler to use the C++17 language standard as required by SFML 3.</p>
+<p>In the project's properties under "C/C++", "Language" tab, change the "C++ Language Standard" dropdown to "ISO C++ 17 Standard":</p>
+<p><img alt="Screenshot of the dialog box for setting up the C++17 language standard" src="../vc-standard.png" title="Screenshot of the dialog box for setting up the C++17 language standard" /></p>
+<p>Now we need to tell the compiler where to find the SFML headers (.hpp files), and the linker where to find the SFML libraries (.lib files).</p>
+<p>In the project's properties, add:</p>
+<ul>
+<li>The path to the SFML headers (<code>&lt;sfml-install-path&gt;/include</code>) to C/C++ &gt; General &gt; Additional Include Directories</li>
+<li>The path to the SFML libraries (<code>&lt;sfml-install-path&gt;/lib</code>) to Linker &gt; General &gt; Additional Library Directories</li>
+</ul>
+<p>These paths are the same in both Debug and Release configuration, so you can set them globally for your project ("All configurations").</p>
+<p><img alt="Screenshot of the dialog box for setting up the search paths" src="../vc-paths.png" title="Screenshot of the dialog box for setting up the search paths" /></p>
+<p>The next step is to link your application to the SFML libraries (.lib files) that your code will need.
+SFML is made of 5 modules (system, window, graphics, network and audio), and there's one library for each of them.</p>
+<p>Libraries must be added in the project's properties, in Linker &gt; Input &gt; Additional Dependencies.
+Add all the SFML libraries that you need, for example "sfml-graphics.lib", "sfml-window.lib" and "sfml-system.lib".</p>
+<p><img alt="Screenshot of the dialog box for setting up the project's libraries" src="../vc-link-libs.png" title="Screenshot of the dialog box for setting up the project's libraries" /></p>
+<p>It is important to link to the libraries that match the configuration: "sfml-xxx-d.lib" for Debug, and "sfml-xxx.lib" for Release.
+A bad mix may result in crashes.</p>
+<p>The settings shown here will result in your application being linked to the dynamic version of SFML, the one that needs the DLL files.
+If you want to get rid of these DLLs and have SFML directly integrated into your executable, you must link to the static version.
+Static SFML libraries have the "-s" suffix: "sfml-xxx-s-d.lib" for Debug, and "sfml-xxx-s.lib" for Release.</p>
+<p>In this case, you'll also need to define the <code>SFML_STATIC</code> macro in the preprocessor options of your project.</p>
+<p><img alt="Screenshot of the dialog box for defining the SFML_STATIC macro" src="../vc-static.png" title="Screenshot of the dialog box for defining the SFML_STATIC macro" /></p>
+<p>When static linking, you will have to link all of SFML's dependencies to your project as well.
+This means that if you are linking sfml-window-s.lib or sfml-window-s-d.lib for example, you will also have to link opengl32.lib, winmm.lib and gdi32.lib.
+Some of these dependency libraries might already be listed under "Inherited values", but adding them again yourself shouldn't cause any problems.</p>
+<p>Here are the dependencies of each module, append the -d as described above if you want to link the SFML debug libraries:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sfml-graphics-s.lib</code></td>
+<td>- sfml-window-s.lib<br>- sfml-system-s.lib<br>- opengl32.lib<br>- freetype.lib</td>
+</tr>
+<tr>
+<td><code>sfml-window-s.lib</code></td>
+<td>- sfml-system-s.lib<br>- opengl32.lib<br>- winmm.lib<br>- gdi32.lib</td>
+</tr>
+<tr>
+<td><code>sfml-audio-s.lib</code></td>
+<td>- sfml-system-s.lib<br>- flac.lib<br>- vorbisenc.lib<br>- vorbisfile.lib<br>- vorbis.lib<br>- ogg.lib</td>
+</tr>
+<tr>
+<td><code>sfml-network-s.lib</code></td>
+<td>- sfml-system-s.lib<br>- ws2_32.lib</td>
+</tr>
+<tr>
+<td><code>sfml-system-s.lib</code></td>
+<td>- winmm.lib</td>
+</tr>
+</tbody>
+</table>
+<p>You might have noticed from the table that SFML modules can also depend on one another, e.g. sfml-graphics-s.lib depends both on sfml-window-s.lib and sfml-system-s.lib.
+If you static link to an SFML library, make sure to link to the dependencies of the library in question, as well as the dependencies of the dependencies and so on.
+If anything along the dependency chain is missing, you <em>will</em> get linker errors.</p>
+<p>If you are slightly confused, don't worry, it is perfectly normal for beginners to be overwhelmed by all this information regarding static linking.
+If something doesn't work for you the first time around, you can simply keep trying always bearing in mind what has been said above.
+If you still can't get static linking to work, you can check the <a href="../../../../faq/build-use/#link-static" title="Go to the FAQ page">FAQ</a> and the <a href="http://en.sfml-dev.org/forums/index.php?board=4.0" title="Go to the general help forum">forum</a> for threads about static linking.</p>
+<p>If you don't know the differences between dynamic (also called shared) and static libraries, and don't know which one to use, you can search for more information on the internet.
+There are many good articles/blogs/posts about them.</p>
+<p>Your project is ready, let's write some code now to make sure that it works.
+Put the following code inside the <code>main.cpp</code> file:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SFML/Graphics.hpp&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">RenderWindow</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">({</span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;SFML works!&quot;</span><span class="p">);</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">CircleShape</span><span class="w"> </span><span class="n">shape</span><span class="p">(</span><span class="mf">100.f</span><span class="p">);</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="n">shape</span><span class="p">.</span><span class="n">setFillColor</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">Color</span><span class="o">::</span><span class="n">Green</span><span class="p">);</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">pollEvent</span><span class="p">())</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">        </span><span class="p">{</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">is</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="o">&gt;</span><span class="p">())</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">                </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">draw</span><span class="p">(</span><span class="n">shape</span><span class="p">);</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>If you chose to create a "Windows application" project, the entry point of your code has to be set to "WinMain" instead of "main".
+Since it's Windows specific, and your code would therefore not compile on Linux or macOS, SFML provides a way to keep a standard "main" entry point in this case: link your project to the sfml-main module ("sfml-main-d.lib" in Debug, "sfml-main.lib" in Release), the same way you linked sfml-graphics, sfml-window and sfml-system.</p>
+<p>Compile it, and if you linked to the dynamic version of SFML, don't forget to copy the SFML DLLs to same directory as your compiled executable.
+They are in the bin/ directory of your SFML installation.
+Run it, and if everything works you should see this:</p>
+<p><img alt="Screenshot of the Hello SFML application" src="../vc-app.png" title="Screenshot of the Hello SFML application" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

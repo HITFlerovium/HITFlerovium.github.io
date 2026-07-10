@@ -1,0 +1,794 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="migration-from-sfml-2-to-sfml-3">Migration from SFML 2 to SFML 3</h1>
+<p>Welcome to SFML 3!
+The SFML Team has put a lot of effort into delivering a library that is both familiar to existing users while also making significant improvements.
+This document will walk you through how to upgrade your SFML 2 application to SFML 3.</p>
+<p>One of the headline changes in SFML 3 is raising the C++ standard to C++17 thus bringing SFML into the world of modern C++!
+This change has enabled a vast number of internal improvements as well as new opportunities for improving the API that will be discussed in this document.</p>
+<h2 id="compiler-requirements">Compiler Requirements</h2>
+<p>Along with the upgrade from C++03 to C++17 you may need to upgrade your compiler.
+C++17 support has been widespread in all major compiler implementations for years prior to SFML 3's release so in all likelihood the compiler you're already using will work.
+In case you do need to upgrade, here are the minimum compiler versions.</p>
+<table>
+<thead>
+<tr>
+<th>Compiler</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSVC</td>
+<td>16 (VS 2019)</td>
+</tr>
+<tr>
+<td>GCC</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Clang</td>
+<td>9</td>
+</tr>
+<tr>
+<td>AppleClang</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cmake-targets">CMake Targets</h2>
+<p>SFML 3 uses modern CMake convention for library targets which entails having a namespace in front of the target name.
+These namespaces tell CMake "this is a target" whereas something like <code>sfml-graphics</code> might be a target or might be a precompiled library on disk like <code>libsfml-graphics.so</code>.
+Fixing this ambiguity leads to more useful error messages when a given target can't be found due to, for example, forgetting a <code>find_package</code> call.
+The component names used when calling <code>find_package</code> were also changed to capitalize the first letter.</p>
+<table>
+<thead>
+<tr>
+<th>v2 Target</th>
+<th>v3 Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sfml-system</code></td>
+<td><code>SFML::System</code></td>
+</tr>
+<tr>
+<td><code>sfml-window</code></td>
+<td><code>SFML::Window</code></td>
+</tr>
+<tr>
+<td><code>sfml-graphics</code></td>
+<td><code>SFML::Graphics</code></td>
+</tr>
+<tr>
+<td><code>sfml-network</code></td>
+<td><code>SFML::Network</code></td>
+</tr>
+<tr>
+<td><code>sfml-audio</code></td>
+<td><code>SFML::Audio</code></td>
+</tr>
+<tr>
+<td><code>sfml-main</code></td>
+<td><code>SFML::Main</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>v2 Component</th>
+<th>v3 Component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>system</code></td>
+<td><code>System</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td><code>Window</code></td>
+</tr>
+<tr>
+<td><code>graphics</code></td>
+<td><code>Graphics</code></td>
+</tr>
+<tr>
+<td><code>network</code></td>
+<td><code>Network</code></td>
+</tr>
+<tr>
+<td><code>audio</code></td>
+<td><code>Audio</code></td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td><code>Main</code></td>
+</tr>
+</tbody>
+</table>
+<p>v2:
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">SFML</span><span class="w"> </span><span class="s">2</span><span class="w"> </span><span class="s">REQUIRED</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">graphics</span><span class="w"> </span><span class="s">audio</span><span class="w"> </span><span class="s">network</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="err">...</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">my_app</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">sfml-graphics</span><span class="w"> </span><span class="s">sfml-audio</span><span class="w"> </span><span class="s">sfml-network</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">SFML</span><span class="w"> </span><span class="s">3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">Graphics</span><span class="w"> </span><span class="s">Audio</span><span class="w"> </span><span class="s">Network</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="err">...</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">my_app</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">SFML::Graphics</span><span class="w"> </span><span class="s">SFML::Audio</span><span class="w"> </span><span class="s">SFML::Network</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h2 id="linux-dependencies">Linux Dependencies</h2>
+<p>When using X11 as the backend on Linux, as opposed to DRM, <code>libxi-dev</code> is a newly required dependency.
+This was introduced with the <a href="../../../../documentation/3.1.0/structsf_1_1Event_1_1MouseMovedRaw.html">raw mouse input support</a>.</p>
+<h2 id="sfvector2t-parameters"><code>sf::Vector2&lt;T&gt;</code> Parameters</h2>
+<p>A common pattern in SFML 2 was to use pairs of scalar parameters to represent concepts like sizes or positions.
+Take <code>sf::Transformable::setPosition(float, float)</code> for example.
+The two parameters combine to represent a position in world space.</p>
+<p>SFML 3 takes all of the APIs with pairs of parameters like <code>(float, float)</code> or <code>(unsigned int, unsigned int)</code> and converts them to their corresponding <code>sf::Vector2&lt;T&gt;</code> type like <code>sf::Vector2f</code> or <code>sf::Vector2u</code> to make the interface more expressive and composable.
+This transition is often as simple as wrapping the two adjacent parameters with braces to construct the vector.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="w"> </span><span class="nf">videoMode</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span><span class="w"> </span><span class="mi">640</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">);</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">CircleShape</span><span class="w"> </span><span class="nf">circle</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">circle</span><span class="p">.</span><span class="n">setPosition</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">sf</span><span class="o">::</span><span class="n">IntRect</span><span class="w"> </span><span class="nf">rect</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="w"> </span><span class="nf">videoMode</span><span class="p">({</span><span class="mi">480</span><span class="p">,</span><span class="w"> </span><span class="mi">640</span><span class="p">},</span><span class="w"> </span><span class="mi">24</span><span class="p">);</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">CircleShape</span><span class="w"> </span><span class="nf">circle</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">circle</span><span class="p">.</span><span class="n">setPosition</span><span class="p">({</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">});</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">sf</span><span class="o">::</span><span class="n">IntRect</span><span class="w"> </span><span class="nf">rect</span><span class="p">({</span><span class="mi">250</span><span class="p">,</span><span class="w"> </span><span class="mi">400</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">});</span>
+</span></code></pre></div></p>
+<h2 id="fixed-width-integers">Fixed Width Integers</h2>
+<p>SFML 2 contained various typedefs for fixed width integers.
+Those are now replaced with the fixed width integers provided in the <code>&lt;cstdint&gt;</code> header from the standard library.</p>
+<table>
+<thead>
+<tr>
+<th>v2</th>
+<th>v3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Int8</code></td>
+<td><code>std::int8_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Uint8</code></td>
+<td><code>std::uint8_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Int16</code></td>
+<td><code>std::int16_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Uint16</code></td>
+<td><code>std::uint16_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Int32</code></td>
+<td><code>std::int32_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Uint32</code></td>
+<td><code>std::uint32_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Int64</code></td>
+<td><code>std::int64_t</code></td>
+</tr>
+<tr>
+<td><code>sf::Uint64</code></td>
+<td><code>std::uint64_t</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="sfevent"><code>sf::Event</code></h2>
+<p>SFML 3 uses <code>std::variant</code> under the hood to implement a totally new, type-safe API for events.
+There are two main ways to use this new API.
+Check out the new EventHandling example program to see these methods in practice.</p>
+<h3 id="sfeventgetift"><code>sf::Event::getIf&lt;T&gt;</code></h3>
+<p>The first option is based around <code>sf::Event::getIf&lt;T&gt;</code> and <code>sf::Event::is&lt;T&gt;</code>.
+<code>getIf&lt;T&gt;</code> works by providing a template parameter which must be an event subtype.
+Event subtypes are types like <code>sf::Event::Resized</code> or <code>sf::Event::MouseMoved</code>.
+If the template argument matches the active event subtype then a pointer to the data is returned.
+If that template argument is not the active event subtype then <code>nullptr</code> is returned.
+<code>sf::Event::is&lt;T&gt;</code> more simply returns <code>true</code> if <code>T</code> matches the active event subtype.
+<code>is&lt;T&gt;</code> is often used for subtypes like <code>sf::Event::Closed</code> which contain no data.
+Here's what that looks like:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">pollEvent</span><span class="p">())</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">is</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="o">&gt;</span><span class="p">())</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="p">{</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">            </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">keyPressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="o">-&gt;</span><span class="n">getIf</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">KeyPressed</span><span class="o">&gt;</span><span class="p">())</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span><span class="p">{</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">keyPressed</span><span class="o">-&gt;</span><span class="n">scancode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Keyboard</span><span class="o">::</span><span class="n">Scancode</span><span class="o">::</span><span class="n">Escape</span><span class="p">)</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">                </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="c1">// Remainder of main loop</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Note how the API for getting events has changed slightly.
+<code>sf::WindowBase::pollEvent</code> and <code>sf::WindowBase::waitEvent</code> now return a <code>std::optional&lt;sf::Event&gt;</code>.
+These two functions <em>might</em> return an event but they might not.
+C++ lets you deduce the template parameter which is why you can write <code>const std::optional event</code> instead of <code>const std::optional&lt;sf::Event&gt; event</code>.
+<code>const auto event</code> is another valid choice if you prefer a more terse expression.</p>
+<h3 id="sfwindowbasehandleevents"><code>sf::WindowBase::handleEvents</code></h3>
+<p>The second option for processing events is via the new <code>sf::WindowBase::handleEvents</code> function.
+This functions performs event visitation.
+What this means is that you can provide callbacks which take different event subtypes as arguments.
+Alternatively you may provide an object (or objects) with <code>operator()</code> implementations which handle the event subtypes you want to process.
+Notably you do not have to provide callbacks for all possible event subtypes.
+Depending on the current active event subtype, the corresponding callback is called.
+Here's what that looks like:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">onClose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">window</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="o">&amp;</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="p">{</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">};</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">onKeyPressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">window</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">KeyPressed</span><span class="o">&amp;</span><span class="w"> </span><span class="n">keyPressed</span><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">{</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">keyPressed</span><span class="p">.</span><span class="n">scancode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Keyboard</span><span class="o">::</span><span class="n">Scancode</span><span class="o">::</span><span class="n">Escape</span><span class="p">)</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">};</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="p">{</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">handleEvents</span><span class="p">(</span><span class="n">onClose</span><span class="p">,</span><span class="w"> </span><span class="n">onKeyPressed</span><span class="p">);</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="c1">// Remainder of main loop</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="window-styles-and-states">Window Styles and States</h2>
+<p>A new <code>sf::State</code> enumeration was added for specifying the state of the window which means whether the window is floating or fullscreen.
+Here's a before-and-after showing how this affects constructing a window.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">RenderWindow</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="o">::</span><span class="n">getFullscreenModes</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Title&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Style</span><span class="o">::</span><span class="n">Fullscreen</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">RenderWindow</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="o">::</span><span class="n">getFullscreenModes</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Title&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">State</span><span class="o">::</span><span class="n">Fullscreen</span><span class="p">);</span>
+</span></code></pre></div></p>
+<h2 id="scoped-enumerations">Scoped Enumerations</h2>
+<p>SFML 3 converts all old style unscoped enumerations to scoped enumerations.
+This improves the type safety of the interface.
+This means that the name of the enumeration is now part of the namespace required to access values of that enumeration.</p>
+<p>For example, take the enumeration <code>sf::Keyboard::Key</code>.
+<code>sf::Keyboard::A</code> becomes <code>sf::Keyboard::Key::A</code>.
+The name of the enumeration now appears as a nested namespace when accessing one of the enumeration's values.</p>
+<p>Here is a complete list of all enumerations which have undergone this change:</p>
+<ul>
+<li><code>sf::BlendMode::Equation</code></li>
+<li><code>sf::BlendMode::Factor</code></li>
+<li><code>sf::Cursor::Type</code></li>
+<li><code>sf::Ftp::Response::Status</code></li>
+<li><code>sf::Ftp::TransferMode</code></li>
+<li><code>sf::Http::Request::Method</code></li>
+<li><code>sf::Http::Response::Status</code></li>
+<li><code>sf::Joystick::Axis</code></li>
+<li><code>sf::Keyboard::Key</code></li>
+<li><code>sf::Keyboard::Scan</code></li>
+<li><code>sf::Mouse::Button</code></li>
+<li><code>sf::Mouse::Wheel</code></li>
+<li><code>sf::PrimitiveType</code></li>
+<li><code>sf::Sensor::Type</code></li>
+<li><code>sf::Shader::Type</code></li>
+<li><code>sf::Socket::Status</code></li>
+<li><code>sf::Socket::Type</code></li>
+<li><code>sf::SoundSource::Status</code></li>
+<li><code>sf::VertexBuffer::Usage</code></li>
+</ul>
+<h2 id="sfrectt"><code>sf::Rect&lt;T&gt;</code></h2>
+<p><code>sf::Rect&lt;T&gt;</code> has been refactored from the four scalar values <code>top</code>, <code>left</code>, <code>width</code>, and <code>height</code> into two <code>sf::Vector2&lt;T&gt;</code>s named <code>position</code> and <code>size</code>.
+This means that <code>sf::Rect&lt;T&gt;::getPosition()</code> and <code>sf::Rect&lt;T&gt;::getSize()</code> have been removed in favor of directly accessing the <code>position</code> and <code>size</code> data members.
+The 4-parameter constructor was also removed in favor of the constructor which takes two <code>sf::Vector2&lt;T&gt;</code>s.</p>
+<table>
+<thead>
+<tr>
+<th>v2</th>
+<th>v3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.left</code></td>
+<td><code>.position.x</code></td>
+</tr>
+<tr>
+<td><code>.top</code></td>
+<td><code>.position.y</code></td>
+</tr>
+<tr>
+<td><code>.width</code></td>
+<td><code>.size.x</code></td>
+</tr>
+<tr>
+<td><code>.height</code></td>
+<td><code>.size.y</code></td>
+</tr>
+</tbody>
+</table>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">FloatRect</span><span class="w"> </span><span class="nf">rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">);</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Vector2f</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rect</span><span class="p">.</span><span class="n">getPosition</span><span class="p">();</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Vector2f</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rect</span><span class="p">.</span><span class="n">getSize</span><span class="p">();</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">FloatRect</span><span class="w"> </span><span class="nf">rect</span><span class="p">({</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">});</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Vector2f</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rect</span><span class="p">.</span><span class="n">position</span><span class="p">;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Vectro2f</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rect</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span></code></pre></div></p>
+<p>The two overloads of <code>sf::Rect&lt;T&gt;::intersects</code> have been replaced with one unified function called <code>sf::Rect&lt;T&gt;::findIntersection</code> which returns a <code>std::optional&lt;Rect&lt;T&gt;&gt;</code>.
+This optional contains the overlapping area if the rectangles overlap.
+Otherwise the optional is empty.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">IntRect</span><span class="w"> </span><span class="nf">rect1</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">});</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">IntRect</span><span class="w"> </span><span class="nf">rect2</span><span class="p">({</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">});</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">IntRect</span><span class="o">&gt;</span><span class="w"> </span><span class="n">intersection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rect1</span><span class="p">.</span><span class="n">findIntersection</span><span class="p">(</span><span class="n">rect2</span><span class="p">);</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1">// position={100, 100} size={100, 100}</span>
+</span></code></pre></div>
+<h2 id="sfangle"><code>sf::Angle</code></h2>
+<p>All angles are now represented with a strong type named <code>sf::Angle</code>.
+This type provides two functions for creating angles called <code>sf::degrees(float)</code> and <code>sf::radians(float)</code> which construct an angle from either some value of degrees or radians.
+Operators (<code>+</code>, <code>-</code>, etc.) are provided to perform mathematical operations with angles.
+If you need access to the raw angle as a <code>float</code> then you can use either <code>sf::Angle::asDegrees()</code> or <code>sf::Angle::asRadians()</code>.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">RectangleShape</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">Vector2f</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">));</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">shape</span><span class="p">.</span><span class="n">setRotation</span><span class="p">(</span><span class="mi">90</span><span class="p">);</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Rotation: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">shape</span><span class="p">.</span><span class="n">getRotation</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">RectangleShape</span><span class="w"> </span><span class="nf">shape</span><span class="p">({</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">});</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">shape</span><span class="p">.</span><span class="n">setRotation</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">degrees</span><span class="p">(</span><span class="mi">90</span><span class="p">));</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Rotation: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">shape</span><span class="p">.</span><span class="n">getRotation</span><span class="p">().</span><span class="n">asDegrees</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+</span></code></pre></div></p>
+<h2 id="renamed-functions">Renamed Functions</h2>
+<p>A number of functions have new names but otherwise have not changed their semantics.</p>
+<table>
+<thead>
+<tr>
+<th>v2</th>
+<th>v3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Font::loadFromFile</code></td>
+<td><code>sf::Font::openFromFile</code></td>
+</tr>
+<tr>
+<td><code>sf::Socket::getHandle</code></td>
+<td><code>sf::Socket::getNativeHandle</code></td>
+</tr>
+<tr>
+<td><code>sf::WindowBase::getSystemHandle</code></td>
+<td><code>sf::WindowBase::getNativeHandle</code></td>
+</tr>
+<tr>
+<td><code>sf::Texture::create</code></td>
+<td><code>sf::Texture::resize</code></td>
+</tr>
+<tr>
+<td><code>sf::RenderTexture::create</code></td>
+<td><code>sf::RenderTexture::resize</code></td>
+</tr>
+<tr>
+<td><code>sf::Image::create</code></td>
+<td><code>sf::Image::resize</code></td>
+</tr>
+<tr>
+<td><code>sf::Sound::getLoop</code></td>
+<td><code>sf::Sound::isLooping</code></td>
+</tr>
+<tr>
+<td><code>sf::Sound::setLoop</code></td>
+<td><code>sf::Sound::setLooping</code></td>
+</tr>
+<tr>
+<td><code>sf::SoundStream::getLoop</code></td>
+<td><code>sf::SoundStream::isLooping</code></td>
+</tr>
+<tr>
+<td><code>sf::SoundStream::setLoop</code></td>
+<td><code>sf::SoundStream::setLooping</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="removal-of-default-constructors">Removal of Default Constructors</h2>
+<p>The default constructors <code>sf::Sound::Sound()</code>, <code>sf::Text::Text()</code>, and <code>sf::Sprite::Sprite()</code> were removed.
+They can be replaced by the corresponding constructors which accept a resource type.</p>
+<table>
+<thead>
+<tr>
+<th>v2</th>
+<th>v3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Sound::Sound()</code></td>
+<td><code>sf::Sound::Sound(const sf::SoundBuffer&amp;)</code></td>
+</tr>
+<tr>
+<td><code>sf::Text::Text()</code></td>
+<td><code>sf::Text::Text(const sf::Font&amp;)</code></td>
+</tr>
+<tr>
+<td><code>sf::Sprite::Sprite()</code></td>
+<td><code>sf::Sprite::Sprite(const sf::Texture&amp;)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Now that these classes are guaranteed to be holding a reference to their corresponding resource type, the functions used to access to those resources can return a reference instead of a pointer.
+These functions are <code>sf::Sound::getBuffer()</code>, <code>sf::Text::getFont()</code>, and <code>sf::Sprite::getTexture()</code>.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">const</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="w"> </span><span class="n">soundBuffer</span><span class="p">(</span><span class="s">&quot;sound.flac&quot;</span><span class="p">);</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Sound</span><span class="w"> </span><span class="n">sound</span><span class="p">;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">sound</span><span class="p">.</span><span class="n">setBuffer</span><span class="p">(</span><span class="n">soundBuffer</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">const</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="w"> </span><span class="n">soundBuffer</span><span class="p">(</span><span class="s">&quot;sound.flac&quot;</span><span class="p">);</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Sound</span><span class="w"> </span><span class="nf">sound</span><span class="p">(</span><span class="n">soundBuffer</span><span class="p">);</span>
+</span></code></pre></div></p>
+<h2 id="stdoptional-usage"><code>std::optional</code> Usage</h2>
+<p>SFML 3 makes liberal use of <code>std::optional</code> to express when a given function may not return a value.
+Some of these usages have already been mentioned like <code>sf::WindowBase::pollEvent</code>.
+Here are some more places where SFML 3 makes use of <code>std::optional</code>.</p>
+<ul>
+<li><code>sf::IpAddress</code> uses <code>std::optional</code> to express how resolving an address from a string may not yield a usable IP address.</li>
+<li><code>sf::Image::saveToMemory</code> returns a <code>std::optional</code> because the <code>sf::Image</code> may be empty or the underlying implementation may fail.</li>
+<li><code>sf::SoundFileReader::open</code> returns a <code>std::optional</code> because the stream being opened may not be valid.</li>
+<li><code>sf::Music::onLoop</code> and <code>sf::SoundStream::onLoop</code> returns a <code>std::optional</code> because if the objects are not in a looping state then there is nothing to return.</li>
+<li><code>sf::InputStream</code> uses <code>std::optional</code> in various places.
+Instead of returning <code>-1</code> to signal an error, <code>std::nullopt</code> can be returned.</li>
+</ul>
+<p>LearnCpp.com is a great place to learn more about using <code>std::optional</code>.
+Read more about that <a href="https://www.learncpp.com/cpp-tutorial/stdoptional/">here</a>.</p>
+<h2 id="new-constructors-for-loading-resources">New Constructors for Loading Resources</h2>
+<p>The following classes gained constructors that allow for loading/opening resources in a single expression.
+Upon failure they throw an <code>sf::Exception</code>.</p>
+<ul>
+<li><code>sf::InputSoundFile</code></li>
+<li><code>sf::OutputSoundFile</code></li>
+<li><code>sf::Music</code></li>
+<li><code>sf::SoundBuffer</code></li>
+<li><code>sf::Font</code></li>
+<li><code>sf::Image</code></li>
+<li><code>sf::RenderTexture</code></li>
+<li><code>sf::Shader</code></li>
+<li><code>sf::Texture</code></li>
+<li><code>sf::FileInputStream</code></li>
+<li><code>sf::Cursor</code></li>
+</ul>
+<p>SFML 3 still supports the SFML 2 style of error handling in addition to these new constructors.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="w"> </span><span class="n">soundBuffer</span><span class="p">;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">soundBuffer</span><span class="p">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="s">&quot;sound.wav&quot;</span><span class="p">))</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="p">{</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="c1">// Handle error</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="w"> </span><span class="n">soundBuffer</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">soundBuffer</span><span class="p">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="s">&quot;sound.wav&quot;</span><span class="p">))</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="p">{</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="c1">// Handle error</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="p">}</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1">// OR</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="k">const</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="w"> </span><span class="n">soundBuffer</span><span class="p">(</span><span class="s">&quot;sound.wav&quot;</span><span class="p">);</span>
+</span></code></pre></div></p>
+<h2 id="sfvector2t-and-sfvector3t-utility-functions"><code>sf::Vector2&lt;T&gt;</code> and <code>sf::Vector3&lt;T&gt;</code> Utility Functions</h2>
+<p><code>sf::Vector2&lt;T&gt;</code> and <code>sf::Vector3&lt;T&gt;</code> gained a number of new functions for performing common mathematic operations on vectors.</p>
+<table>
+<thead>
+<tr>
+<th><code>sf::Vector2&lt;T&gt;</code> Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Vector2(T, sf::Angle)</code></td>
+<td>Construct from polar coordinates</td>
+</tr>
+<tr>
+<td><code>length()</code></td>
+<td>Get length</td>
+</tr>
+<tr>
+<td><code>lengthSquared()</code></td>
+<td>Get length squared</td>
+</tr>
+<tr>
+<td><code>normalized()</code></td>
+<td>Get vector normalized to unit circle</td>
+</tr>
+<tr>
+<td><code>angleTo(sf::Vector2)</code></td>
+<td>Get angle to another vector</td>
+</tr>
+<tr>
+<td><code>angle()</code></td>
+<td>Get angle from X axis</td>
+</tr>
+<tr>
+<td><code>rotatedBy(sf::Angle)</code></td>
+<td>Get vector rotated by a given angle</td>
+</tr>
+<tr>
+<td><code>projectedOnto(sf::Vector2)</code></td>
+<td>Get vector projected onto another vector</td>
+</tr>
+<tr>
+<td><code>perpendicular()</code></td>
+<td>Get perpendicular vector</td>
+</tr>
+<tr>
+<td><code>dot(sf::Vector2)</code></td>
+<td>Get dot product</td>
+</tr>
+<tr>
+<td><code>cross(sf::Vector2)</code></td>
+<td>Get Z component of cross product</td>
+</tr>
+<tr>
+<td><code>componentWiseMul(sf::Vector2)</code></td>
+<td>Get component-wise multiple</td>
+</tr>
+<tr>
+<td><code>componentWiseDiv(sf::Vector2)</code></td>
+<td>Get component-wise divisor</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><code>sf::Vector3&lt;T&gt;</code> Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>length()</code></td>
+<td>Get length</td>
+</tr>
+<tr>
+<td><code>lengthSquared()</code></td>
+<td>Get length squared</td>
+</tr>
+<tr>
+<td><code>normalized()</code></td>
+<td>Get vector normalized to unit circle</td>
+</tr>
+<tr>
+<td><code>dot(sf::Vector3)</code></td>
+<td>Get dot product</td>
+</tr>
+<tr>
+<td><code>cross(sf::Vector3)</code></td>
+<td>Get cross product</td>
+</tr>
+<tr>
+<td><code>componentWiseMul(sf::Vector3)</code></td>
+<td>Get component-wise multiple</td>
+</tr>
+<tr>
+<td><code>componentWiseDiv(sf::Vector3)</code></td>
+<td>Get component-wise divisor</td>
+</tr>
+</tbody>
+</table>
+<h2 id="threading-primitives">Threading Primitives</h2>
+<p><code>sf::Lock</code>, <code>sf::Mutex</code>, <code>sf::Thread</code>, <code>sf::ThreadLocal</code>, and <code>sf::ThreadLocalPtr</code> were removed and replaced with their equivalents from the standard library.
+The standard library provides multiple options for threads, locks, and mutexes among other threading primitives.</p>
+<table>
+<thead>
+<tr>
+<th>v2</th>
+<th>v3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Lock</code></td>
+<td><code>std::lock_guard</code> or <code>std::unique_lock</code></td>
+</tr>
+<tr>
+<td><code>sf::Mutex</code></td>
+<td><code>std::mutex</code> or <code>std::recursive_mutex</code></td>
+</tr>
+<tr>
+<td><code>sf::Thread</code></td>
+<td><code>std::thread</code> or <code>std::jthread</code> (requires C++20)</td>
+</tr>
+<tr>
+<td><code>sf::ThreadLocal</code></td>
+<td><code>thread_local</code></td>
+</tr>
+<tr>
+<td><code>sf::ThreadLocalPtr</code></td>
+<td><code>thread_local</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="sound-samples-and-channel-map">Sound Samples and Channel Map</h2>
+<p>SFML 3 introduces the concept of a Channel Map which defines the mapping of the position in sample frame to the sound channel.
+For example, if you have a sound frame with six different samples for a 5.1 sound system, the Channel Map defines how each of those samples map to which speaker channel.</p>
+<p>SFML 2 always assumed the order as specified by OpenAL.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">auto</span><span class="w"> </span><span class="n">samples</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">int16_t</span><span class="o">&gt;</span><span class="p">();</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1">// ...</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="k">auto</span><span class="w"> </span><span class="n">channelMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">&gt;</span><span class="p">{</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">FrontLeft</span><span class="p">,</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">FrontCenter</span><span class="p">,</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">FrontRight</span><span class="p">,</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">BackRight</span><span class="p">,</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">BackLeft</span><span class="p">,</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundChannel</span><span class="o">::</span><span class="n">LowFrequencyEffects</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="p">};</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="k">auto</span><span class="w"> </span><span class="n">soundBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">SoundBuffer</span><span class="p">(</span><span class="n">samples</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">samples</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">channelMap</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mi">44100</span><span class="p">,</span><span class="w"> </span><span class="n">channelMap</span><span class="p">);</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="k">auto</span><span class="w"> </span><span class="n">sound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Sound</span><span class="p">(</span><span class="n">soundBuffer</span><span class="p">);</span>
+</span></code></pre></div>
+<p>This a breaking change for the following APIs:</p>
+<ul>
+<li><code>bool sf::SoundBuffer::loadFromSamples(...)</code></li>
+<li><code>bool sf::SoundBuffer::update(...)</code></li>
+<li><code>void sf::SoundStream::initialize(...)</code></li>
+<li><code>bool sf::OutputSoundFile::openFromFile(...)</code></li>
+<li><code>bool sf::SoundFileWriter::open(...)</code></li>
+</ul>
+<h2 id="deprecated-apis">Deprecated APIs</h2>
+<p>SFML 3 removes all of the deprecated APIs in SFML 2.</p>
+<table>
+<thead>
+<tr>
+<th>Deprecated API</th>
+<th>Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Event::MouseWheelEvent</code></td>
+<td><code>sf::Event::MouseWheelScrolled</code></td>
+</tr>
+<tr>
+<td><code>sf::RenderWindow::capture</code></td>
+<td>See 1</td>
+</tr>
+<tr>
+<td><code>sf::RenderTexture::create</code></td>
+<td><code>sf::RenderTexture::resize</code></td>
+</tr>
+<tr>
+<td><code>sf::Shader::setParameter</code></td>
+<td><code>sf::Shader::setUniform</code></td>
+</tr>
+<tr>
+<td><code>sf::Text::setColor</code></td>
+<td><code>sf::Text::setFillColor</code></td>
+</tr>
+<tr>
+<td><code>sf::Text::getColor</code></td>
+<td><code>sf::Text::getFillColor</code></td>
+</tr>
+<tr>
+<td><code>sf::PrimitiveType::LinesStrip</code></td>
+<td><code>sf::PrimitiveType::LineStrip</code></td>
+</tr>
+<tr>
+<td><code>sf::PrimitiveType::TrianglesStrip</code></td>
+<td><code>sf::PrimitiveType::TriangleStrip</code></td>
+</tr>
+<tr>
+<td><code>sf::PrimitiveType::TrianglesFan</code></td>
+<td><code>sf::PrimitiveType::TriangleFan</code></td>
+</tr>
+<tr>
+<td><code>sf::PrimitiveType::Quads</code></td>
+<td>See 2</td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::BackSlash</code></td>
+<td><code>sf::Keyboard::Key::Backslash</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::BackSpace</code></td>
+<td><code>sf::Keyboard::Key::Backspace</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::Dash</code></td>
+<td><code>sf::Keyboard::Key::Dash</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::Quote</code></td>
+<td><code>sf::Keyboard::Key::Hyphen</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::Return</code></td>
+<td><code>sf::Keyboard::Key::Enter</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::SemiColon</code></td>
+<td><code>sf::Keyboard::Key::Semicolon</code></td>
+</tr>
+<tr>
+<td><code>sf::Keyboard::Tilde</code></td>
+<td><code>sf::Keyboard::Key::Grave</code></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><code>sf::RenderWindow::capture</code> can be recreated by using an <code>sf::Texture</code> and its <code>sf::Texture::update(const Window&amp;)</code> function to copy its contents into an <code>sf::Image</code> instead.</li>
+<li><code>sf::PrimitiveType::Quads</code> can be replaced by another primitive type.
+This is not a drop-in replacement but rather will require refactoring your code to work with a new geometry.
+One viable option is to use <code>sf::PrimitiveType::Triangles</code> where two adjacent triangles join to form what was previously one quad.</li>
+</ol>
+<h2 id="anti-aliasing-renamed">Anti-Aliasing Renamed</h2>
+<p>SFML 3 capitalizes the <code>A</code> of <code>aliasing</code> for all the APIs.</p>
+<ul>
+<li><code>sf::RenderTexture::getMaximumAntialiasingLevel()</code> becomes <code>sf::RenderTexture::getMaximumAntiAliasingLevel()</code></li>
+<li><code>sf::ContextSettings::antialiasingLevel</code> becomes <code>sf::ContextSettings::antiAliasingLevel</code></li>
+</ul>
+<h2 id="coordinatetype-for-renderstates">CoordinateType for RenderStates</h2>
+<p>The enum <code>sf::CoordinateType</code> was moved from the <code>sf::Texture</code> into its own dedicated enum class.</p>
+<p>The <code>sf::RenderStates</code> class got a new member of type <code>sf::CoordinateType</code> to control how the texture coordinates will be interpreted.
+By default SFML uses <code>sf::CoordinateType::Pixels</code>, while <code>sf::CoordinateType::Normalized</code> is the default for OpenGL.
+Using <code>sf::CoordinateType::Normalized</code> with <code>sf::RenderStates</code> allows for using normalized textures with <code>sf::VertexArray</code> and <code>sf::VertexBuffer</code>.</p>
+<p>The constructor for <code>sf::RenderStates</code> has changed.</p>
+<p>v2:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">auto</span><span class="w"> </span><span class="n">renderStates</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">RenderStates</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">BlendAlpha</span><span class="p">,</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">                                     </span><span class="n">transform</span><span class="p">,</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">                                     </span><span class="n">texture</span><span class="p">,</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">                                     </span><span class="k">nullptr</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p>v3:
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="k">auto</span><span class="w"> </span><span class="n">renderStates</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">RenderStates</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">BlendMode</span><span class="o">::</span><span class="n">BlendAlpha</span><span class="p">,</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">                                     </span><span class="n">transform</span><span class="p">,</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">                                     </span><span class="n">sf</span><span class="o">::</span><span class="n">CoordinateTye</span><span class="o">::</span><span class="n">Pixels</span><span class="p">,</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">                                     </span><span class="n">texture</span><span class="p">,</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">                                     </span><span class="k">nullptr</span><span class="p">);</span>
+</span></code></pre></div></p>
+<h2 id="other-minor-changes">Other Minor Changes</h2>
+<p>SFML 3 includes various smaller changes that ought to be mentioned.</p>
+<ul>
+<li>Changed the parameter order of the <code>sf::Text</code> constructor, so that the provided font is always the first parameter</li>
+<li>Reverted to default value of CMake's <code>BUILD_SHARED_LIBS</code> which means SFML now builds static libraries by default</li>
+<li>Changed <code>sf::String</code> interface to use <code>std::u16string</code> and <code>std::u32string</code></li>
+<li>Removed <code>sf::ContextSettings</code> constructor in favor of aggregate initialization</li>
+<li>Removed <code>sf::View::reset</code> in favor of assigning from a new <code>sf::View</code> object</li>
+<li>Removed <code>sf::Vertex</code> constructors in favor of aggregate initialization</li>
+<li>Renamed <code>sf::Mouse::Button::XButton1</code> and <code>sf::Mouse::Button::XButton2</code> enumerators to <code>sf::Mouse::Button::Extra1</code> and <code>sf::Mouse::Button::Extra2</code></li>
+<li>Removed NonCopyable.hpp header in favor of using built-in language features for disabling copy operators</li>
+<li>Converted the following classes to namespaces: <code>sf::Clipboard</code>, <code>sf::Keyboard</code>, <code>sf::Joystick</code>, <code>sf::Listener</code>, <code>sf::Mouse</code>, <code>sf::Sensor</code>, <code>sf::Touch</code>, <code>sf::Vulkan</code></li>
+<li>Removed <code>sf::SoundStream::setProcessingInterval</code> as miniaudio matches the internal processing rate to the underlying backend</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

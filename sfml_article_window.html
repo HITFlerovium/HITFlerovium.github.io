@@ -1,0 +1,227 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="opening-and-managing-an-sfml-window">Opening and managing an SFML window</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This tutorial only explains how to open and manage a window.
+Drawing stuff is beyond the scope of the sfml-window module: it is handled by the sfml-graphics module.
+However, the window management remains exactly the same so reading this tutorial is important in any case.</p>
+<h2 id="opening-a-window">Opening a window</h2>
+<p>Windows in SFML are defined by the <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> class.
+A window can be created and opened directly upon construction:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SFML/Window.hpp&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">({</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;My window&quot;</span><span class="p">);</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="p">...</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The first argument, the <em>video mode</em>, defines the size of the window (the inner size, without the title bar and borders).
+Here, we create a window with a size of 800x600 pixels.
+The <a href="../../../../documentation/3.1.0/classsf_1_1VideoMode.html" title="sf::VideoMode documentation"><code>sf::VideoMode</code></a> class has some interesting static functions to get the desktop resolution or the list of valid video modes for fullscreen mode.
+Don't hesitate to have a look at its documentation.</p>
+<p>The second argument is simply the title of the window.</p>
+<p>This constructor accepts a third optional argument: a style, which allows you to choose which decorations and features you want.
+You can use any combination of the following styles:</p>
+<table>
+<thead>
+<tr>
+<th>Style</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::Style::None</code></td>
+<td>No decoration at all (useful for splash screens, for example)<br>This style cannot be combined with others</td>
+</tr>
+<tr>
+<td><code>sf::Style::Titlebar</code></td>
+<td>The window has a titlebar</td>
+</tr>
+<tr>
+<td><code>sf::Style::Resize</code></td>
+<td>The window can be resized and has a maximize button</td>
+</tr>
+<tr>
+<td><code>sf::Style::Close</code></td>
+<td>The window has a close button</td>
+</tr>
+<tr>
+<td><code>sf::Style::Default</code></td>
+<td>The default style, which is a shortcut for <code>Titlebar | Resize | Close</code></td>
+</tr>
+</tbody>
+</table>
+<p>The fourth argument defines the window states which lets you pick between a floating window or a fullscreen window.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sf::State::Windowed</code></td>
+<td>Floating window</td>
+</tr>
+<tr>
+<td><code>sf::State::Fullscreen</code></td>
+<td>Fullscreen window</td>
+</tr>
+</tbody>
+</table>
+<p>There's also a fifth optional argument, which defines OpenGL specific options which are explained in the <a href="../opengl/" title="OpenGL tutorial">dedicated OpenGL tutorial</a>.</p>
+<p>If you want to create the window <em>after</em> the construction of the <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> instance, or re-create it with a different video mode or title, you can use the <code>create</code> function instead.
+It takes the exact same arguments as the constructor.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SFML/Window.hpp&gt;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">{</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="p">;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">({</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;My window&quot;</span><span class="p">);</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">...</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="bringing-the-window-to-life">Bringing the window to life</h2>
+<p>If you try to execute the code above with nothing in place of the "...", you will hardly see something.
+First, because the program ends immediately.
+Second, because there's no event handling -- so even if you added an endless loop to this code, you would see a dead window, unable to be moved, resized, or closed.</p>
+<p>Let's add some code to make this program a bit more interesting:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SFML/Window.hpp&gt;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">({</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;My window&quot;</span><span class="p">);</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="c1">// run the program as long as the window is open</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="c1">// check all the window&#39;s events that were triggered since the last iteration of the loop</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">pollEvent</span><span class="p">())</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="p">{</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">            </span><span class="c1">// &quot;close requested&quot; event: we close the window</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">is</span><span class="o">&lt;</span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="o">&gt;</span><span class="p">())</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">                </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The above code will open a window, and terminate when the user closes it.
+Let's see how it works in detail.</p>
+<p>First, we added a loop that ensures that the application will be refreshed/updated until the window is closed.
+Most (if not all) SFML programs will have this kind of loop, sometimes called the <em>main loop</em> or <em>game loop</em>.</p>
+<p>Then, the first thing that we want to do inside our game loop is check for any events that occurred.
+Note that we use a <code>while</code> loop so that all pending events are processed in case there were several.
+The <code>pollEvent</code> function returns an event if an event was pending, or <code>std::nullopt</code> if there was none.</p>
+<p>Whenever we get an event, we must check its type (window closed? key pressed? mouse moved? joystick connected? ...), and react accordingly if we are interested in it.
+In this case, we only care about the <code>sf::Event::Closed</code> event, which is triggered when the user wants to close the window.
+At this point, the window is still open and we have to close it explicitly with the <code>close</code> function.
+This enables you to do something before the window is closed, such as saving the current state of the application, or displaying a message.</p>
+<p>A mistake that people often make is to forget the event loop, simply because they don't yet care about handling events (they use real-time inputs instead).
+Without an event loop, the window will become unresponsive.
+It is important to note that the event loop has two roles: in addition to providing events to the user, it gives the window a chance to process its internal events too, which is required so that it can react to move or resize user actions.</p>
+<p>After the window has been closed, the main loop exits and the program terminates.</p>
+<p>At this point, you probably noticed that we haven't talked about <em>drawing something</em> to the window yet.
+As stated in the introduction, this is not the job of the sfml-window module, and you'll have to jump to the sfml-graphics tutorials if you want to draw things such as sprites, text, or shapes.</p>
+<p>To draw stuff, you can also use OpenGL directly and totally ignore the sfml-graphics module.
+<a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> internally creates an OpenGL context and is ready to accept your OpenGL calls.
+You can learn more about that in the <a href="../opengl/" title="OpenGL tutorial">corresponding tutorial</a>.</p>
+<p>Don't expect to see something interesting in this window: you may see a uniform color (black or white), or the last contents of the previous application that used OpenGL, or... something else.</p>
+<h2 id="playing-with-the-window">Playing with the window</h2>
+<p>Of course, SFML allows you to play with your windows a bit.
+Basic window operations such as changing the size, position, title or icon are supported, but unlike dedicated GUI libraries (Qt, wxWidgets), SFML doesn't provide advanced features.
+SFML windows are only meant to provide an environment for OpenGL or SFML drawing.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// change the position of the window (relatively to the desktop)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">window</span><span class="p">.</span><span class="n">setPosition</span><span class="p">({</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">});</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">// change the size of the window</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">window</span><span class="p">.</span><span class="n">setSize</span><span class="p">({</span><span class="mi">640</span><span class="p">,</span><span class="w"> </span><span class="mi">480</span><span class="p">});</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1">// change the title of the window</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">window</span><span class="p">.</span><span class="n">setTitle</span><span class="p">(</span><span class="s">&quot;SFML window&quot;</span><span class="p">);</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1">// get the size of the window</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">sf</span><span class="o">::</span><span class="n">Vector2u</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">getSize</span><span class="p">();</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c1">// check whether the window has the focus</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="kt">bool</span><span class="w"> </span><span class="n">focus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">hasFocus</span><span class="p">();</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="p">...</span>
+</span></code></pre></div>
+<p>You can refer to the API documentation for a complete list of <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a>'s functions.</p>
+<p>In case you really need advanced features for your window, you can create one (or even a full GUI) with another library, and embed SFML into it.
+To do so, you can use the other constructor, or <code>create</code> function, of <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> which takes the OS-specific handle of an existing window.
+In this case, SFML will create a drawing context inside the given window and catch all its events without interfering with the parent window management.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">WindowHandle</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* specific to what you&#39;re doing and the library you&#39;re using */</span><span class="p">;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="nf">window</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+</span></code></pre></div>
+<p>If you just want an additional, very specific feature, you can also do it the other way round: create an SFML window and get its OS-specific handle to implement things that SFML itself doesn't support.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="p">(</span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">({</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">}),</span><span class="w"> </span><span class="s">&quot;SFML window&quot;</span><span class="p">);</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">WindowHandle</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="n">getNativeHandle</span><span class="p">();</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">// you can now use the handle with OS specific functions</span>
+</span></code></pre></div>
+<p>Integrating SFML with other libraries requires some work and won't be described here, but you can refer to the dedicated tutorials, examples or forum posts.</p>
+<h2 id="controlling-the-framerate">Controlling the framerate</h2>
+<p>Sometimes, when your application runs fast, you may notice visual artifacts such as tearing.
+The reason is that your application's refresh rate is not synchronized with the vertical frequency of the monitor, and as a result, the bottom of the previous frame is mixed with the top of the next one.<br />
+The solution to this problem is to activate <em>vertical synchronization</em>.
+It is automatically handled by the graphics card, and can easily be switched on and off with the <code>setVerticalSyncEnabled</code> function:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">window</span><span class="p">.</span><span class="n">setVerticalSyncEnabled</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// call it once after creating the window</span>
+</span></code></pre></div>
+<p>After this call, your application will run at the same frequency as the monitor's refresh rate.</p>
+<p>Sometimes <code>setVerticalSyncEnabled</code> will have no effect: this is most likely because vertical synchronization is forced to "off" in your graphics driver's settings.
+It should be set to "controlled by application" instead.</p>
+<p>In other situations, you may also want your application to run at a given framerate, instead of the monitor's frequency.
+This can be done by calling <code>setFramerateLimit</code>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">window</span><span class="p">.</span><span class="n">setFramerateLimit</span><span class="p">(</span><span class="mi">60</span><span class="p">);</span><span class="w"> </span><span class="c1">// call it once after creating the window</span>
+</span></code></pre></div>
+<p>Unlike <code>setVerticalSyncEnabled</code>, this feature is implemented by SFML itself, using a combination of <a href="../../../../documentation/3.1.0/classsf_1_1Clock.html" title="sf::Clock documentation"><code>sf::Clock</code></a> and <code>sf::sleep</code>.
+An important consequence is that it is not 100% reliable, especially for high framerates: <code>sf::sleep</code>'s resolution depends on the underlying operating system and hardware, and can be as high as 10 or 15 milliseconds.
+Don't rely on this feature to implement precise timing.</p>
+<p>Never use both <code>setVerticalSyncEnabled</code> and <code>setFramerateLimit</code> at the same time!
+They would badly mix and make things worse.</p>
+<h2 id="things-to-know-about-windows">Things to know about windows</h2>
+<p>Here is a brief list of what you can and cannot do with SFML windows.</p>
+<h3 id="you-can-create-multiple-windows">You can create multiple windows</h3>
+<p>SFML allows you to create multiple windows, and to handle them either all in the main thread, or each one in its own thread (but... see below).
+In this case, don't forget to have an event loop for each window.</p>
+<h3 id="multiple-monitors-are-not-correctly-supported-yet">Multiple monitors are not correctly supported yet</h3>
+<p>SFML doesn't explicitly manage multiple monitors.
+As a consequence, you won't be able to choose which monitor a window appears on, and you won't be able to create more than one fullscreen window.
+This should be improved in a future version.</p>
+<h3 id="events-must-be-polled-in-the-windows-thread">Events must be polled in the window's thread</h3>
+<p>This is an important limitation of most operating systems: the event loop (more precisely, the <code>pollEvent</code> or <code>waitEvent</code> function) must be called in the same thread that created the window.
+This means that if you want to create a dedicated thread for event handling, you'll have to make sure that the window is created in this thread too.
+If you really want to split things between threads, it is more convenient to keep event handling in the main thread and move the rest (rendering, physics, logic, ...) to a separate thread instead.
+This configuration will also be compatible with the other limitation described below.</p>
+<h3 id="on-macos-windows-and-events-must-be-managed-in-the-main-thread">On macOS, windows and events must be managed in the main thread</h3>
+<p>Yep, that's true; macOS just won't agree if you try to create a window or handle events in a thread other than the main one.</p>
+<h3 id="on-windows-a-window-which-is-bigger-than-the-desktop-will-not-behave-correctly">On Windows, a window which is bigger than the desktop will not behave correctly</h3>
+<p>For some reason, Windows doesn't like windows that are bigger than the desktop.
+This includes windows created with <code>VideoMode::getDesktopMode()</code>: with the window decorations (borders and titlebar) added, you end up with a window which is slightly bigger than the desktop.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Window 窗口模块 on Flerovium&#39;s Blog</title>
+    <link>http://localhost:1313/sfml/window/</link>
+    <description>Recent content in Window 窗口模块 on Flerovium&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 10 Jul 2026 10:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/sfml/window/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>事件详解</title>
+      <link>http://localhost:1313/sfml/window/events/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/events/</guid>
+      <description>&lt;h1 id=&#34;事件详解&#34;&gt;事件详解&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程详细列出了所有的窗口事件。
+它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。&lt;/p&gt;
+&lt;h2 id=&#34;sfevent-类型&#34;&gt;sf::Event 类型&lt;/h2&gt;
+&lt;p&gt;SFML 使用类型安全的 API 来处理事件。
+有两种主要方式可以使用此 API。
+有关这两种方法的综合示例，请查看 &lt;a href=&#34;https://github.com/SFML/SFML/tree/master/examples/event_handling&#34; title=&#34;EventHandling example on GitHub&#34;&gt;EventHandling 示例程序&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;sfeventgetift&#34;&gt;&lt;code&gt;sf::Event::getIf&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;第一种选择是基于 &lt;code&gt;sf::Event&lt;/code&gt; 的成员函数 &lt;code&gt;getIf&amp;lt;T&amp;gt;&lt;/code&gt; 和 &lt;code&gt;is&amp;lt;T&amp;gt;&lt;/code&gt;。
+模板参数 &lt;code&gt;T&lt;/code&gt; 必须是一个事件子类型，例如 &lt;code&gt;sf::Event::Resized&lt;/code&gt; 或 &lt;code&gt;sf::Event::MouseMoved&lt;/code&gt;。
+如果模板参数与当前活跃的事件子类型相匹配，&lt;code&gt;getIf&amp;lt;T&amp;gt;&lt;/code&gt; 将返回指向该特定事件子类型的指针。
+否则，它将返回 &lt;code&gt;nullptr&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;如果模板参数与当前活跃的事件子类型相匹配，&lt;code&gt;is&amp;lt;T&amp;gt;&lt;/code&gt; 将返回 &lt;code&gt;true&lt;/code&gt;。
+否则，它将返回 &lt;code&gt;false&lt;/code&gt;。
+这对于像 &lt;code&gt;sf::Event::Closed&lt;/code&gt; 这种不包含任何数据的子类型特别有用。&lt;/p&gt;
+&lt;p&gt;请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。
+&lt;code&gt;sf::WindowBase::pollEvent&lt;/code&gt; 和 &lt;code&gt;sf::WindowBase::waitEvent&lt;/code&gt; 返回一个 &lt;code&gt;std::optional&amp;lt;sf::Event&amp;gt;&lt;/code&gt;。
+这两个函数&lt;strong&gt;可能&lt;/strong&gt;会返回一个事件，但也可能不会。&lt;/p&gt;
+&lt;p&gt;它的代码如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (window.isOpen())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional event &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; window.pollEvent())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (event&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;is&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Event&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Closed&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            window.close();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;auto&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; keyPressed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; event&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;getIf&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Event&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;KeyPressed&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (keyPressed&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;scancode &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Scancode&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Escape)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                window.close();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 主循环的其他部分
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;C++ 允许你推导模板参数，这就是为什么你可以写成 &lt;code&gt;const std::optional event&lt;/code&gt; 而不是 &lt;code&gt;const std::optional&amp;lt;sf::Event&amp;gt; event&lt;/code&gt; 的原因。
+如果你更喜欢简短的表达式，&lt;code&gt;const auto event&lt;/code&gt; 也是一个有效的选择。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>打开并管理 SFML 窗口</title>
+      <link>http://localhost:1313/sfml/window/opening-window/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/opening-window/</guid>
+      <description>&lt;h1 id=&#34;打开并管理-sfml-窗口&#34;&gt;打开并管理 SFML 窗口&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程仅解释如何打开和管理一个窗口。
+绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。
+然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。&lt;/p&gt;
+&lt;h2 id=&#34;打开窗口&#34;&gt;打开窗口&lt;/h2&gt;
+&lt;p&gt;在 SFML 中，窗口由 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt; 类定义。
+一个窗口可以在构造时被直接创建和打开：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;SFML/Window.hpp&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Window window(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;VideoMode({&lt;span style=&#34;color:#ae81ff&#34;&gt;800&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;600&lt;/span&gt;}), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;My window&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第一个参数——&lt;strong&gt;视频模式&lt;/strong&gt;（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。
+在这里，我们创建了一个大小为 800x600 像素的窗口。
+&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1VideoMode.html&#34; title=&#34;sf::VideoMode documentation&#34;&gt;&lt;code&gt;sf::VideoMode&lt;/code&gt;&lt;/a&gt; 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。
+千万不要犹豫去查阅一下它的文档。&lt;/p&gt;
+&lt;p&gt;第二个参数就是窗口的标题。&lt;/p&gt;
+&lt;p&gt;这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。
+你可以使用以下样式的任意组合：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;样式&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::None&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;没有任何装饰（例如对于启动画面非常有用）&lt;br&gt;此样式不能与其他样式组合使用&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Titlebar&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口拥有一个标题栏&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Resize&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口可以调整大小并拥有一个最大化按钮&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Close&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口拥有一个关闭按钮&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Default&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;默认样式，它是 `Titlebar&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;状态&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::State::Windowed&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;悬浮窗口&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::State::Fullscreen&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;全屏窗口&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;还有第五个可选参数，它定义了 OpenGL 的特定选项，这在&lt;a href=&#34;../opengl/&#34; title=&#34;OpenGL tutorial&#34;&gt;专属的 OpenGL 教程&lt;/a&gt;中会有详细解释。&lt;/p&gt;
+&lt;p&gt;如果你想在 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt; 实例构造&lt;strong&gt;之后&lt;/strong&gt;再去创建窗口，或者想用不同的视频模式或标题重新创建它，你可以改用 &lt;code&gt;create&lt;/code&gt; 函数。
+它接受与构造函数完全相同的参数。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>键盘、鼠标与手柄</title>
+      <link>http://localhost:1313/sfml/window/inputs/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/inputs/</guid>
+      <description>&lt;h1 id=&#34;键盘鼠标与手柄&#34;&gt;键盘、鼠标与手柄&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程解释了如何访问全局输入设备：键盘、鼠标和手柄。
+千万不要将它与事件混淆。
+实时输入允许你在任何时候查询键盘、鼠标和手柄的全局状态（“&lt;strong&gt;这个按钮现在被按下了吗？&lt;/strong&gt;”，“&lt;strong&gt;鼠标现在在哪里？&lt;/strong&gt;”），而事件则是在有事情发生时通知你（“&lt;strong&gt;这个按钮被按下了&lt;/strong&gt;”，“&lt;strong&gt;鼠标移动了&lt;/strong&gt;”）。&lt;/p&gt;
+&lt;h2 id=&#34;键盘&#34;&gt;键盘&lt;/h2&gt;
+&lt;p&gt;提供访问键盘状态的命名空间是 &lt;a href=&#34;../../../../documentation/3.1.0/namespacesf_1_1Keyboard.html&#34; title=&#34;sf::Keyboard documentation&#34;&gt;&lt;code&gt;sf::Keyboard&lt;/code&gt;&lt;/a&gt;。
+它包含同一个函数 &lt;code&gt;isKeyPressed&lt;/code&gt; 的两个重载，用于检查按键的当前状态（按下或释放）。&lt;/p&gt;
+&lt;p&gt;此函数直接读取键盘状态，并忽略你窗口的焦点状态。
+这意味着即使你的窗口处于非活跃状态，&lt;code&gt;isKeyPressed&lt;/code&gt; 也可能返回 true。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isKeyPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Key&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Left))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 左方向键被按下了：移动我们的角色
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    character.move({&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.f&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.f&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;键码（Key codes）定义在 &lt;code&gt;sf::Keyboard::Key&lt;/code&gt; 枚举中。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isKeyPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Scan&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Right))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 右方向键被按下了：移动我们的角色
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    character.move({&lt;span style=&#34;color:#ae81ff&#34;&gt;1.f&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.f&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;扫描码（Scancodes）定义在 &lt;code&gt;sf::Keyboard::Scancode&lt;/code&gt; 枚举中。&lt;/p&gt;
+&lt;h2 id=&#34;鼠标&#34;&gt;鼠标&lt;/h2&gt;
+&lt;p&gt;提供访问鼠标状态的命名空间是 &lt;a href=&#34;../../../../documentation/3.1.0/namespacesf_1_1Mouse.html&#34; title=&#34;sf::Mouse documentation&#34;&gt;&lt;code&gt;sf::Mouse&lt;/code&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;你可以检查鼠标按键是否被按下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isButtonPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Button&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Left))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 鼠标左键被按下了：开火
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    gun.fire();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;鼠标按键代码定义在 &lt;code&gt;sf::Mouse::Button&lt;/code&gt; 枚举中。
+SFML 支持最多 5 个按键：左键、右键、中键（滚轮），以及两个可能对应任何功能的附加按键。&lt;/p&gt;
+&lt;p&gt;你还可以获取和设置鼠标的当前位置，这可以是相对于桌面的，也可以是相对于某个窗口的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 获取全局鼠标位置（相对于桌面）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Vector2i globalPosition &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;getPosition();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 获取局部鼠标位置（相对于一个窗口）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Vector2i localPosition &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;getPosition(window); &lt;span style=&#34;color:#75715e&#34;&gt;// window 是一个 sf::Window
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 全局设置鼠标位置（相对于桌面）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;setPosition({&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 局部设置鼠标位置（相对于一个窗口）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;setPosition({&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;}, window); &lt;span style=&#34;color:#75715e&#34;&gt;// window 是一个 sf::Window
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;目前没有用于读取鼠标滚轮当前状态的函数。
+由于滚轮只能进行相对移动，它没有可被查询的绝对状态。
+通过观察一个按键，你可以分辨出它是被按下还是被释放了。
+通过观察鼠标光标，你可以分辨出它在屏幕上的具体位置。
+然而，仅仅观察鼠标滚轮并不能告诉你它处于哪个“刻度”上。
+你只能在它移动时收到通知（&lt;code&gt;MouseWheelScrolled&lt;/code&gt; 事件）。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

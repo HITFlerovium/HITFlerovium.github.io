@@ -1,13 +1,500 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>My New Hugo Project</title>
+    <title>Flerovium&#39;s Blog</title>
     <link>http://localhost:1313/</link>
-    <description>Recent content on My New Hugo Project</description>
+    <description>Recent content on Flerovium&#39;s Blog</description>
     <generator>Hugo</generator>
-    <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jul 2026 01:31:15 +0800</lastBuildDate>
+    <language>en</language>
+    <lastBuildDate>Fri, 10 Jul 2026 13:33:22 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SFML 3.0 到 3.1 迁移指南</title>
+      <link>http://localhost:1313/sfml/migration/3-0-to-3-1/</link>
+      <pubDate>Fri, 10 Jul 2026 13:33:22 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/migration/3-0-to-3-1/</guid>
+      <description>&lt;h1 id=&#34;从-sfml-30-迁移到-sfml-31&#34;&gt;从 SFML 3.0 迁移到 SFML 3.1&lt;/h1&gt;
+&lt;p&gt;欢迎来到 SFML 3.1！
+本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。&lt;/p&gt;
+&lt;h2 id=&#34;依赖项&#34;&gt;依赖项&lt;/h2&gt;
+&lt;p&gt;我们引入了一系列新的依赖项以支持所有改进：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;FetchContent / 系统依赖&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/harfbuzz/harfbuzz&#34;&gt;HarfBuzz&lt;/a&gt; 用于复杂的文本布局&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Tehreer/SheenBidi&#34;&gt;SheenBidi&lt;/a&gt; 用于正确的双向文本渲染&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Mbed-TLS/mbedtls&#34;&gt;Mbed TLS&lt;/a&gt; 提供 TLS 支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/libssh2/libssh2&#34;&gt;libssh2&lt;/a&gt; 提供 SFTP 支持&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Header-only (仅头文件)&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yhirose/cpp-unicodelib&#34;&gt;cpp-unicodelib&lt;/a&gt; 提供完善的 Unicode 支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/piscisaureus/wepoll&#34;&gt;wepoll&lt;/a&gt; 用于改进 &lt;code&gt;SocketSelector&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/phoboslab/qoi&#34;&gt;qoi&lt;/a&gt; 支持 QOI 图像格式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;废弃接口&#34;&gt;废弃接口&lt;/h2&gt;
+&lt;p&gt;已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。
+建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。&lt;/p&gt;
+&lt;h3 id=&#34;字体字距调节&#34;&gt;字体字距调节&lt;/h3&gt;
+&lt;p&gt;使用 &lt;code&gt;std::uint32_t&lt;/code&gt; 表示 Unicode 码位的 &lt;code&gt;sf::Font::getKerning&lt;/code&gt; 重载现已废弃。
+请改用接受 &lt;code&gt;char32_t&lt;/code&gt; 的重载版本。
+两者的行为完全一致——仅仅是参数类型发生了改变。&lt;/p&gt;
+&lt;p&gt;v3.0:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt; kerning &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; font.getKerning(&lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32_t&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;A&amp;#39;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32_t&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;V&amp;#39;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;v3.1:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt; kerning &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; font.getKerning(U&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;A&amp;#39;&lt;/span&gt;, U&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;V&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;文本中的字符位置&#34;&gt;文本中的字符位置&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;sf::Text::findCharacterPos(std::size_t index)&lt;/code&gt; 已被废弃，替代方案为 &lt;code&gt;getShapedGlyphs()&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>SFML 与 Visual Studio</title>
+      <link>http://localhost:1313/sfml/getting-started/visual-studio/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/getting-started/visual-studio/</guid>
+      <description>&lt;h1 id=&#34;sfml-与-visual-studio&#34;&gt;SFML 与 Visual Studio&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;如果你正在使用带有 Visual Studio IDE 以及 Visual C++ 编译器的环境来开发 SFML，那么这篇教程应该是你的首选阅读材料。
+它将向你解释如何配置你的 SFML 项目。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!NOTE]
+&lt;a href=&#34;../cmake/&#34;&gt;CMake 模板&lt;/a&gt;是开始使用 SFML 的推荐方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;安装-sfml&#34;&gt;安装 SFML&lt;/h2&gt;
+&lt;p&gt;首先，你必须从&lt;a href=&#34;../../../../download/&#34; title=&#34;Go to the download page&#34;&gt;下载页面&lt;/a&gt;下载 SFML SDK。&lt;/p&gt;
+&lt;p&gt;然后，你可以将 SFML 压缩包解压到你喜欢的任何位置。
+不推荐将头文件和库文件直接复制到你的 Visual Studio 安装目录中。更好的做法是将各种库保存在它们各自独立的位置，特别是当你打算使用同一个库的多个版本，或者使用多个编译器时。&lt;/p&gt;
+&lt;h2 id=&#34;创建并配置-sfml-项目&#34;&gt;创建并配置 SFML 项目&lt;/h2&gt;
+&lt;p&gt;第一件事是选择创建什么类型的项目。
+推荐选择“空项目”。
+对话框窗口还提供了几个其他选项来定制项目：只有当你懂得如何使用预编译头文件时，才选择“控制台应用程序”或“Windows 应用程序”。&lt;/p&gt;
+&lt;p&gt;为了本教程的演示目的，你应该创建一个 &lt;code&gt;main.cpp&lt;/code&gt; 文件并将其添加到项目中，这样我们就能访问 C++ 的各项设置（否则 Visual Studio 不知道你在这个项目中打算使用哪种语言）。
+稍后我们会说明在其中填写什么内容。&lt;/p&gt;
+&lt;p&gt;首先我们需要配置编译器使用 SFML 3 所要求的 C++17 语言标准。&lt;/p&gt;
+&lt;p&gt;在项目的属性中，转到“C/C++”下的“语言”选项卡，将“C++ 语言标准”下拉菜单修改为“ISO C++ 17 标准”：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;设置 C++17 语言标准的对话框截图&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/sfml/getting-started/vc-standard.png&#34; title=&#34;设置 C++17 语言标准的对话框截图&#34;&gt;&lt;/p&gt;
+&lt;p&gt;现在我们需要告诉编译器去哪里寻找 SFML 的头文件（.hpp 文件），并告诉链接器去哪里寻找 SFML 的库文件（.lib 文件）。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>事件详解</title>
+      <link>http://localhost:1313/sfml/window/events/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/events/</guid>
+      <description>&lt;h1 id=&#34;事件详解&#34;&gt;事件详解&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程详细列出了所有的窗口事件。
+它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。&lt;/p&gt;
+&lt;h2 id=&#34;sfevent-类型&#34;&gt;sf::Event 类型&lt;/h2&gt;
+&lt;p&gt;SFML 使用类型安全的 API 来处理事件。
+有两种主要方式可以使用此 API。
+有关这两种方法的综合示例，请查看 &lt;a href=&#34;https://github.com/SFML/SFML/tree/master/examples/event_handling&#34; title=&#34;EventHandling example on GitHub&#34;&gt;EventHandling 示例程序&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;sfeventgetift&#34;&gt;&lt;code&gt;sf::Event::getIf&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;第一种选择是基于 &lt;code&gt;sf::Event&lt;/code&gt; 的成员函数 &lt;code&gt;getIf&amp;lt;T&amp;gt;&lt;/code&gt; 和 &lt;code&gt;is&amp;lt;T&amp;gt;&lt;/code&gt;。
+模板参数 &lt;code&gt;T&lt;/code&gt; 必须是一个事件子类型，例如 &lt;code&gt;sf::Event::Resized&lt;/code&gt; 或 &lt;code&gt;sf::Event::MouseMoved&lt;/code&gt;。
+如果模板参数与当前活跃的事件子类型相匹配，&lt;code&gt;getIf&amp;lt;T&amp;gt;&lt;/code&gt; 将返回指向该特定事件子类型的指针。
+否则，它将返回 &lt;code&gt;nullptr&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;如果模板参数与当前活跃的事件子类型相匹配，&lt;code&gt;is&amp;lt;T&amp;gt;&lt;/code&gt; 将返回 &lt;code&gt;true&lt;/code&gt;。
+否则，它将返回 &lt;code&gt;false&lt;/code&gt;。
+这对于像 &lt;code&gt;sf::Event::Closed&lt;/code&gt; 这种不包含任何数据的子类型特别有用。&lt;/p&gt;
+&lt;p&gt;请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。
+&lt;code&gt;sf::WindowBase::pollEvent&lt;/code&gt; 和 &lt;code&gt;sf::WindowBase::waitEvent&lt;/code&gt; 返回一个 &lt;code&gt;std::optional&amp;lt;sf::Event&amp;gt;&lt;/code&gt;。
+这两个函数&lt;strong&gt;可能&lt;/strong&gt;会返回一个事件，但也可能不会。&lt;/p&gt;
+&lt;p&gt;它的代码如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (window.isOpen())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional event &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; window.pollEvent())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (event&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;is&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Event&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Closed&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            window.close();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;auto&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; keyPressed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; event&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;getIf&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Event&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;KeyPressed&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (keyPressed&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;scancode &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Scancode&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Escape)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                window.close();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 主循环的其他部分
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;C++ 允许你推导模板参数，这就是为什么你可以写成 &lt;code&gt;const std::optional event&lt;/code&gt; 而不是 &lt;code&gt;const std::optional&amp;lt;sf::Event&amp;gt; event&lt;/code&gt; 的原因。
+如果你更喜欢简短的表达式，&lt;code&gt;const auto event&lt;/code&gt; 也是一个有效的选择。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>从 SFML 2 迁移到 SFML 3</title>
+      <link>http://localhost:1313/sfml/migration/2-to-3/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/migration/2-to-3/</guid>
+      <description>&lt;h1 id=&#34;从-sfml-2-迁移到-sfml-3&#34;&gt;从 SFML 2 迁移到 SFML 3&lt;/h1&gt;
+&lt;p&gt;欢迎来到 SFML 3！
+SFML 团队付出了巨大的努力，旨在提供一个既能让现有用户感到熟悉，又带来了重大改进的库。
+本文档将指导您如何将现有的 SFML 2 应用程序升级至 SFML 3。&lt;/p&gt;
+&lt;p&gt;SFML 3 最大的变化之一是将 C++ 标准提升到了 C++17，从而将 SFML 带入了现代 C++ 的世界！
+这一改变不仅促成了大量的内部改进，也为优化 API 提供了新的机遇，这些我们都会在本文档中逐一探讨。&lt;/p&gt;
+&lt;h2 id=&#34;编译器要求&#34;&gt;编译器要求&lt;/h2&gt;
+&lt;p&gt;随着标准从 C++03 升级到 C++17，您可能也需要升级编译器。
+在 SFML 3 发布之前的几年里，所有主流编译器均已广泛支持 C++17，因此您目前正在使用的编译器极有可能已经支持。
+如果您确实需要升级，以下是最低的编译器版本要求：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;编译器&lt;/th&gt;
+					&lt;th&gt;版本&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;MSVC&lt;/td&gt;
+					&lt;td&gt;16 (VS 2019)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;GCC&lt;/td&gt;
+					&lt;td&gt;9&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Clang&lt;/td&gt;
+					&lt;td&gt;9&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;AppleClang&lt;/td&gt;
+					&lt;td&gt;12&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;cmake-目标&#34;&gt;CMake 目标&lt;/h2&gt;
+&lt;p&gt;SFML 3 采用了现代 CMake 库目标的命名惯例，即在目标名称前添加一个命名空间。
+这些命名空间明确告诉 CMake “这是一个目标”，而像 &lt;code&gt;sfml-graphics&lt;/code&gt; 这样的名称，既可能是一个目标，也可能是磁盘上的一个预编译库，比如 &lt;code&gt;libsfml-graphics.so&lt;/code&gt;。
+消除这种歧义后，在因为（例如）忘记调用 &lt;code&gt;find_package&lt;/code&gt; 而找不到某个目标时，CMake 可以提供更有用的错误信息。
+此外，调用 &lt;code&gt;find_package&lt;/code&gt; 时使用的组件名称现在也改为了首字母大写。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>使用 CMake 项目模板的 SFML</title>
+      <link>http://localhost:1313/sfml/getting-started/cmake/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/getting-started/cmake/</guid>
+      <description>&lt;h1 id=&#34;使用-cmake-项目模板的-sfml&#34;&gt;使用 CMake 项目模板的 SFML&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程适用于任何操作系统、任何 IDE 以及任何编译器。
+它将向你解释如何构建一个能够与 SFML 的任意发布版本、分支或 Git 提交配合使用的项目。
+这种方法的独特性在于，它消除了发生链接器错误的可能性，并使未来升级 SFML 版本变得尽可能简单。
+它甚至包含了一个 CI 流水线，能够自动验证你的项目是否能继续在 Windows、Linux 和 macOS 上成功编译。&lt;/p&gt;
+&lt;h2 id=&#34;创建你自己的-github-项目&#34;&gt;创建你自己的 GitHub 项目&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/SFML/cmake-sfml-project&#34; title=&#34;CMake SFML Project Template Repository&#34;&gt;https://github.com/SFML/cmake-sfml-project&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;上述 GitHub 仓库就是 GitHub 所称的&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template&#34; title=&#34;GitHub documentation about repository templates&#34;&gt;仓库模板&lt;/a&gt;。
+查阅 GitHub 关于仓库模板的官方文档，了解如何利用此模板创建你自己的 GitHub 项目。
+这一步骤可确保你的代码安全地存放在远程位置，从而避免意外丢失。&lt;/p&gt;
+&lt;h2 id=&#34;自定义-cmake-项目与可执行文件的名称&#34;&gt;自定义 CMake 项目与可执行文件的名称&lt;/h2&gt;
+&lt;p&gt;开箱即用时，本项目为项目名称和可执行文件名称使用了占位符。
+这些名称可以是你想要的任何名字，并且它们不必保持一致。
+项目名称定义在 &lt;code&gt;CMakeLists.txt&lt;/code&gt; 文件顶部的 &lt;code&gt;project()&lt;/code&gt; 调用中。&lt;/p&gt;
+&lt;p&gt;可执行文件的名称则定义在 &lt;code&gt;add_executable()&lt;/code&gt; 调用中。
+请务必替换掉所有旧可执行文件名称的实例。
+在可执行文件被创建之后，该名称还会被多次使用。&lt;/p&gt;
+&lt;h2 id=&#34;添加你自己的源文件&#34;&gt;添加你自己的源文件&lt;/h2&gt;
+&lt;p&gt;项目初始时唯一的 C++ 源文件是 &lt;code&gt;src/main.cpp&lt;/code&gt;。
+你可以根据自己项目的需要，重命名、移除或添加新的源文件。
+只需确保所有的 &lt;code&gt;.cpp&lt;/code&gt; 文件都被包含在 &lt;code&gt;add_executable&lt;/code&gt; 调用中，以此来避免链接器错误。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>处理时间</title>
+      <link>http://localhost:1313/sfml/system/time/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/time/</guid>
+      <description>&lt;h1 id=&#34;处理时间&#34;&gt;处理时间&lt;/h1&gt;
+&lt;h2 id=&#34;sfml-中的时间&#34;&gt;SFML 中的时间&lt;/h2&gt;
+&lt;p&gt;与许多其他库将时间表示为 uint32 类型的毫秒数或是 float 类型的秒数不同，SFML 没有对时间值强加任何特定的单位或类型。
+相反，它通过一个灵活的类将这个选择权交给了用户：&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt;。
+所有操作时间值的 SFML 类和函数都使用这个类。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 代表的是一个时间段（换句话说，就是两个事件之间流逝的时间）。
+它&lt;strong&gt;不是&lt;/strong&gt;一个用于表示当前年/月/日/时/分/秒的时间戳（日期时间类）。
+它仅仅是一个代表一定时长的时间值，至于如何解释它，则取决于它被使用的上下文。&lt;/p&gt;
+&lt;h2 id=&#34;转换时间&#34;&gt;转换时间&lt;/h2&gt;
+&lt;p&gt;一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 值可以从不同的源单位构造而来：秒、毫秒和微秒。
+我们提供了一组自由函数（free function）来将它们各自转变为一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 对象：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;microseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;milliseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;seconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.01f&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;请注意，这三个时间值是完全相等的。&lt;/p&gt;
+&lt;p&gt;类似地，一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 也可以被转换回秒、毫秒或微秒：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ...;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int64_t&lt;/span&gt; usec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asMicroseconds();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int32_t&lt;/span&gt; msec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asMilliseconds();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt;        sec  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asSeconds();
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过以下两种方式，SFML 支持与 C++ 标准库中的 &lt;code&gt;std::chrono::duration&lt;/code&gt; 进行转换。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个接受任意 &lt;code&gt;std::chrono::duration&lt;/code&gt; 特化类型的隐式构造函数。&lt;/li&gt;
+&lt;li&gt;一个向任意 &lt;code&gt;std::chrono::duration&lt;/code&gt; 特化类型的隐式转换运算符。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;chrono&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;milliseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// (1) 从 std::chrono::milliseconds 隐式构造
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;this_thread&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;sleep_for(time); &lt;span style=&#34;color:#75715e&#34;&gt;// (2) 隐式转换为 std::chrono::nanoseconds
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这两种转换机制允许该类与使用 &lt;code&gt;&amp;lt;chrono&amp;gt;&lt;/code&gt; 头文件的接口实现无缝的互操作。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>处理角度</title>
+      <link>http://localhost:1313/sfml/system/angle/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/angle/</guid>
+      <description>&lt;h1 id=&#34;处理角度&#34;&gt;处理角度&lt;/h1&gt;
+&lt;h2 id=&#34;sfml-中的角度&#34;&gt;SFML 中的角度&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Angle.html&#34; title=&#34;sf::Angle documentation&#34;&gt;&lt;code&gt;sf::Angle&lt;/code&gt;&lt;/a&gt; 以一种与单位无关的方式来表示角度，这使得你可以无论是从度数还是从弧度的角度来考量它。
+SFML 中定义角度遵循&lt;a href=&#34;https://en.wikipedia.org/wiki/Right-hand_rule&#34;&gt;右手定则&lt;/a&gt;。
+这意味着如果窗口中 X 轴向右，Y 轴向下，那么正角度对应的是顺时针旋转。
+所有与角度相关的 SFML 类都使用 &lt;code&gt;sf::Angle&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;所有的 &lt;code&gt;sf::Angle&lt;/code&gt; 函数都启用了 &lt;code&gt;constexpr&lt;/code&gt;，因此这里展示的所有操作都可以在编译期完成。&lt;/p&gt;
+&lt;h2 id=&#34;构造角度&#34;&gt;构造角度&lt;/h2&gt;
+&lt;p&gt;有两个用于构造角度的工厂函数：&lt;code&gt;sf::degrees&lt;/code&gt; 和 &lt;code&gt;sf::radians&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;degrees(&lt;span style=&#34;color:#ae81ff&#34;&gt;180&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;radians(&lt;span style=&#34;color:#ae81ff&#34;&gt;3.1415f&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这两个函数可以分别从度数或弧度构建出近似相等的角度，这样你在编写自己的代码时就无需再去费心考虑单位问题了。
+请根据你的需要随意选用这两个函数。
+&lt;code&gt;sf::Angle&lt;/code&gt; 会在内部处理好任何必需的单位转换。&lt;/p&gt;
+&lt;h2 id=&#34;操作角度&#34;&gt;操作角度&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;sf::Angle&lt;/code&gt; 提供了一系列的运算符来进行算术操作。
+你可以对角度进行加、减、乘、除运算。
+同时还提供了取模、相等、不相等以及大小比较等运算符。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;degrees(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle1 &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2.f&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// 20 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; angle1 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;radians(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5f&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// 48.6 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;angle2; &lt;span style=&#34;color:#75715e&#34;&gt;// -48.6 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle2 &lt;span style=&#34;color:#f92672&#34;&gt;/=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.f&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// -16.2 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; equal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (angle1 &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; angle2); &lt;span style=&#34;color:#75715e&#34;&gt;// false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; inequal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (angle1 &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; angle2); &lt;span style=&#34;color:#75715e&#34;&gt;// true
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;sf::Angle&lt;/code&gt; 可以存在于 [-pi, pi) 或 [0, 2pi) 范围之外。
+例如，一个角度的值可能是 720 度。
+如果你希望获取一个新角度，使其值等效地被限制（折叠）在一个更小的范围内，有两个函数可以做到这一点：&lt;code&gt;sf::Angle::wrapSigned&lt;/code&gt; 和 &lt;code&gt;sf::Angle::wrapUnsigned&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>打开并管理 SFML 窗口</title>
+      <link>http://localhost:1313/sfml/window/opening-window/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/opening-window/</guid>
+      <description>&lt;h1 id=&#34;打开并管理-sfml-窗口&#34;&gt;打开并管理 SFML 窗口&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程仅解释如何打开和管理一个窗口。
+绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。
+然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。&lt;/p&gt;
+&lt;h2 id=&#34;打开窗口&#34;&gt;打开窗口&lt;/h2&gt;
+&lt;p&gt;在 SFML 中，窗口由 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt; 类定义。
+一个窗口可以在构造时被直接创建和打开：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;SFML/Window.hpp&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Window window(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;VideoMode({&lt;span style=&#34;color:#ae81ff&#34;&gt;800&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;600&lt;/span&gt;}), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;My window&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第一个参数——&lt;strong&gt;视频模式&lt;/strong&gt;（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。
+在这里，我们创建了一个大小为 800x600 像素的窗口。
+&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1VideoMode.html&#34; title=&#34;sf::VideoMode documentation&#34;&gt;&lt;code&gt;sf::VideoMode&lt;/code&gt;&lt;/a&gt; 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。
+千万不要犹豫去查阅一下它的文档。&lt;/p&gt;
+&lt;p&gt;第二个参数就是窗口的标题。&lt;/p&gt;
+&lt;p&gt;这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。
+你可以使用以下样式的任意组合：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;样式&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::None&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;没有任何装饰（例如对于启动画面非常有用）&lt;br&gt;此样式不能与其他样式组合使用&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Titlebar&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口拥有一个标题栏&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Resize&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口可以调整大小并拥有一个最大化按钮&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Close&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;窗口拥有一个关闭按钮&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::Style::Default&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;默认样式，它是 `Titlebar&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;状态&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::State::Windowed&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;悬浮窗口&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;sf::State::Fullscreen&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;全屏窗口&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;还有第五个可选参数，它定义了 OpenGL 的特定选项，这在&lt;a href=&#34;../opengl/&#34; title=&#34;OpenGL tutorial&#34;&gt;专属的 OpenGL 教程&lt;/a&gt;中会有详细解释。&lt;/p&gt;
+&lt;p&gt;如果你想在 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt; 实例构造&lt;strong&gt;之后&lt;/strong&gt;再去创建窗口，或者想用不同的视频模式或标题重新创建它，你可以改用 &lt;code&gt;create&lt;/code&gt; 函数。
+它接受与构造函数完全相同的参数。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>用户数据流</title>
+      <link>http://localhost:1313/sfml/system/stream/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/stream/</guid>
+      <description>&lt;h1 id=&#34;用户数据流&#34;&gt;用户数据流&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;SFML 拥有几种资源类：图像、字体、声音等。
+在大多数程序中，这些资源都将借助于它们的 &lt;code&gt;{load|open}FromFile&lt;/code&gt; 函数或相应的构造函数从文件中加载。
+在其他少数情况下，资源可能会被直接打包进可执行文件或一个大型数据文件中，并通过 &lt;code&gt;{load|open}FromMemory&lt;/code&gt; 从内存中加载。
+这些函数涵盖了&lt;strong&gt;几乎&lt;/strong&gt;所有可能的用例——但并非全部。&lt;/p&gt;
+&lt;p&gt;有时你会想要从一些非同寻常的地方加载文件，比如一个被压缩或加密的压缩包中，再比如一个远程的网络地址。
+针对这些特殊情况，SFML 提供了第三种加载选项：&lt;code&gt;loadFromStream&lt;/code&gt; 或 &lt;code&gt;openFromStream&lt;/code&gt;。
+该函数使用一个抽象的 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1InputStream.html&#34; title=&#34;sf::InputStream documentation&#34;&gt;&lt;code&gt;sf::InputStream&lt;/code&gt;&lt;/a&gt; 接口来读取数据，这允许你提供一个与 SFML 兼容的自定义流类的实现。&lt;/p&gt;
+&lt;p&gt;在这篇教程中，你将学习如何编写和使用你自己的派生输入流。&lt;/p&gt;
+&lt;h2 id=&#34;那标准流呢&#34;&gt;那标准流呢？&lt;/h2&gt;
+&lt;p&gt;像许多其他语言一样，C++ 已经拥有了一个用于输入数据流的类：&lt;code&gt;std::istream&lt;/code&gt;。
+事实上它有两个。
+&lt;code&gt;std::istream&lt;/code&gt; 仅仅是一个前端。
+负责自定义数据的抽象接口是 &lt;code&gt;std::streambuf&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;不幸的是，这些类对用户并不十分友好，如果你想实现一些不那么简单的东西，它们会变得非常复杂。
+&lt;a href=&#34;http://www.boost.org/doc/libs/1_49_0/libs/iostreams/doc/index.html&#34; title=&#34;Boost.Iostreams&#34;&gt;Boost.Iostreams&lt;/a&gt; 库试图为标准流提供一个更简单的接口，但是 Boost 是一个庞大的依赖库，而 SFML 无法去依赖它。&lt;/p&gt;
+&lt;p&gt;这就是为什么 SFML 提供了自己的流接口，期望它能&lt;strong&gt;更简单且更快速&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;inputstream&#34;&gt;InputStream&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1InputStream.html&#34; title=&#34;sf::InputStream documentation&#34;&gt;&lt;code&gt;sf::InputStream&lt;/code&gt;&lt;/a&gt; 类声明了四个虚函数：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;InputStream&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;InputStream() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; read(&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; data, std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t size) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; seek(std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t position) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; tell() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; getSize() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;read&lt;/strong&gt; 必须从流中提取 &lt;em&gt;size&lt;/em&gt; 字节的数据，并将它们复制到所提供的 &lt;em&gt;data&lt;/em&gt; 地址处。
+它返回读取的字节数，或者在发生错误时返回 &lt;code&gt;std::nullopt&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>绘制 2D 图形</title>
+      <link>http://localhost:1313/sfml/graphics/draw/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/graphics/draw/</guid>
+      <description>&lt;h1 id=&#34;绘制-2d-图形&#34;&gt;绘制 2D 图形&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;正如你在前面的教程中所学到的，SFML 的 window 模块提供了一种打开 OpenGL 窗口并处理其事件的简便方法，但在涉及到绘制东西时，它就爱莫能助了。
+留给你的唯一选择就是使用强大，但却复杂且底层的 OpenGL API。&lt;/p&gt;
+&lt;p&gt;幸运的是，SFML 提供了一个 graphics 图形模块，它将帮助你以比 OpenGL 简单得多的方式绘制 2D 实体。&lt;/p&gt;
+&lt;h2 id=&#34;绘图窗口&#34;&gt;绘图窗口&lt;/h2&gt;
+&lt;p&gt;要绘制 graphics 模块提供的实体，你必须使用一个专门的窗口类：&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1RenderWindow.html&#34; title=&#34;sf::RenderWindow documentation&#34;&gt;&lt;code&gt;sf::RenderWindow&lt;/code&gt;&lt;/a&gt;。
+这个类派生自 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt;，并继承了它的所有功能。
+你所学到的关于 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Window.html&#34; title=&#34;sf::Window documentation&#34;&gt;&lt;code&gt;sf::Window&lt;/code&gt;&lt;/a&gt; 的所有知识（创建、事件处理、控制帧率、与 OpenGL 混合等）同样适用于 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1RenderWindow.html&#34; title=&#34;sf::RenderWindow documentation&#34;&gt;&lt;code&gt;sf::RenderWindow&lt;/code&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;除此之外，&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1RenderWindow.html&#34; title=&#34;sf::RenderWindow documentation&#34;&gt;&lt;code&gt;sf::RenderWindow&lt;/code&gt;&lt;/a&gt; 还添加了高级函数来帮助你轻松地绘制物体。
+在本教程中，我们将重点关注其中的两个函数：&lt;code&gt;clear&lt;/code&gt; 和 &lt;code&gt;draw&lt;/code&gt;。
+正如它们的名字所暗示的那样简单：&lt;code&gt;clear&lt;/code&gt; 使用你选择的颜色清除整个窗口，而 &lt;code&gt;draw&lt;/code&gt; 绘制你传递给它的任何对象。&lt;/p&gt;
+&lt;p&gt;下面是使用渲染窗口时，典型的游戏主循环的样子：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;SFML/Graphics.hpp&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 创建窗口
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;RenderWindow window(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;VideoMode({&lt;span style=&#34;color:#ae81ff&#34;&gt;800&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;600&lt;/span&gt;}), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;My window&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 只要窗口开着，就一直运行程序
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (window.isOpen())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// 检查自上一次循环迭代以来触发的所有窗口事件
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional event &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; window.pollEvent())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;// “关闭请求”事件：我们关闭窗口
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (event&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;is&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Event&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Closed&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;())
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                window.close();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// 用黑色清除窗口
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        window.clear(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Color&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Black);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// 在这里绘制所有的东西...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// window.draw(...);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// 结束当前帧
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        window.display();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在绘制任何东西之前调用 &lt;code&gt;clear&lt;/code&gt; 是强制性的，否则前几帧的残影将会出现在你绘制的任何东西的后面。
+唯一的例外是，当你绘制的东西覆盖了整个窗口，使得每一个像素都被重新绘制时。
+在这种情况下，你可以不调用 &lt;code&gt;clear&lt;/code&gt;（尽管调用它也不会对性能产生明显的负面影响）。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>键盘、鼠标与手柄</title>
+      <link>http://localhost:1313/sfml/window/inputs/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/window/inputs/</guid>
+      <description>&lt;h1 id=&#34;键盘鼠标与手柄&#34;&gt;键盘、鼠标与手柄&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程解释了如何访问全局输入设备：键盘、鼠标和手柄。
+千万不要将它与事件混淆。
+实时输入允许你在任何时候查询键盘、鼠标和手柄的全局状态（“&lt;strong&gt;这个按钮现在被按下了吗？&lt;/strong&gt;”，“&lt;strong&gt;鼠标现在在哪里？&lt;/strong&gt;”），而事件则是在有事情发生时通知你（“&lt;strong&gt;这个按钮被按下了&lt;/strong&gt;”，“&lt;strong&gt;鼠标移动了&lt;/strong&gt;”）。&lt;/p&gt;
+&lt;h2 id=&#34;键盘&#34;&gt;键盘&lt;/h2&gt;
+&lt;p&gt;提供访问键盘状态的命名空间是 &lt;a href=&#34;../../../../documentation/3.1.0/namespacesf_1_1Keyboard.html&#34; title=&#34;sf::Keyboard documentation&#34;&gt;&lt;code&gt;sf::Keyboard&lt;/code&gt;&lt;/a&gt;。
+它包含同一个函数 &lt;code&gt;isKeyPressed&lt;/code&gt; 的两个重载，用于检查按键的当前状态（按下或释放）。&lt;/p&gt;
+&lt;p&gt;此函数直接读取键盘状态，并忽略你窗口的焦点状态。
+这意味着即使你的窗口处于非活跃状态，&lt;code&gt;isKeyPressed&lt;/code&gt; 也可能返回 true。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isKeyPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Key&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Left))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 左方向键被按下了：移动我们的角色
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    character.move({&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1.f&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.f&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;键码（Key codes）定义在 &lt;code&gt;sf::Keyboard::Key&lt;/code&gt; 枚举中。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isKeyPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Keyboard&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Scan&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Right))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 右方向键被按下了：移动我们的角色
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    character.move({&lt;span style=&#34;color:#ae81ff&#34;&gt;1.f&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.f&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;扫描码（Scancodes）定义在 &lt;code&gt;sf::Keyboard::Scancode&lt;/code&gt; 枚举中。&lt;/p&gt;
+&lt;h2 id=&#34;鼠标&#34;&gt;鼠标&lt;/h2&gt;
+&lt;p&gt;提供访问鼠标状态的命名空间是 &lt;a href=&#34;../../../../documentation/3.1.0/namespacesf_1_1Mouse.html&#34; title=&#34;sf::Mouse documentation&#34;&gt;&lt;code&gt;sf::Mouse&lt;/code&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;你可以检查鼠标按键是否被按下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;isButtonPressed(sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Button&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Left))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// 鼠标左键被按下了：开火
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    gun.fire();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;鼠标按键代码定义在 &lt;code&gt;sf::Mouse::Button&lt;/code&gt; 枚举中。
+SFML 支持最多 5 个按键：左键、右键、中键（滚轮），以及两个可能对应任何功能的附加按键。&lt;/p&gt;
+&lt;p&gt;你还可以获取和设置鼠标的当前位置，这可以是相对于桌面的，也可以是相对于某个窗口的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 获取全局鼠标位置（相对于桌面）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Vector2i globalPosition &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;getPosition();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 获取局部鼠标位置（相对于一个窗口）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Vector2i localPosition &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;getPosition(window); &lt;span style=&#34;color:#75715e&#34;&gt;// window 是一个 sf::Window
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 全局设置鼠标位置（相对于桌面）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;setPosition({&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 局部设置鼠标位置（相对于一个窗口）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Mouse&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;setPosition({&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;}, window); &lt;span style=&#34;color:#75715e&#34;&gt;// window 是一个 sf::Window
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;目前没有用于读取鼠标滚轮当前状态的函数。
+由于滚轮只能进行相对移动，它没有可被查询的绝对状态。
+通过观察一个按键，你可以分辨出它是被按下还是被释放了。
+通过观察鼠标光标，你可以分辨出它在屏幕上的具体位置。
+然而，仅仅观察鼠标滚轮并不能告诉你它处于哪个“刻度”上。
+你只能在它移动时收到通知（&lt;code&gt;MouseWheelScrolled&lt;/code&gt; 事件）。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>First Post</title>
       <link>http://localhost:1313/posts/first-post/</link>

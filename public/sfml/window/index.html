@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Window 窗口模块 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Window 窗口模块 - Flerovium&#39;s Blog">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/window/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/sfml/window/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/window/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/window/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="Window 窗口模块">
+  <meta property="og:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Window 窗口模块">
+  <meta name="twitter:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Window 窗口模块",
+      "item": "http://localhost:1313/sfml/window/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Window 窗口模块
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">事件详解
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>事件详解 简介 本教程详细列出了所有的窗口事件。 它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。
+sf::Event 类型 SFML 使用类型安全的 API 来处理事件。 有两种主要方式可以使用此 API。 有关这两种方法的综合示例，请查看 EventHandling 示例程序。
+sf::Event::getIf&lt;T&gt; 第一种选择是基于 sf::Event 的成员函数 getIf&lt;T&gt; 和 is&lt;T&gt;。 模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。 如果模板参数与当前活跃的事件子类型相匹配，getIf&lt;T&gt; 将返回指向该特定事件子类型的指针。 否则，它将返回 nullptr。
+如果模板参数与当前活跃的事件子类型相匹配，is&lt;T&gt; 将返回 true。 否则，它将返回 false。 这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。
+请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。 sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional&lt;sf::Event&gt;。 这两个函数可能会返回一个事件，但也可能不会。
+它的代码如下所示：
+while (window.isOpen()) { while (const std::optional event = window.pollEvent()) { if (event-&gt;is&lt;sf::Event::Closed&gt;()) { window.close(); } else if (const auto* keyPressed = event-&gt;getIf&lt;sf::Event::KeyPressed&gt;()) { if (keyPressed-&gt;scancode == sf::Keyboard::Scancode::Escape) window.close(); } } // 主循环的其他部分 } C&#43;&#43; 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional&lt;sf::Event&gt; event 的原因。 如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 事件详解" href="http://localhost:1313/sfml/window/events/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">打开并管理 SFML 窗口
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>打开并管理 SFML 窗口 简介 本教程仅解释如何打开和管理一个窗口。 绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。 然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。
+打开窗口 在 SFML 中，窗口由 sf::Window 类定义。 一个窗口可以在构造时被直接创建和打开：
+#include &lt;SFML/Window.hpp&gt; int main() { sf::Window window(sf::VideoMode({800, 600}), &#34;My window&#34;); ... } 第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。 在这里，我们创建了一个大小为 800x600 像素的窗口。 sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。 千万不要犹豫去查阅一下它的文档。
+第二个参数就是窗口的标题。
+这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。 你可以使用以下样式的任意组合：
+样式 描述 sf::Style::None 没有任何装饰（例如对于启动画面非常有用）
+此样式不能与其他样式组合使用 sf::Style::Titlebar 窗口拥有一个标题栏 sf::Style::Resize 窗口可以调整大小并拥有一个最大化按钮 sf::Style::Close 窗口拥有一个关闭按钮 sf::Style::Default 默认样式，它是 `Titlebar 第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。
+状态 描述 sf::State::Windowed 悬浮窗口 sf::State::Fullscreen 全屏窗口 还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。
+如果你想在 sf::Window 实例构造之后再去创建窗口，或者想用不同的视频模式或标题重新创建它，你可以改用 create 函数。 它接受与构造函数完全相同的参数。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 打开并管理 SFML 窗口" href="http://localhost:1313/sfml/window/opening-window/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">键盘、鼠标与手柄
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>键盘、鼠标与手柄 简介 本教程解释了如何访问全局输入设备：键盘、鼠标和手柄。 千万不要将它与事件混淆。 实时输入允许你在任何时候查询键盘、鼠标和手柄的全局状态（“这个按钮现在被按下了吗？”，“鼠标现在在哪里？”），而事件则是在有事情发生时通知你（“这个按钮被按下了”，“鼠标移动了”）。
+键盘 提供访问键盘状态的命名空间是 sf::Keyboard。 它包含同一个函数 isKeyPressed 的两个重载，用于检查按键的当前状态（按下或释放）。
+此函数直接读取键盘状态，并忽略你窗口的焦点状态。 这意味着即使你的窗口处于非活跃状态，isKeyPressed 也可能返回 true。
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) { // 左方向键被按下了：移动我们的角色 character.move({-1.f, 0.f}); } 键码（Key codes）定义在 sf::Keyboard::Key 枚举中。
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::Right)) { // 右方向键被按下了：移动我们的角色 character.move({1.f, 0.f}); } 扫描码（Scancodes）定义在 sf::Keyboard::Scancode 枚举中。
+鼠标 提供访问鼠标状态的命名空间是 sf::Mouse。
+你可以检查鼠标按键是否被按下：
+if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) { // 鼠标左键被按下了：开火 gun.fire(); } 鼠标按键代码定义在 sf::Mouse::Button 枚举中。 SFML 支持最多 5 个按键：左键、右键、中键（滚轮），以及两个可能对应任何功能的附加按键。
+你还可以获取和设置鼠标的当前位置，这可以是相对于桌面的，也可以是相对于某个窗口的：
+// 获取全局鼠标位置（相对于桌面） sf::Vector2i globalPosition = sf::Mouse::getPosition(); // 获取局部鼠标位置（相对于一个窗口） sf::Vector2i localPosition = sf::Mouse::getPosition(window); // window 是一个 sf::Window // 全局设置鼠标位置（相对于桌面） sf::Mouse::setPosition({10, 50}); // 局部设置鼠标位置（相对于一个窗口） sf::Mouse::setPosition({10, 50}, window); // window 是一个 sf::Window 目前没有用于读取鼠标滚轮当前状态的函数。 由于滚轮只能进行相对移动，它没有可被查询的绝对状态。 通过观察一个按键，你可以分辨出它是被按下还是被释放了。 通过观察鼠标光标，你可以分辨出它在屏幕上的具体位置。 然而，仅仅观察鼠标滚轮并不能告诉你它处于哪个“刻度”上。 你只能在它移动时收到通知（MouseWheelScrolled 事件）。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 键盘、鼠标与手柄" href="http://localhost:1313/sfml/window/inputs/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

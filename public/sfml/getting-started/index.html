@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>起步教程 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="起步教程 - Flerovium&#39;s Blog">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/getting-started/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/sfml/getting-started/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/getting-started/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/getting-started/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="起步教程">
+  <meta property="og:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="起步教程">
+  <meta name="twitter:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "起步教程",
+      "item": "http://localhost:1313/sfml/getting-started/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    起步教程
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">SFML 与 Visual Studio
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>SFML 与 Visual Studio 简介 如果你正在使用带有 Visual Studio IDE 以及 Visual C&#43;&#43; 编译器的环境来开发 SFML，那么这篇教程应该是你的首选阅读材料。 它将向你解释如何配置你的 SFML 项目。
+[!NOTE] CMake 模板是开始使用 SFML 的推荐方式。
+安装 SFML 首先，你必须从下载页面下载 SFML SDK。
+然后，你可以将 SFML 压缩包解压到你喜欢的任何位置。 不推荐将头文件和库文件直接复制到你的 Visual Studio 安装目录中。更好的做法是将各种库保存在它们各自独立的位置，特别是当你打算使用同一个库的多个版本，或者使用多个编译器时。
+创建并配置 SFML 项目 第一件事是选择创建什么类型的项目。 推荐选择“空项目”。 对话框窗口还提供了几个其他选项来定制项目：只有当你懂得如何使用预编译头文件时，才选择“控制台应用程序”或“Windows 应用程序”。
+为了本教程的演示目的，你应该创建一个 main.cpp 文件并将其添加到项目中，这样我们就能访问 C&#43;&#43; 的各项设置（否则 Visual Studio 不知道你在这个项目中打算使用哪种语言）。 稍后我们会说明在其中填写什么内容。
+首先我们需要配置编译器使用 SFML 3 所要求的 C&#43;&#43;17 语言标准。
+在项目的属性中，转到“C/C&#43;&#43;”下的“语言”选项卡，将“C&#43;&#43; 语言标准”下拉菜单修改为“ISO C&#43;&#43; 17 标准”：
+现在我们需要告诉编译器去哪里寻找 SFML 的头文件（.hpp 文件），并告诉链接器去哪里寻找 SFML 的库文件（.lib 文件）。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to SFML 与 Visual Studio" href="http://localhost:1313/sfml/getting-started/visual-studio/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">使用 CMake 项目模板的 SFML
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>使用 CMake 项目模板的 SFML 简介 本教程适用于任何操作系统、任何 IDE 以及任何编译器。 它将向你解释如何构建一个能够与 SFML 的任意发布版本、分支或 Git 提交配合使用的项目。 这种方法的独特性在于，它消除了发生链接器错误的可能性，并使未来升级 SFML 版本变得尽可能简单。 它甚至包含了一个 CI 流水线，能够自动验证你的项目是否能继续在 Windows、Linux 和 macOS 上成功编译。
+创建你自己的 GitHub 项目 https://github.com/SFML/cmake-sfml-project
+上述 GitHub 仓库就是 GitHub 所称的仓库模板。 查阅 GitHub 关于仓库模板的官方文档，了解如何利用此模板创建你自己的 GitHub 项目。 这一步骤可确保你的代码安全地存放在远程位置，从而避免意外丢失。
+自定义 CMake 项目与可执行文件的名称 开箱即用时，本项目为项目名称和可执行文件名称使用了占位符。 这些名称可以是你想要的任何名字，并且它们不必保持一致。 项目名称定义在 CMakeLists.txt 文件顶部的 project() 调用中。
+可执行文件的名称则定义在 add_executable() 调用中。 请务必替换掉所有旧可执行文件名称的实例。 在可执行文件被创建之后，该名称还会被多次使用。
+添加你自己的源文件 项目初始时唯一的 C&#43;&#43; 源文件是 src/main.cpp。 你可以根据自己项目的需要，重命名、移除或添加新的源文件。 只需确保所有的 .cpp 文件都被包含在 add_executable 调用中，以此来避免链接器错误。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 使用 CMake 项目模板的 SFML" href="http://localhost:1313/sfml/getting-started/cmake/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

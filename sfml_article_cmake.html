@@ -1,0 +1,84 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sfml-with-the-cmake-project-template">SFML with the CMake Project Template</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This tutorial will work on any OS, with any IDE, and with any compiler.
+It will explain how to build a project that can be used with any release, branch, or Git commit of SFML.
+This approach is unique in that it eliminates the possibility of linker errors and makes it as easy as possible to upgrade your SFML version in the future.
+It even includes a CI pipeline to automatically verify that your project continues to compile on Windows, Linux, and macOS.</p>
+<h2 id="create-your-own-github-project">Create Your Own GitHub Project</h2>
+<p><a href="https://github.com/SFML/cmake-sfml-project" title="CMake SFML Project Template Repository">https://github.com/SFML/cmake-sfml-project</a></p>
+<p>The GitHub repository above is what GitHub calls a <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template" title="GitHub documentation about repository templates">repository template</a>.
+Check out GitHub's documentation on repository templates to make your own GitHub project out of this template.
+This step ensures your code is kept safe in a remote location, so you won't accidentally lose it.</p>
+<h2 id="customize-the-cmake-project-and-executable-names">Customize the CMake Project and Executable Names</h2>
+<p>Out of the box this project uses placeholder names for the project name and executable name.
+These names can be whatever you'd like and do not have to match.
+The project name is defined in the call to <code>project()</code> at the top of <code>CMakeLists.txt</code>.</p>
+<p>The executable name is defined in the call to <code>add_executable()</code>.
+Be sure to replace all instances of that old executable name.
+The executable name is used a few more times after the executable is made.</p>
+<h2 id="add-your-own-source-files">Add Your Own Source Files</h2>
+<p>The only C++ file in the project to begin with is <code>src/main.cpp</code>.
+You may rename, remove, or add source files as needed for your own project.
+Just be sure that all <code>.cpp</code> files are included in the <code>add_executable</code> call to avoid linker errors.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Because this template builds SFML from source, Linux users will need to install the required system packages first.
+On Ubuntu or other Debian-based OSes, that can be done with the commands below.
+A similar process will be required for non-Debian Linux distributions like Fedora.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo apt update
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo apt install \
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    libxrandr-dev \
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    libxcursor-dev \
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    libxi-dev \
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    libudev-dev \
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    libfreetype-dev \
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    libflac-dev \
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    libvorbis-dev \
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    libgl1-mesa-dev \
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    libegl1-mesa-dev \
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    libfreetype-dev
+</span></code></pre></div>
+<p>The CMake template requires having CMake installed.
+Your system's package manager is the best way to get CMake.
+It also gets installed alongside Visual Studio.
+If for some reason the previous options will not work, you can use <a href="https://cmake.org/download/" title="CMake download">https://cmake.org/download/</a> to install CMake for your operating system.</p>
+<p><a href="https://git-scm.com/" title="Git SCM">Git</a> is also required since CMake uses Git to clone the SFML repository.
+If you cloned your own GitHub project then you will already have Git installed.
+Without Git, CMake will fail in an unintuitive way.</p>
+<h2 id="configure-and-build-your-project">Configure and Build Your Project</h2>
+<p>Now that you've made any changes you wanted to the build script, we're ready to build!
+CMake is by far the most popular C++ build system so any IDE you may use will have support for CMake projects.
+Below are some links to the documentation for setting up CMake projects with a few different popular IDEs.</p>
+<ul>
+<li><a href="https://code.visualstudio.com/docs/cpp/cmake-linux" title="VS Code CMake project documentation">VS Code</a></li>
+<li><a href="https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170" title="Visual Studio CMake project documentation">Visual Studio</a></li>
+<li><a href="https://www.jetbrains.com/clion/features/cmake-support.html" title="CLion CMake project documentation">CLion</a></li>
+<li><a href="https://doc.qt.io/qtcreator/creator-project-cmake.html" title="Qt Creator CMake project documentation">Qt Creator</a></li>
+</ul>
+<p>If you would rather build this project from the command line instead of via your IDE, that's easy to do as well.
+You can use these two shell commands to do a release build of the project.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cmake -B build
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>cmake --build build
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

@@ -1,4 +1,70 @@
-baseURL = 'https://HITFlerovium.github.io/'
-locale = 'en-us'
-title = 'My New Hugo Project'
+baseURL = "https://HITFlerovium.github.io/"
+title = "Flerovium's Blog"
 theme = "PaperMod"
+
+# 1. 开启搜索支持
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+# 2. 全局参数设置
+[params]
+env = "production"
+author = "Flerovium"
+description = "C++ 学习记录，算法日常与 SFML 官方文档中文版"
+defaultTheme = "auto"
+ShowReadingTime = true
+ShowShareButtons = true
+ShowPostNavLinks = true
+
+  # 3. 激活“个人名片”模式
+  [params.profileMode]
+  enabled = true
+  title = "👋 欢迎来到 Flerovium 的技术主页"
+  subtitle = "哈尔滨工业大学 CS 在读 | C++ 开发者 | SFML 开源汉化贡献者"
+  # 这里填你的头像链接，或者把图片放到 static 文件夹里直接写 "/头像.jpg"
+  imageUrl = "https://github.com/HITFlerovium.png" 
+  imageWidth = 120
+  imageHeight = 120
+
+  # 4. 底部社交链接图标
+  [[params.socialIcons]]
+  name = "github"
+  url = "https://github.com/HITFlerovium"
+  
+  [[params.socialIcons]]
+  name = "bilibili"
+  url = "https://www.bilibili.com/" # 这里可以换成你自己的 B 站主页
+
+# 5. 顶部导航栏菜单
+[[menu.main]]
+identifier = "home"
+name = "主页"
+url = "/"
+weight = 10
+
+[[menu.main]]
+identifier = "sfml"
+name = "SFML自制中文文档"
+url = "/sfml/"
+weight = 20
+
+[[menu.main]]
+identifier = "blog"
+name = "个人博客"
+url = "/posts/" # 指向默认的文章存放目录
+weight = 30
+
+[[menu.main]]
+identifier = "archives"
+name = "归档"
+url = "/archives/"
+weight = 40
+
+[[menu.main]]
+identifier = "search"
+name = "搜索"
+url = "/search/"
+weight = 50
+
+[markup.goldmark.renderer]
+unsafe = true

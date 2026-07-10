@@ -1,0 +1,98 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="handling-time">Handling time</h1>
+<h2 id="time-in-sfml">Time in SFML</h2>
+<p>Unlike many other libraries where time is a uint32 number of milliseconds or a float number of seconds, SFML doesn't impose any specific unit or type for time values.
+Instead it leaves this choice to the user through a flexible class: <a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a>.
+All SFML classes and functions that manipulate time values use this class.</p>
+<p><a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a> represents a time period (in other words, the time that elapses between two events).
+It is <em>not</em> a date-time class which would represent the current year/month/day/hour/minute/second as a timestamp.
+It's just a value that represents a certain amount of time, and how to interpret it depends on the context where it is used.</p>
+<h2 id="converting-time">Converting time</h2>
+<p>A <a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a> value can be constructed from different source units: seconds, milliseconds and microseconds.
+There is a free function to turn each of them into a <a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">microseconds</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mf">0.01f</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Note that these three times are all equal.</p>
+<p>Similarly, a <a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a> can be converted back to either seconds, milliseconds or microseconds:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">usec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">.</span><span class="n">asMicroseconds</span><span class="p">();</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">std</span><span class="o">::</span><span class="kt">int32_t</span><span class="w"> </span><span class="n">msec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">.</span><span class="n">asMilliseconds</span><span class="p">();</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kt">float</span><span class="w">        </span><span class="n">sec</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">.</span><span class="n">asSeconds</span><span class="p">();</span>
+</span></code></pre></div>
+<p>Conversions with the C++ standard library's <code>std::chrono::duration</code> are supported in two ways.</p>
+<ol>
+<li>An implicit constructor which accepts any <code>std::chrono::duration</code> specialization.</li>
+<li>An implicit conversion operator to any <code>std::chrono::duration</code> specialization.</li>
+</ol>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"> </span><span class="c1">// (1) Implicitly constructs from std::chrono::milliseconds</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">time</span><span class="p">);</span><span class="w"> </span><span class="c1">// (2) Implicitly converts to std::chrono::nanoseconds</span>
+</span></code></pre></div>
+<p>These two conversions allow for seamless interoperation with interfaces that use the <code>&lt;chrono&gt;</code> header.</p>
+<h2 id="playing-with-time-values">Playing with time values</h2>
+<p><a href="../../../../documentation/3.1.0/classsf_1_1Time.html" title="sf::Time documentation"><code>sf::Time</code></a> is just an amount of time, so it supports arithmetic operations such as addition, subtraction, comparison, etc.
+Times can also be negative.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">t2</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">t4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">t3</span><span class="p">;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kt">bool</span><span class="w"> </span><span class="n">b1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">t1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">t2</span><span class="p">);</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="kt">bool</span><span class="w"> </span><span class="n">b2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">t3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">t4</span><span class="p">);</span>
+</span></code></pre></div>
+<p><code>sf::Time</code> is fully <code>constexpr</code>-enabled so all of these operations can be performed in a compile-time context.</p>
+<h2 id="measuring-time">Measuring time</h2>
+<p>Now that we've seen how to manipulate time values with SFML, let's see how to do something that almost every program needs: measuring the time elapsed.</p>
+<p>SFML has a very simple class for measuring time: <a href="../../../../documentation/3.1.0/classsf_1_1Clock.html" title="sf::Clock documentation"><code>sf::Clock</code></a>.
+It provides a variety of functions for manipulating and querying the elapsed time.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Clock</span><span class="w"> </span><span class="n">clock</span><span class="p">;</span><span class="w"> </span><span class="c1">// starts the clock</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">...</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">elapsed1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">getElapsedTime</span><span class="p">();</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elapsed1</span><span class="p">.</span><span class="n">asSeconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">clock</span><span class="p">.</span><span class="n">restart</span><span class="p">();</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">...</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">elapsed2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">getElapsedTime</span><span class="p">();</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elapsed2</span><span class="p">.</span><span class="n">asSeconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">...</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">clock</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span><span class="w"> </span><span class="c1">// stops the clock</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">boolalpha</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">isRunning</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">clock</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w"> </span><span class="c1">// resets elapsed time to zero</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">...</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="n">clock</span><span class="p">.</span><span class="n">start</span><span class="p">();</span><span class="w"> </span><span class="c1">// starts the clock</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">elapsed3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">getElapsedTime</span><span class="p">();</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elapsed3</span><span class="p">.</span><span class="n">asSeconds</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Note that <code>restart</code> also returns the elapsed time, so that you can avoid the slight gap that would exist if you had to call <code>getElapsedTime</code> explicitly before <code>restart</code>.</p>
+<p>Here is an example that uses the time elapsed at each iteration of the game loop to update the game logic:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Clock</span><span class="w"> </span><span class="n">clock</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">{</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Time</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clock</span><span class="p">.</span><span class="n">restart</span><span class="p">();</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="n">updateGame</span><span class="p">(</span><span class="n">elapsed</span><span class="p">);</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="p">...</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">}</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

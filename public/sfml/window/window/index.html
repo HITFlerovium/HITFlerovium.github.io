@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>打开并管理 SFML 窗口 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="打开并管理 SFML 窗口
+简介
+本教程仅解释如何打开和管理一个窗口。
+绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。
+然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。
+打开窗口
+在 SFML 中，窗口由 sf::Window 类定义。
+一个窗口可以在构造时被直接创建和打开：
+#include &lt;SFML/Window.hpp&gt;
+
+int main()
+{
+    sf::Window window(sf::VideoMode({800, 600}), &#34;My window&#34;);
+    ...
+}
+第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。
+在这里，我们创建了一个大小为 800x600 像素的窗口。
+sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。
+千万不要犹豫去查阅一下它的文档。
+第二个参数就是窗口的标题。
+这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。
+你可以使用以下样式的任意组合：
+
+	
+			
+					样式
+					描述
+			
+	
+	
+			
+					sf::Style::None
+					没有任何装饰（例如对于启动画面非常有用）此样式不能与其他样式组合使用
+			
+			
+					sf::Style::Titlebar
+					窗口拥有一个标题栏
+			
+			
+					sf::Style::Resize
+					窗口可以调整大小并拥有一个最大化按钮
+			
+			
+					sf::Style::Close
+					窗口拥有一个关闭按钮
+			
+			
+					sf::Style::Default
+					默认样式，它是 `Titlebar
+			
+	
+
+第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。
+
+	
+			
+					状态
+					描述
+			
+	
+	
+			
+					sf::State::Windowed
+					悬浮窗口
+			
+			
+					sf::State::Fullscreen
+					全屏窗口
+			
+	
+
+还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="https://HITFlerovium.github.io/sfml/window/window/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://HITFlerovium.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://HITFlerovium.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://HITFlerovium.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://HITFlerovium.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://HITFlerovium.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://HITFlerovium.github.io/sfml/window/window/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://HITFlerovium.github.io/sfml/window/window/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="打开并管理 SFML 窗口">
+  <meta property="og:description" content="打开并管理 SFML 窗口 简介 本教程仅解释如何打开和管理一个窗口。 绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。 然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。
+打开窗口 在 SFML 中，窗口由 sf::Window 类定义。 一个窗口可以在构造时被直接创建和打开：
+#include &lt;SFML/Window.hpp&gt; int main() { sf::Window window(sf::VideoMode({800, 600}), &#34;My window&#34;); ... } 第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。 在这里，我们创建了一个大小为 800x600 像素的窗口。 sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。 千万不要犹豫去查阅一下它的文档。
+第二个参数就是窗口的标题。
+这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。 你可以使用以下样式的任意组合：
+样式 描述 sf::Style::None 没有任何装饰（例如对于启动画面非常有用）此样式不能与其他样式组合使用 sf::Style::Titlebar 窗口拥有一个标题栏 sf::Style::Resize 窗口可以调整大小并拥有一个最大化按钮 sf::Style::Close 窗口拥有一个关闭按钮 sf::Style::Default 默认样式，它是 `Titlebar 第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。
+状态 描述 sf::State::Windowed 悬浮窗口 sf::State::Fullscreen 全屏窗口 还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="sfml">
+    <meta property="article:published_time" content="2026-07-10T10:00:00+08:00">
+    <meta property="article:modified_time" content="2026-07-10T10:00:00+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="打开并管理 SFML 窗口">
+  <meta name="twitter:description" content="打开并管理 SFML 窗口 简介 本教程仅解释如何打开和管理一个窗口。 绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。 然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。
+打开窗口 在 SFML 中，窗口由 sf::Window 类定义。 一个窗口可以在构造时被直接创建和打开：
+#include &lt;SFML/Window.hpp&gt; int main() { sf::Window window(sf::VideoMode({800, 600}), &#34;My window&#34;); ... } 第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。 在这里，我们创建了一个大小为 800x600 像素的窗口。 sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。 千万不要犹豫去查阅一下它的文档。
+第二个参数就是窗口的标题。
+这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。 你可以使用以下样式的任意组合：
+样式 描述 sf::Style::None 没有任何装饰（例如对于启动画面非常有用）此样式不能与其他样式组合使用 sf::Style::Titlebar 窗口拥有一个标题栏 sf::Style::Resize 窗口可以调整大小并拥有一个最大化按钮 sf::Style::Close 窗口拥有一个关闭按钮 sf::Style::Default 默认样式，它是 `Titlebar 第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。
+状态 描述 sf::State::Windowed 悬浮窗口 sf::State::Fullscreen 全屏窗口 还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "https://HITFlerovium.github.io/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Window 窗口模块",
+      "item": "https://HITFlerovium.github.io/sfml/window/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "打开并管理 SFML 窗口",
+      "item": "https://HITFlerovium.github.io/sfml/window/window/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "打开并管理 SFML 窗口",
+  "name": "打开并管理 SFML 窗口",
+  "description": "打开并管理 SFML 窗口 简介 本教程仅解释如何打开和管理一个窗口。 绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。 然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。\n打开窗口 在 SFML 中，窗口由 sf::Window 类定义。 一个窗口可以在构造时被直接创建和打开：\n#include \u0026lt;SFML/Window.hpp\u0026gt; int main() { sf::Window window(sf::VideoMode({800, 600}), \u0026#34;My window\u0026#34;); ... } 第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。 在这里，我们创建了一个大小为 800x600 像素的窗口。 sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。 千万不要犹豫去查阅一下它的文档。\n第二个参数就是窗口的标题。\n这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。 你可以使用以下样式的任意组合：\n样式 描述 sf::Style::None 没有任何装饰（例如对于启动画面非常有用）此样式不能与其他样式组合使用 sf::Style::Titlebar 窗口拥有一个标题栏 sf::Style::Resize 窗口可以调整大小并拥有一个最大化按钮 sf::Style::Close 窗口拥有一个关闭按钮 sf::Style::Default 默认样式，它是 `Titlebar 第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。\n状态 描述 sf::State::Windowed 悬浮窗口 sf::State::Fullscreen 全屏窗口 还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "打开并管理 SFML 窗口 简介 本教程仅解释如何打开和管理一个窗口。 绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。 然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。\n打开窗口 在 SFML 中，窗口由 sf::Window 类定义。 一个窗口可以在构造时被直接创建和打开：\n#include int main() { sf::Window window(sf::VideoMode({800, 600}), \"My window\"); ... } 第一个参数——视频模式（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。 在这里，我们创建了一个大小为 800x600 像素的窗口。 sf::VideoMode 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。 千万不要犹豫去查阅一下它的文档。\n第二个参数就是窗口的标题。\n这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。 你可以使用以下样式的任意组合：\n样式 描述 sf::Style::None 没有任何装饰（例如对于启动画面非常有用）此样式不能与其他样式组合使用 sf::Style::Titlebar 窗口拥有一个标题栏 sf::Style::Resize 窗口可以调整大小并拥有一个最大化按钮 sf::Style::Close 窗口拥有一个关闭按钮 sf::Style::Default 默认样式，它是 `Titlebar 第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。\n状态 描述 sf::State::Windowed 悬浮窗口 sf::State::Fullscreen 全屏窗口 还有第五个可选参数，它定义了 OpenGL 的特定选项，这在专属的 OpenGL 教程中会有详细解释。\n如果你想在 sf::Window 实例构造之后再去创建窗口，或者想用不同的视频模式或标题重新创建它，你可以改用 create 函数。 它接受与构造函数完全相同的参数。\n#include int main() { sf::Window window; window.create(sf::VideoMode({800, 600}), \"My window\"); ... } 让窗口“活”起来 如果你尝试执行上面的代码（将 “…” 留空），你几乎什么也看不到。 首先，因为程序会立刻结束。 其次，因为没有事件处理——所以即使你在这段代码中添加了一个死循环，你看到的也将是一个“死”的窗口，无法被移动、调整大小或是关闭。\n让我们添加一些代码，让这个程序变得稍微有趣一点：\n#include int main() { sf::Window window(sf::VideoMode({800, 600}), \"My window\"); // 只要窗口开着，就运行程序 while (window.isOpen()) { // 检查自上次循环迭代以来所有被触发的窗口事件 while (const std::optional event = window.pollEvent()) { // “请求关闭”事件：我们关闭窗口 if (event-\u003eis\u003csf::Event::Closed\u003e()) window.close(); } } } 上面的代码将打开一个窗口，并在用户关闭它时终止。 让我们详细看看它是如何运作的。\n首先，我们添加了一个循环来确保应用程序能够持续刷新/更新，直到窗口被关闭。 绝大多数（如果不是全部的话）SFML 程序都会有这种类型的循环，它有时被称为主循环（main loop）或游戏循环（game loop）。\n然后，我们在游戏循环里要做的第一件事就是检查是否发生了任何事件。 注意我们使用了一个 while 循环，这样如果挂起了多个事件，所有的待处理事件都将被一一处理。 如果有挂起的事件，pollEvent 函数将返回一个事件；如果没有，则返回 std::nullopt。\n每当我们获取到一个事件，我们就必须检查它的类型（窗口关闭？按键按下？鼠标移动？手柄连接？…），如果我们对该类型事件感兴趣，就做出相应的反应。 在这里，我们只关心 sf::Event::Closed 事件，它会在用户想要关闭窗口时触发。 此时此刻，窗口其实仍处于打开状态，我们必须通过调用 close 函数来显式地关闭它。 这就允许你在窗口被关闭之前做点事情，比如保存应用程序的当前状态，或者显示一条消息。\n人们经常犯的一个错误就是忘记编写事件循环，仅仅是因为他们暂时还不关心事件处理（他们通常直接使用实时输入代替）。 如果没有事件循环，窗口将会变得无法响应。 必须指出事件循环有两个作用：除了将事件提供给用户之外，它也给了窗口处理其内部事件的机会，这是必需的，以便窗口能够对移动或调整大小等用户操作做出反应。\n在窗口被关闭之后，主循环退出，程序随之终止。\n说到这里，你可能已经注意到了我们还没讨论如何向窗口绘制东西。 正如引言中所述，这不是 sfml-window 模块的职责，如果你想绘制精灵（sprites）、文本或各种形状，你将不得不跳转到 sfml-graphics 模块的教程。\n为了绘制内容，你也可以直接使用 OpenGL 并完全无视 sfml-graphics 模块。 sf::Window 内部创建了一个 OpenGL 绘图上下文，并且随时准备好接受你的 OpenGL 调用。 你可以在相关的教程中了解更多详情。\n不要指望在这个窗口中看到什么有趣的东西：你可能会看到一种纯色（黑色或白色），或是上一个使用过 OpenGL 的应用程序遗留的内容，抑或是……其他莫名其妙的东西。\n操作窗口 当然，SFML 允许你对窗口进行一些操作。 诸如更改大小、位置、标题或图标等基本窗口操作都是受支持的，但与专门的 GUI 库（如 Qt、wxWidgets）不同，SFML 并不提供高级功能。 SFML 窗口仅仅旨在为 OpenGL 或 SFML 的绘制提供一个运行环境。\n// 更改窗口的位置（相对于桌面） window.setPosition({10, 50}); // 更改窗口的大小 window.setSize({640, 480}); // 更改窗口的标题 window.setTitle(\"SFML window\"); // 获取窗口的大小 sf::Vector2u size = window.getSize(); auto [width, height] = size; // 检查窗口是否拥有焦点 bool focus = window.hasFocus(); ... 你可以查阅 API 文档以获取 sf::Window 的完整函数列表。\n如果你真的需要为你的窗口添加一些高级功能，你可以使用其他的库来创建一个窗口（甚至是一个完整的 GUI），然后将 SFML 嵌入到其中。 要做到这一点，你可以使用 sf::Window 的另一个构造函数（或 create 函数），它接收一个现有窗口的、特定于操作系统的句柄。 在这种情况下，SFML 将会在给定的窗口内部创建一个绘图上下文并捕获其所有的事件，而且绝不会干扰到父窗口的管理。\nsf::WindowHandle handle = /* 针对你正在做的事情和你所使用的库而定 */; sf::Window window(handle); 如果你只想要一种额外的、非常特定于平台的功能，你也可以反其道而行之：创建一个 SFML 窗口并获取其底层操作系统的原生句柄，以此来实现 SFML 本身不支持的事务。\nsf::Window window(sf::VideoMode({800, 600}), \"SFML window\"); sf::WindowHandle handle = window.getNativeHandle(); // 你现在可以在特定于操作系统的函数中使用这个句柄了 将 SFML 与其他库集成需要做一些工作，这里不再赘述，但你可以参考相关的专门教程、示例或是论坛上的帖子。\n控制帧率 有时候，当你的应用程序运行得非常快时，你可能会注意到一些画面瑕疵，比如画面撕裂（tearing）。 原因在于你的应用程序的刷新率与显示器的垂直刷新频率没有同步，从而导致前一帧的底部与下一帧的顶部混杂在了一起。 解决这个问题的方法是开启垂直同步（vertical synchronization）。 它由显卡自动处理，并且可以通过 setVerticalSyncEnabled 函数轻松开启或关闭：\nwindow.setVerticalSyncEnabled(true); // 在创建窗口后调用一次 在这次调用之后，你的应用程序将以与显示器刷新率相同的频率运行。\n有时 setVerticalSyncEnabled 可能不起作用：这很有可能是因为在你的显卡驱动设置中，垂直同步被强制关闭了。 你应该将其改为“由应用程序控制”。\n在其他情况下，你可能希望你的应用程序以给定的帧率运行，而不是受制于显示器的频率。 这可以通过调用 setFramerateLimit 来实现：\nwindow.setFramerateLimit(60); // 在创建窗口后调用一次 与 setVerticalSyncEnabled 不同，这个功能是由 SFML 自身实现的，它组合使用了 sf::Clock 和 sf::sleep。 一个重要的后果是它并非 100% 绝对可靠，尤其是在高帧率下：sf::sleep 的精度取决于底层的操作系统和硬件，误差可能高达 10 甚至 15 毫秒。 千万不要依赖这个功能来实现精确的时序控制。\n绝对不要同时使用 setVerticalSyncEnabled 和 setFramerateLimit！ 它们会产生极其糟糕的相互作用并让情况变得更糟。\n关于窗口你必须知道的事 这里有一份简要的清单，列出了你能用以及不能用 SFML 窗口做什么。\n你可以创建多个窗口 SFML 允许你创建多个窗口，并且可以在主线程中统一处理它们，或者在各自独立的线程中单独处理每一个窗口（但是……请看下文）。 在这种情况下，别忘了为每个窗口都配备一个事件循环。\n尚未对多显示器提供良好支持 SFML 目前并没有显式地管理多台显示器。 因此，你无法选择窗口将出现在哪台显示器上，并且你无法创建超过一个的全屏窗口。 这应该会在未来的版本中得到改善。\n事件必须在窗口所在的线程中进行轮询 这是大多数操作系统的一个重要限制：事件循环（更准确地说，是 pollEvent 或 waitEvent 函数）必须在创建窗口的那个相同线程中被调用。 这意味着如果你想要创建一个专门用于事件处理的线程，你就必须确保窗口也是在这个线程中创建的。 如果你真的想在线程间分割事务，更方便的做法是将事件处理保留在主线程中，而把其余的工作（渲染、物理运算、逻辑等）移动到一个独立的线程里。 这样的架构同样也兼容下面所描述的另一个限制。\n在 macOS 上，窗口和事件必须在主线程中管理 没错，这是真的；如果你尝试在除了主线程之外的其他线程里去创建窗口或处理事件，macOS 是绝对不会答应的。\n在 Windows 上，大于桌面的窗口将无法正常表现 出于某些原因，Windows 并不喜欢比桌面尺寸还要大的窗口。 这同样包括使用 VideoMode::getDesktopMode() 创建的窗口：在加上了窗口装饰（边框和标题栏）之后，你最终得到的一个窗口会比桌面的尺寸略微大那么一点点。\n",
+  "wordCount" : "338",
+  "inLanguage": "en",
+  "datePublished": "2026-07-10T10:00:00+08:00",
+  "dateModified": "2026-07-10T10:00:00+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "Flerovium"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://HITFlerovium.github.io/sfml/window/window/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Flerovium's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://HITFlerovium.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://HITFlerovium.github.io/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="https://HITFlerovium.github.io/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://HITFlerovium.github.io/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://HITFlerovium.github.io/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://HITFlerovium.github.io/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://HITFlerovium.github.io/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      打开并管理 SFML 窗口
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Flerovium</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="打开并管理-sfml-窗口">打开并管理 SFML 窗口<a hidden class="anchor" aria-hidden="true" href="#打开并管理-sfml-窗口">#</a></h1>
+<h2 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h2>
+<p>本教程仅解释如何打开和管理一个窗口。
+绘制内容超出了 sfml-window 模块的范畴：它是由 sfml-graphics 模块来处理的。
+然而，窗口管理的机制是完全一样的，因此在任何情况下阅读本教程都是很重要的。</p>
+<h2 id="打开窗口">打开窗口<a hidden class="anchor" aria-hidden="true" href="#打开窗口">#</a></h2>
+<p>在 SFML 中，窗口由 <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> 类定义。
+一个窗口可以在构造时被直接创建和打开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;SFML/Window.hpp&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Window window(sf<span style="color:#f92672">::</span>VideoMode({<span style="color:#ae81ff">800</span>, <span style="color:#ae81ff">600</span>}), <span style="color:#e6db74">&#34;My window&#34;</span>);
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>第一个参数——<strong>视频模式</strong>（video mode），定义了窗口的大小（即内部大小，不包括标题栏和边框）。
+在这里，我们创建了一个大小为 800x600 像素的窗口。
+<a href="../../../../documentation/3.1.0/classsf_1_1VideoMode.html" title="sf::VideoMode documentation"><code>sf::VideoMode</code></a> 类提供了一些非常实用的静态函数，用于获取桌面分辨率或是全屏模式下所有受支持的有效视频模式列表。
+千万不要犹豫去查阅一下它的文档。</p>
+<p>第二个参数就是窗口的标题。</p>
+<p>这个构造函数接受第三个可选参数：样式（style），它允许你选择你想要的装饰和功能。
+你可以使用以下样式的任意组合：</p>
+<table>
+	<thead>
+			<tr>
+					<th>样式</th>
+					<th>描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>sf::Style::None</code></td>
+					<td>没有任何装饰（例如对于启动画面非常有用）<!-- raw HTML omitted -->此样式不能与其他样式组合使用</td>
+			</tr>
+			<tr>
+					<td><code>sf::Style::Titlebar</code></td>
+					<td>窗口拥有一个标题栏</td>
+			</tr>
+			<tr>
+					<td><code>sf::Style::Resize</code></td>
+					<td>窗口可以调整大小并拥有一个最大化按钮</td>
+			</tr>
+			<tr>
+					<td><code>sf::Style::Close</code></td>
+					<td>窗口拥有一个关闭按钮</td>
+			</tr>
+			<tr>
+					<td><code>sf::Style::Default</code></td>
+					<td>默认样式，它是 `Titlebar</td>
+			</tr>
+	</tbody>
+</table>
+<p>第四个参数定义了窗口的状态，让你可以在悬浮窗口或全屏窗口之间做出选择。</p>
+<table>
+	<thead>
+			<tr>
+					<th>状态</th>
+					<th>描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>sf::State::Windowed</code></td>
+					<td>悬浮窗口</td>
+			</tr>
+			<tr>
+					<td><code>sf::State::Fullscreen</code></td>
+					<td>全屏窗口</td>
+			</tr>
+	</tbody>
+</table>
+<p>还有第五个可选参数，它定义了 OpenGL 的特定选项，这在<a href="../opengl/" title="OpenGL tutorial">专属的 OpenGL 教程</a>中会有详细解释。</p>
+<p>如果你想在 <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> 实例构造<strong>之后</strong>再去创建窗口，或者想用不同的视频模式或标题重新创建它，你可以改用 <code>create</code> 函数。
+它接受与构造函数完全相同的参数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;SFML/Window.hpp&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Window window;
+</span></span><span style="display:flex;"><span>    window.create(sf<span style="color:#f92672">::</span>VideoMode({<span style="color:#ae81ff">800</span>, <span style="color:#ae81ff">600</span>}), <span style="color:#e6db74">&#34;My window&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="让窗口活起来">让窗口“活”起来<a hidden class="anchor" aria-hidden="true" href="#让窗口活起来">#</a></h2>
+<p>如果你尝试执行上面的代码（将 &ldquo;&hellip;&rdquo; 留空），你几乎什么也看不到。
+首先，因为程序会立刻结束。
+其次，因为没有事件处理——所以即使你在这段代码中添加了一个死循环，你看到的也将是一个“死”的窗口，无法被移动、调整大小或是关闭。</p>
+<p>让我们添加一些代码，让这个程序变得稍微有趣一点：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;SFML/Window.hpp&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Window window(sf<span style="color:#f92672">::</span>VideoMode({<span style="color:#ae81ff">800</span>, <span style="color:#ae81ff">600</span>}), <span style="color:#e6db74">&#34;My window&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 只要窗口开着，就运行程序
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (window.isOpen())
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 检查自上次循环迭代以来所有被触发的窗口事件
+</span></span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>optional event <span style="color:#f92672">=</span> window.pollEvent())
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// “请求关闭”事件：我们关闭窗口
+</span></span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>Closed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>                window.close();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面的代码将打开一个窗口，并在用户关闭它时终止。
+让我们详细看看它是如何运作的。</p>
+<p>首先，我们添加了一个循环来确保应用程序能够持续刷新/更新，直到窗口被关闭。
+绝大多数（如果不是全部的话）SFML 程序都会有这种类型的循环，它有时被称为<strong>主循环</strong>（main loop）或<strong>游戏循环</strong>（game loop）。</p>
+<p>然后，我们在游戏循环里要做的第一件事就是检查是否发生了任何事件。
+注意我们使用了一个 <code>while</code> 循环，这样如果挂起了多个事件，所有的待处理事件都将被一一处理。
+如果有挂起的事件，<code>pollEvent</code> 函数将返回一个事件；如果没有，则返回 <code>std::nullopt</code>。</p>
+<p>每当我们获取到一个事件，我们就必须检查它的类型（窗口关闭？按键按下？鼠标移动？手柄连接？&hellip;），如果我们对该类型事件感兴趣，就做出相应的反应。
+在这里，我们只关心 <code>sf::Event::Closed</code> 事件，它会在用户想要关闭窗口时触发。
+此时此刻，窗口其实仍处于打开状态，我们必须通过调用 <code>close</code> 函数来显式地关闭它。
+这就允许你在窗口被关闭之前做点事情，比如保存应用程序的当前状态，或者显示一条消息。</p>
+<p>人们经常犯的一个错误就是忘记编写事件循环，仅仅是因为他们暂时还不关心事件处理（他们通常直接使用实时输入代替）。
+如果没有事件循环，窗口将会变得无法响应。
+必须指出事件循环有两个作用：除了将事件提供给用户之外，它也给了窗口处理其内部事件的机会，这是必需的，以便窗口能够对移动或调整大小等用户操作做出反应。</p>
+<p>在窗口被关闭之后，主循环退出，程序随之终止。</p>
+<p>说到这里，你可能已经注意到了我们还没讨论如何向窗口<strong>绘制东西</strong>。
+正如引言中所述，这不是 sfml-window 模块的职责，如果你想绘制精灵（sprites）、文本或各种形状，你将不得不跳转到 sfml-graphics 模块的教程。</p>
+<p>为了绘制内容，你也可以直接使用 OpenGL 并完全无视 sfml-graphics 模块。
+<a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> 内部创建了一个 OpenGL 绘图上下文，并且随时准备好接受你的 OpenGL 调用。
+你可以在<a href="../opengl/" title="OpenGL tutorial">相关的教程</a>中了解更多详情。</p>
+<p>不要指望在这个窗口中看到什么有趣的东西：你可能会看到一种纯色（黑色或白色），或是上一个使用过 OpenGL 的应用程序遗留的内容，抑或是……其他莫名其妙的东西。</p>
+<h2 id="操作窗口">操作窗口<a hidden class="anchor" aria-hidden="true" href="#操作窗口">#</a></h2>
+<p>当然，SFML 允许你对窗口进行一些操作。
+诸如更改大小、位置、标题或图标等基本窗口操作都是受支持的，但与专门的 GUI 库（如 Qt、wxWidgets）不同，SFML 并不提供高级功能。
+SFML 窗口仅仅旨在为 OpenGL 或 SFML 的绘制提供一个运行环境。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 更改窗口的位置（相对于桌面）
+</span></span></span><span style="display:flex;"><span>window.setPosition({<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">50</span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 更改窗口的大小
+</span></span></span><span style="display:flex;"><span>window.setSize({<span style="color:#ae81ff">640</span>, <span style="color:#ae81ff">480</span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 更改窗口的标题
+</span></span></span><span style="display:flex;"><span>window.setTitle(<span style="color:#e6db74">&#34;SFML window&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 获取窗口的大小
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Vector2u size <span style="color:#f92672">=</span> window.getSize();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> [width, height] <span style="color:#f92672">=</span> size;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 检查窗口是否拥有焦点
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> focus <span style="color:#f92672">=</span> window.hasFocus();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>你可以查阅 API 文档以获取 <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> 的完整函数列表。</p>
+<p>如果你真的需要为你的窗口添加一些高级功能，你可以使用其他的库来创建一个窗口（甚至是一个完整的 GUI），然后将 SFML 嵌入到其中。
+要做到这一点，你可以使用 <a href="../../../../documentation/3.1.0/classsf_1_1Window.html" title="sf::Window documentation"><code>sf::Window</code></a> 的另一个构造函数（或 <code>create</code> 函数），它接收一个现有窗口的、特定于操作系统的句柄。
+在这种情况下，SFML 将会在给定的窗口内部创建一个绘图上下文并捕获其所有的事件，而且绝不会干扰到父窗口的管理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>WindowHandle handle <span style="color:#f92672">=</span> <span style="color:#75715e">/* 针对你正在做的事情和你所使用的库而定 */</span>;
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Window window(handle);
+</span></span></code></pre></div><p>如果你只想要一种额外的、非常特定于平台的功能，你也可以反其道而行之：创建一个 SFML 窗口并获取其底层操作系统的原生句柄，以此来实现 SFML 本身不支持的事务。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Window window(sf<span style="color:#f92672">::</span>VideoMode({<span style="color:#ae81ff">800</span>, <span style="color:#ae81ff">600</span>}), <span style="color:#e6db74">&#34;SFML window&#34;</span>);
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>WindowHandle handle <span style="color:#f92672">=</span> window.getNativeHandle();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 你现在可以在特定于操作系统的函数中使用这个句柄了
+</span></span></span></code></pre></div><p>将 SFML 与其他库集成需要做一些工作，这里不再赘述，但你可以参考相关的专门教程、示例或是论坛上的帖子。</p>
+<h2 id="控制帧率">控制帧率<a hidden class="anchor" aria-hidden="true" href="#控制帧率">#</a></h2>
+<p>有时候，当你的应用程序运行得非常快时，你可能会注意到一些画面瑕疵，比如画面撕裂（tearing）。
+原因在于你的应用程序的刷新率与显示器的垂直刷新频率没有同步，从而导致前一帧的底部与下一帧的顶部混杂在了一起。
+解决这个问题的方法是开启<strong>垂直同步</strong>（vertical synchronization）。
+它由显卡自动处理，并且可以通过 <code>setVerticalSyncEnabled</code> 函数轻松开启或关闭：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>window.setVerticalSyncEnabled(true); <span style="color:#75715e">// 在创建窗口后调用一次
+</span></span></span></code></pre></div><p>在这次调用之后，你的应用程序将以与显示器刷新率相同的频率运行。</p>
+<p>有时 <code>setVerticalSyncEnabled</code> 可能不起作用：这很有可能是因为在你的显卡驱动设置中，垂直同步被强制关闭了。
+你应该将其改为“由应用程序控制”。</p>
+<p>在其他情况下，你可能希望你的应用程序以给定的帧率运行，而不是受制于显示器的频率。
+这可以通过调用 <code>setFramerateLimit</code> 来实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>window.setFramerateLimit(<span style="color:#ae81ff">60</span>); <span style="color:#75715e">// 在创建窗口后调用一次
+</span></span></span></code></pre></div><p>与 <code>setVerticalSyncEnabled</code> 不同，这个功能是由 SFML 自身实现的，它组合使用了 <a href="../../../../documentation/3.1.0/classsf_1_1Clock.html" title="sf::Clock documentation"><code>sf::Clock</code></a> 和 <code>sf::sleep</code>。
+一个重要的后果是它并非 100% 绝对可靠，尤其是在高帧率下：<code>sf::sleep</code> 的精度取决于底层的操作系统和硬件，误差可能高达 10 甚至 15 毫秒。
+千万不要依赖这个功能来实现精确的时序控制。</p>
+<p>绝对不要同时使用 <code>setVerticalSyncEnabled</code> 和 <code>setFramerateLimit</code>！
+它们会产生极其糟糕的相互作用并让情况变得更糟。</p>
+<h2 id="关于窗口你必须知道的事">关于窗口你必须知道的事<a hidden class="anchor" aria-hidden="true" href="#关于窗口你必须知道的事">#</a></h2>
+<p>这里有一份简要的清单，列出了你能用以及不能用 SFML 窗口做什么。</p>
+<h3 id="你可以创建多个窗口">你可以创建多个窗口<a hidden class="anchor" aria-hidden="true" href="#你可以创建多个窗口">#</a></h3>
+<p>SFML 允许你创建多个窗口，并且可以在主线程中统一处理它们，或者在各自独立的线程中单独处理每一个窗口（但是……请看下文）。
+在这种情况下，别忘了为每个窗口都配备一个事件循环。</p>
+<h3 id="尚未对多显示器提供良好支持">尚未对多显示器提供良好支持<a hidden class="anchor" aria-hidden="true" href="#尚未对多显示器提供良好支持">#</a></h3>
+<p>SFML 目前并没有显式地管理多台显示器。
+因此，你无法选择窗口将出现在哪台显示器上，并且你无法创建超过一个的全屏窗口。
+这应该会在未来的版本中得到改善。</p>
+<h3 id="事件必须在窗口所在的线程中进行轮询">事件必须在窗口所在的线程中进行轮询<a hidden class="anchor" aria-hidden="true" href="#事件必须在窗口所在的线程中进行轮询">#</a></h3>
+<p>这是大多数操作系统的一个重要限制：事件循环（更准确地说，是 <code>pollEvent</code> 或 <code>waitEvent</code> 函数）必须在创建窗口的那个相同线程中被调用。
+这意味着如果你想要创建一个专门用于事件处理的线程，你就必须确保窗口也是在这个线程中创建的。
+如果你真的想在线程间分割事务，更方便的做法是将事件处理保留在主线程中，而把其余的工作（渲染、物理运算、逻辑等）移动到一个独立的线程里。
+这样的架构同样也兼容下面所描述的另一个限制。</p>
+<h3 id="在-macos-上窗口和事件必须在主线程中管理">在 macOS 上，窗口和事件必须在主线程中管理<a hidden class="anchor" aria-hidden="true" href="#在-macos-上窗口和事件必须在主线程中管理">#</a></h3>
+<p>没错，这是真的；如果你尝试在除了主线程之外的其他线程里去创建窗口或处理事件，macOS 是绝对不会答应的。</p>
+<h3 id="在-windows-上大于桌面的窗口将无法正常表现">在 Windows 上，大于桌面的窗口将无法正常表现<a hidden class="anchor" aria-hidden="true" href="#在-windows-上大于桌面的窗口将无法正常表现">#</a></h3>
+<p>出于某些原因，Windows 并不喜欢比桌面尺寸还要大的窗口。
+这同样包括使用 <code>VideoMode::getDesktopMode()</code> 创建的窗口：在加上了窗口装饰（边框和标题栏）之后，你最终得到的一个窗口会比桌面的尺寸略微大那么一点点。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://HITFlerovium.github.io/sfml/system/angle/">
+    <span class="title">« Prev</span>
+    <span>处理角度</span>
+  </a>
+  <a class="next" href="https://HITFlerovium.github.io/sfml/system/stream/">
+    <span class="title">Next »</span>
+    <span>用户数据流</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on x"
+            href="https://x.com/intent/tweet/?text=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3&amp;url=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f&amp;title=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3&amp;summary=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3&amp;source=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f&title=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3%20-%20https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on telegram"
+            href="https://telegram.me/share/url?text=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3&amp;url=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 打开并管理 SFML 窗口 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%89%93%e5%bc%80%e5%b9%b6%e7%ae%a1%e7%90%86%20SFML%20%e7%aa%97%e5%8f%a3&u=https%3a%2f%2fHITFlerovium.github.io%2fsfml%2fwindow%2fwindow%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://HITFlerovium.github.io/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

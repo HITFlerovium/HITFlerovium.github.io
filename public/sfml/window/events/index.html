@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>事件详解 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="事件详解
+简介
+本教程详细列出了所有的窗口事件。
+它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。
+sf::Event 类型
+SFML 使用类型安全的 API 来处理事件。
+有两种主要方式可以使用此 API。
+有关这两种方法的综合示例，请查看 EventHandling 示例程序。
+sf::Event::getIf&lt;T&gt;
+第一种选择是基于 sf::Event 的成员函数 getIf&lt;T&gt; 和 is&lt;T&gt;。
+模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。
+如果模板参数与当前活跃的事件子类型相匹配，getIf&lt;T&gt; 将返回指向该特定事件子类型的指针。
+否则，它将返回 nullptr。
+如果模板参数与当前活跃的事件子类型相匹配，is&lt;T&gt; 将返回 true。
+否则，它将返回 false。
+这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。
+请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。
+sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional&lt;sf::Event&gt;。
+这两个函数可能会返回一个事件，但也可能不会。
+它的代码如下所示：
+while (window.isOpen())
+{
+    while (const std::optional event = window.pollEvent())
+    {
+        if (event-&gt;is&lt;sf::Event::Closed&gt;())
+        {
+            window.close();
+        }
+        else if (const auto* keyPressed = event-&gt;getIf&lt;sf::Event::KeyPressed&gt;())
+        {
+            if (keyPressed-&gt;scancode == sf::Keyboard::Scancode::Escape)
+                window.close();
+        }
+    }
+
+    // 主循环的其他部分
+}
+C&#43;&#43; 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional&lt;sf::Event&gt; event 的原因。
+如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/window/events/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/window/events/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/window/events/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="事件详解">
+  <meta property="og:description" content="事件详解 简介 本教程详细列出了所有的窗口事件。 它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。
+sf::Event 类型 SFML 使用类型安全的 API 来处理事件。 有两种主要方式可以使用此 API。 有关这两种方法的综合示例，请查看 EventHandling 示例程序。
+sf::Event::getIf&lt;T&gt; 第一种选择是基于 sf::Event 的成员函数 getIf&lt;T&gt; 和 is&lt;T&gt;。 模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。 如果模板参数与当前活跃的事件子类型相匹配，getIf&lt;T&gt; 将返回指向该特定事件子类型的指针。 否则，它将返回 nullptr。
+如果模板参数与当前活跃的事件子类型相匹配，is&lt;T&gt; 将返回 true。 否则，它将返回 false。 这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。
+请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。 sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional&lt;sf::Event&gt;。 这两个函数可能会返回一个事件，但也可能不会。
+它的代码如下所示：
+while (window.isOpen()) { while (const std::optional event = window.pollEvent()) { if (event-&gt;is&lt;sf::Event::Closed&gt;()) { window.close(); } else if (const auto* keyPressed = event-&gt;getIf&lt;sf::Event::KeyPressed&gt;()) { if (keyPressed-&gt;scancode == sf::Keyboard::Scancode::Escape) window.close(); } } // 主循环的其他部分 } C&#43;&#43; 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional&lt;sf::Event&gt; event 的原因。 如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="sfml">
+    <meta property="article:published_time" content="2026-07-10T10:00:00+08:00">
+    <meta property="article:modified_time" content="2026-07-10T10:00:00+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="事件详解">
+  <meta name="twitter:description" content="事件详解 简介 本教程详细列出了所有的窗口事件。 它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。
+sf::Event 类型 SFML 使用类型安全的 API 来处理事件。 有两种主要方式可以使用此 API。 有关这两种方法的综合示例，请查看 EventHandling 示例程序。
+sf::Event::getIf&lt;T&gt; 第一种选择是基于 sf::Event 的成员函数 getIf&lt;T&gt; 和 is&lt;T&gt;。 模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。 如果模板参数与当前活跃的事件子类型相匹配，getIf&lt;T&gt; 将返回指向该特定事件子类型的指针。 否则，它将返回 nullptr。
+如果模板参数与当前活跃的事件子类型相匹配，is&lt;T&gt; 将返回 true。 否则，它将返回 false。 这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。
+请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。 sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional&lt;sf::Event&gt;。 这两个函数可能会返回一个事件，但也可能不会。
+它的代码如下所示：
+while (window.isOpen()) { while (const std::optional event = window.pollEvent()) { if (event-&gt;is&lt;sf::Event::Closed&gt;()) { window.close(); } else if (const auto* keyPressed = event-&gt;getIf&lt;sf::Event::KeyPressed&gt;()) { if (keyPressed-&gt;scancode == sf::Keyboard::Scancode::Escape) window.close(); } } // 主循环的其他部分 } C&#43;&#43; 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional&lt;sf::Event&gt; event 的原因。 如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Window 窗口模块",
+      "item": "http://localhost:1313/sfml/window/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "事件详解",
+      "item": "http://localhost:1313/sfml/window/events/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "事件详解",
+  "name": "事件详解",
+  "description": "事件详解 简介 本教程详细列出了所有的窗口事件。 它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。\nsf::Event 类型 SFML 使用类型安全的 API 来处理事件。 有两种主要方式可以使用此 API。 有关这两种方法的综合示例，请查看 EventHandling 示例程序。\nsf::Event::getIf\u0026lt;T\u0026gt; 第一种选择是基于 sf::Event 的成员函数 getIf\u0026lt;T\u0026gt; 和 is\u0026lt;T\u0026gt;。 模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。 如果模板参数与当前活跃的事件子类型相匹配，getIf\u0026lt;T\u0026gt; 将返回指向该特定事件子类型的指针。 否则，它将返回 nullptr。\n如果模板参数与当前活跃的事件子类型相匹配，is\u0026lt;T\u0026gt; 将返回 true。 否则，它将返回 false。 这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。\n请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。 sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional\u0026lt;sf::Event\u0026gt;。 这两个函数可能会返回一个事件，但也可能不会。\n它的代码如下所示：\nwhile (window.isOpen()) { while (const std::optional event = window.pollEvent()) { if (event-\u0026gt;is\u0026lt;sf::Event::Closed\u0026gt;()) { window.close(); } else if (const auto* keyPressed = event-\u0026gt;getIf\u0026lt;sf::Event::KeyPressed\u0026gt;()) { if (keyPressed-\u0026gt;scancode == sf::Keyboard::Scancode::Escape) window.close(); } } // 主循环的其他部分 } C++ 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional\u0026lt;sf::Event\u0026gt; event 的原因。 如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "事件详解 简介 本教程详细列出了所有的窗口事件。 它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。\nsf::Event 类型 SFML 使用类型安全的 API 来处理事件。 有两种主要方式可以使用此 API。 有关这两种方法的综合示例，请查看 EventHandling 示例程序。\nsf::Event::getIf 第一种选择是基于 sf::Event 的成员函数 getIf 和 is。 模板参数 T 必须是一个事件子类型，例如 sf::Event::Resized 或 sf::Event::MouseMoved。 如果模板参数与当前活跃的事件子类型相匹配，getIf 将返回指向该特定事件子类型的指针。 否则，它将返回 nullptr。\n如果模板参数与当前活跃的事件子类型相匹配，is 将返回 true。 否则，它将返回 false。 这对于像 sf::Event::Closed 这种不包含任何数据的子类型特别有用。\n请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。 sf::WindowBase::pollEvent 和 sf::WindowBase::waitEvent 返回一个 std::optional。 这两个函数可能会返回一个事件，但也可能不会。\n它的代码如下所示：\nwhile (window.isOpen()) { while (const std::optional event = window.pollEvent()) { if (event-\u003eis\u003csf::Event::Closed\u003e()) { window.close(); } else if (const auto* keyPressed = event-\u003egetIf\u003csf::Event::KeyPressed\u003e()) { if (keyPressed-\u003escancode == sf::Keyboard::Scancode::Escape) window.close(); } } // 主循环的其他部分 } C++ 允许你推导模板参数，这就是为什么你可以写成 const std::optional event 而不是 const std::optional event 的原因。 如果你更喜欢简短的表达式，const auto event 也是一个有效的选择。\nsf::WindowBase::handleEvents 处理事件的第二种选择是通过 sf::WindowBase::handleEvents 函数。 这个函数执行事件访问（event visitation）。 这意味着你可以提供 lambda 表达式或其他可调用对象，它们将不同的事件子类型作为参数。 或者，你也可以提供一个（或多个）实现了 operator() 的对象来处理你想要处理的事件子类型。 根据当前活跃的事件子类型，将调用相应的回调函数。\n[!NOTE] 你无需为所有可能的事件子类型都提供回调函数。\n它的代码如下所示：\nconst auto onClose = [\u0026window](const sf::Event::Closed\u0026) { window.close(); }; const auto onKeyPressed = [\u0026window](const sf::Event::KeyPressed\u0026 keyPressed) { if (keyPressed.scancode == sf::Keyboard::Scancode::Escape) window.close(); }; while (window.isOpen()) { window.handleEvents(onClose, onKeyPressed); // 主循环的其他部分 } Closed 事件 当用户希望通过窗口管理器提供的任何可能方式（“关闭”按钮、键盘快捷键等）关闭窗口时，会触发 sf::Event::Closed 事件。 此事件仅代表一个关闭请求，这意味着在收到事件时窗口尚未关闭。\n通常，针对此事件，我们只需调用 window.close() 就能真正关闭窗口。 但是，你可能还想先做些其他事情，例如保存当前的应用程序状态，或者询问用户要执行什么操作。 如果你什么都不做，窗口将保持打开状态。\n此事件没有关联的事件数据。\nif (event-\u003eis\u003csf::Event::Closed\u003e()) window.close(); Resized 事件 当窗口被调整大小时（无论是通过用户操作还是通过调用 window.setSize 以编程方式触发），都会触发 sf::Event::Resized 事件。 你可以使用此事件来调整渲染设置：如果你直接使用 OpenGL 则调整视口（viewport）；如果你使用 sfml-graphics，则调整当前视图（view）。\n与此事件关联的数据包含了窗口的新尺寸。\nif (const auto* resized = event-\u003egetIf\u003csf::Event::Resized\u003e()) { std::cout \u003c\u003c \"new width: \" \u003c\u003c resized-\u003esize.x \u003c\u003c std::endl; std::cout \u003c\u003c \"new height: \" \u003c\u003c resized-\u003esize.y \u003c\u003c std::endl; } FocusLost 与 FocusGained 事件 当窗口失去或获得焦点时（即当用户切换当前活跃窗口时），会触发 sf::Event::FocusLost 和 sf::Event::FocusGained 事件。 当窗口失去焦点时，它将不会接收到键盘事件。 例如，如果你想在窗口处于非活跃状态时暂停游戏，就可以使用此事件。\n这两个事件都没有关联的事件数据。\nif (event-\u003eis\u003csf::Event::FocusLost\u003e()) myGame.pause(); if (event-\u003eis\u003csf::Event::FocusGained\u003e()) myGame.resume(); TextEntered 事件 当键入一个字符时，会触发 sf::Event::TextEntered 事件。 千万不要将它与 KeyPressed 事件混淆。 TextEntered 会解析用户输入并生成合适的可打印字符。 例如，在法语键盘上先按 ‘^’ 再按 ’e’ 会产生两个 KeyPressed 事件，但只会产生一个包含 ‘ê’ 字符的 TextEntered 事件。 它适用于操作系统提供的所有输入法，即使是最特殊或最复杂的输入法也是如此。\n此事件通常用于捕获文本字段中的用户输入。\n与此事件关联的数据包含了所输入字符的 Unicode 值。 你可以将此数据直接存入 sf::String 中，或者在确保其位于 ASCII 范围（0 - 127）内之后，将其强制转换为 char 类型。\nif (const auto* textEntered = event-\u003egetIf\u003csf::Event::TextEntered\u003e()) { if (textEntered-\u003eunicode \u003c 128) std::cout \u003c\u003c \"ASCII character typed: \" \u003c\u003c static_cast\u003cchar\u003e(textEntered-\u003eunicode) \u003c\u003c std::endl; } 请注意，由于它们属于 Unicode 标准的一部分，一些不可打印字符（如退格键）也会由此事件生成。 在大多数情况下，你需要将它们过滤掉。\n[!WARNING] 许多程序员喜欢使用 KeyPressed 事件来获取用户输入，并试图通过编写疯狂的算法来解析所有可能的按键组合以生成正确的字符。 千万不要这么做！\nKeyPressed 与 KeyReleased 事件 当按下或释放键盘按键时，会触发 sf::Event::KeyPressed 和 sf::Event::KeyReleased 事件。\n如果按住某个按键不放，系统将按照操作系统的默认延迟间隔持续生成多个 KeyPressed 事件（即与在文本编辑器中按住某个字母时适用的延迟相同）。 要禁用重复的 KeyPressed 事件，你可以调用 window.setKeyRepeatEnabled(false)。 另一方面，显而易见 KeyReleased 事件是永远无法重复的。\n如果你想在按下或释放按键时恰好触发一次操作（比如按空格键让角色跳跃，或者按 Esc 退出某事），那么这个事件就是你的最佳选择。\n有时，人们会试图直接对 KeyPressed 事件做出反应来实现平滑移动。 这样做不会产生预期的效果，因为当你按住按键时，你只能得到寥寥几个事件（还记得上面提到的重复延迟吗？）。 为了通过事件实现平滑移动，你必须使用一个布尔变量，在 KeyPressed 时将其设为 true，在 KeyReleased 时将其清空；然后，只要这个布尔变量为 true，你就可以（独立于事件）进行移动了。\n实现平滑移动的另一个（更简单的）解决方案，是使用 sf::Keyboard 进行实时键盘输入监控（参阅相关的教程）。\n与这些事件关联的数据包含了按下或释放按键的扫描码（scancode）和键码（key code），以及修饰键（alt、control、shift、system）的当前状态。\n扫描码对于键盘上的每个物理按键来说都是唯一的值，不受语言或布局的影响，而键码则表示基于用户所选布局的按键。 例如，在美式键盘布局下，Z 键位于 X 键左侧的最底下一排。 如果你引用 Z 键的扫描码，就可以在任何键盘上定位到这一个物理按键的位置。 然而，在德语布局下，同一个物理按键的标签是 Y。 因此，使用 Y 的键码可能会指向不同的物理按键位置，这取决于所选择的布局。\n如果按键的物理位置（例如使用 WASD 键进行移动）比受制于键盘布局的按键值更重要的话，强烈建议使用扫描码而不是键码。\nif (const auto* keyPressed = event-\u003egetIf\u003csf::Event::KeyPressed\u003e()) { if (keyPressed-\u003escancode == sf::Keyboard::Scan::Escape) { std::cout \u003c\u003c \"the escape key was pressed\" \u003c\u003c std::endl; std::cout \u003c\u003c \"scancode: \" \u003c\u003c static_cast\u003cint\u003e(keyPressed-\u003escancode) \u003c\u003c std::endl; std::cout \u003c\u003c \"code: \" \u003c\u003c static_cast\u003cint\u003e(keyPressed-\u003ecode) \u003c\u003c std::endl; std::cout \u003c\u003c \"control: \" \u003c\u003c keyPressed-\u003econtrol \u003c\u003c std::endl; std::cout \u003c\u003c \"alt: \" \u003c\u003c keyPressed-\u003ealt \u003c\u003c std::endl; std::cout \u003c\u003c \"shift: \" \u003c\u003c keyPressed-\u003eshift \u003c\u003c std::endl; std::cout \u003c\u003c \"system: \" \u003c\u003c keyPressed-\u003esystem \u003c\u003c std::endl; std::cout \u003c\u003c \"description: \" \u003c\u003c sf::Keyboard::getDescription(keyPressed-\u003escancode).toAnsiString() \u003c\u003c std::endl; std::cout \u003c\u003c \"localize: \" \u003c\u003c static_cast\u003cint\u003e(sf::Keyboard::localize(keyPressed-\u003escancode)) \u003c\u003c std::endl; std::cout \u003c\u003c \"delocalize: \" \u003c\u003c static_cast\u003cint\u003e(sf::Keyboard::delocalize(keyPressed-\u003ecode)) \u003c\u003c std::endl; } } [!NOTE] 请注意，某些按键对操作系统具有特殊含义，可能会导致意料之外的行为。 例如 Windows 上的 F10 键会“窃取”焦点，而在使用 Visual Studio 时，F12 键会启动调试器。\nMouseWheelScrolled 事件 当鼠标滚轮向上或向下滚动时，或者如果鼠标支持横向滚动时，也会触发 sf::Event::MouseWheelScrolled 事件。\n与此事件关联的数据包含了滚轮滚动的刻度数、滚轮滚动的方向以及当前鼠标光标的位置。\nif (const auto* mouseWheelScrolled = event-\u003egetIf\u003csf::Event::MouseWheelScrolled\u003e()) { switch (mouseWheelScrolled-\u003ewheel) { case sf::Mouse::Wheel::Vertical: std::cout \u003c\u003c \"wheel type: vertical\" \u003c\u003c std::endl; break; case sf::Mouse::Wheel::Horizontal: std::cout \u003c\u003c \"wheel type: horizontal\" \u003c\u003c std::endl; break; } std::cout \u003c\u003c \"wheel movement: \" \u003c\u003c mouseWheelScrolled-\u003edelta \u003c\u003c std::endl; std::cout \u003c\u003c \"mouse x: \" \u003c\u003c mouseWheelScrolled-\u003eposition.x \u003c\u003c std::endl; std::cout \u003c\u003c \"mouse y: \" \u003c\u003c mouseWheelScrolled-\u003eposition.y \u003c\u003c std::endl; } MouseButtonPressed 与 MouseButtonReleased 事件 当鼠标按键被按下或释放时，会触发 sf::Event::MouseButtonPressed 和 sf::Event::MouseButtonReleased 事件。 SFML 支持 5 个鼠标按键：左键、右键、中键（滚轮）、附加键 #1 和附加键 #2（侧键）。\n与这些事件关联的数据包含了按下或释放按键的代码，以及鼠标光标的当前位置。\nif (const auto* mouseButtonPressed = event-\u003egetIf\u003csf::Event::MouseButtonPressed\u003e()) { if (mouseButtonPressed-\u003ebutton == sf::Mouse::Button::Right) { std::cout \u003c\u003c \"the right button was pressed\" \u003c\u003c std::endl; std::cout \u003c\u003c \"mouse x: \" \u003c\u003c mouseButtonPressed-\u003eposition.x \u003c\u003c std::endl; std::cout \u003c\u003c \"mouse y: \" \u003c\u003c mouseButtonPressed-\u003eposition.y \u003c\u003c std::endl; } } MouseMoved 事件 当鼠标在窗口内移动时，会触发 sf::Event::MouseMoved 事件。\n[!NOTE] 即使窗口没有焦点，此事件也会被触发，但仅当鼠标在窗口的内部区域移动时有效，如果鼠标移动到标题栏或窗口边框上方，则不会触发。\n与此事件关联的数据包含了鼠标光标相对于窗口的当前位置。\nif (const auto* mouseMoved = event-\u003egetIf\u003csf::Event::MouseMoved\u003e()) { std::cout \u003c\u003c \"new mouse x: \" \u003c\u003c mouseMoved-\u003eposition.x \u003c\u003c std::endl; std::cout \u003c\u003c \"new mouse y: \" \u003c\u003c mouseMoved-\u003eposition.y \u003c\u003c std::endl; } MouseMovedRaw 事件 只要鼠标在窗口内移动，甚至在鼠标移动距离微小到难以察觉时，也会触发 sf::Event::MouseMovedRaw 事件。\nsf::Event::MouseMoved 的位置值受限于屏幕分辨率，而此事件的原始数据则不然。 如果物理鼠标的移动量太小，甚至不足以让屏幕上的光标移动哪怕一个像素，那么将不会生成 sf::Event::MouseMoved 事件。 相比之下，无论鼠标传感器的分辨率如何，任何鼠标生成的移动信息都会始终触发 sf::Event::MouseMovedRaw 事件。\n与此事件关联的数据包含了鼠标光标相对于窗口的位置变化量。\nif (const auto* mouseMovedRaw = event-\u003egetIf\u003csf::Event::MouseMovedRaw\u003e()) { std::cout \u003c\u003c \"new mouse x: \" \u003c\u003c mouseMoved-\u003edelta.x \u003c\u003c std::endl; std::cout \u003c\u003c \"new mouse y: \" \u003c\u003c mouseMoved-\u003edelta.y \u003c\u003c std::endl; } [!NOTE] 目前，原始鼠标输入事件仅在 Windows 和 Linux 系统上生成。\nMouseEntered 与 MouseLeft 事件 当鼠标光标进入或进入离开窗口时，会触发 sf::Event::MouseEntered 和 sf::Event::MouseLeft 事件。 这两个事件没有关联的事件数据。\nif (event-\u003eis\u003csf::Event::MouseEntered\u003e()) std::cout \u003c\u003c \"the mouse cursor has entered the window\" \u003c\u003c std::endl; if (event-\u003eis\u003csf::Event::MouseLeft\u003e()) std::cout \u003c\u003c \"the mouse cursor has left the window\" \u003c\u003c std::endl; JoystickButtonPressed 与 JoystickButtonReleased 事件 当手柄（摇杆）按钮被按下或释放时，会触发 sf::Event::JoystickButtonPressed 和 sf::Event::JoystickButtonReleased 事件。\nSFML 支持最多 8 个手柄和 32 个按钮。\n与这些事件关联的数据包含了手柄的标识符以及按下或释放按钮的索引。\nif (const auto* joystickButtonPressed = event-\u003egetIf\u003csf::Event::JoystickButtonPressed\u003e()) { std::cout \u003c\u003c \"joystick button pressed!\" \u003c\u003c std::endl; std::cout \u003c\u003c \"joystick id: \" \u003c\u003c joystickButtonPressed-\u003ejoystickId \u003c\u003c std::endl; std::cout \u003c\u003c \"button: \" \u003c\u003c joystickButtonPressed-\u003ebutton \u003c\u003c std::endl; } JoystickMoved 事件 当手柄轴发生移动时，会触发 sf::Event::JoystickMoved 事件。 手柄轴通常非常敏感。 这就是为什么 SFML 使用检测阈值来避免大量 JoystickMoved 事件淹没你的事件循环的原因。 你可以通过 sf::Window::setJoystickThreshold 函数来更改此阈值，以便接收更多或更少的手柄移动事件。\nSFML 支持 8 个手柄轴：X、Y、Z、R、U、V、POV X 和 POV Y。 它们如何映射到你的手柄，取决于手柄驱动程序。\n与此事件关联的数据包含了手柄的标识符、轴的名称，以及它的当前位置（范围在 [-100, 100] 之间）。\nif (const auto* joystickMoved = event-\u003egetIf\u003csf::Event::JoystickMoved\u003e()) { if (joystickMoved-\u003eaxis == sf::Joystick::Axis::X) { std::cout \u003c\u003c \"X axis moved!\" \u003c\u003c std::endl; std::cout \u003c\u003c \"joystick id: \" \u003c\u003c joystickMoved-\u003ejoystickId \u003c\u003c std::endl; std::cout \u003c\u003c \"new position: \" \u003c\u003c joystickMoved-\u003eposition \u003c\u003c std::endl; } } JoystickConnected 与 JoystickDisconnected 事件 当手柄连接或断开时，会触发 sf::Event::JoystickConnected 和 sf::Event::JoystickDisconnected 事件。\n与此事件关联的数据包含了已连接或已断开手柄的标识符。\nif (const auto* joystickConnected = event-\u003egetIf\u003csf::Event::JoystickConnected\u003e()) std::cout \u003c\u003c \"joystick connected: \" \u003c\u003c joystickConnected-\u003ejoystickId \u003c\u003c std::endl; if (const auto* joystickDisconnected = event-\u003egetIf\u003csf::Event::JoystickDisconnected\u003e()) std::cout \u003c\u003c \"joystick disconnected: \" \u003c\u003c joystickDisconnected-\u003ejoystickId \u003c\u003c std::endl; ",
+  "wordCount" : "841",
+  "inLanguage": "en",
+  "datePublished": "2026-07-10T10:00:00+08:00",
+  "dateModified": "2026-07-10T10:00:00+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "Flerovium"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/sfml/window/events/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Flerovium's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      事件详解
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>Flerovium</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="事件详解">事件详解<a hidden class="anchor" aria-hidden="true" href="#事件详解">#</a></h1>
+<h2 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h2>
+<p>本教程详细列出了所有的窗口事件。
+它对这些事件进行了描述，并展示了如何（以及不该如何）使用它们。</p>
+<h2 id="sfevent-类型">sf::Event 类型<a hidden class="anchor" aria-hidden="true" href="#sfevent-类型">#</a></h2>
+<p>SFML 使用类型安全的 API 来处理事件。
+有两种主要方式可以使用此 API。
+有关这两种方法的综合示例，请查看 <a href="https://github.com/SFML/SFML/tree/master/examples/event_handling" title="EventHandling example on GitHub">EventHandling 示例程序</a>。</p>
+<h3 id="sfeventgetift"><code>sf::Event::getIf&lt;T&gt;</code><a hidden class="anchor" aria-hidden="true" href="#sfeventgetift">#</a></h3>
+<p>第一种选择是基于 <code>sf::Event</code> 的成员函数 <code>getIf&lt;T&gt;</code> 和 <code>is&lt;T&gt;</code>。
+模板参数 <code>T</code> 必须是一个事件子类型，例如 <code>sf::Event::Resized</code> 或 <code>sf::Event::MouseMoved</code>。
+如果模板参数与当前活跃的事件子类型相匹配，<code>getIf&lt;T&gt;</code> 将返回指向该特定事件子类型的指针。
+否则，它将返回 <code>nullptr</code>。</p>
+<p>如果模板参数与当前活跃的事件子类型相匹配，<code>is&lt;T&gt;</code> 将返回 <code>true</code>。
+否则，它将返回 <code>false</code>。
+这对于像 <code>sf::Event::Closed</code> 这种不包含任何数据的子类型特别有用。</p>
+<p>请注意获取事件的 API 与 SFML 2 相比发生了微小的变化。
+<code>sf::WindowBase::pollEvent</code> 和 <code>sf::WindowBase::waitEvent</code> 返回一个 <code>std::optional&lt;sf::Event&gt;</code>。
+这两个函数<strong>可能</strong>会返回一个事件，但也可能不会。</p>
+<p>它的代码如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (window.isOpen())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>optional event <span style="color:#f92672">=</span> window.pollEvent())
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>Closed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            window.close();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> keyPressed <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>KeyPressed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (keyPressed<span style="color:#f92672">-&gt;</span>scancode <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>Scancode<span style="color:#f92672">::</span>Escape)
+</span></span><span style="display:flex;"><span>                window.close();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 主循环的其他部分
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>C++ 允许你推导模板参数，这就是为什么你可以写成 <code>const std::optional event</code> 而不是 <code>const std::optional&lt;sf::Event&gt; event</code> 的原因。
+如果你更喜欢简短的表达式，<code>const auto event</code> 也是一个有效的选择。</p>
+<h3 id="sfwindowbasehandleevents"><code>sf::WindowBase::handleEvents</code><a hidden class="anchor" aria-hidden="true" href="#sfwindowbasehandleevents">#</a></h3>
+<p>处理事件的第二种选择是通过 <code>sf::WindowBase::handleEvents</code> 函数。
+这个函数执行事件访问（event visitation）。
+这意味着你可以提供 lambda 表达式或其他可调用对象，它们将不同的事件子类型作为参数。
+或者，你也可以提供一个（或多个）实现了 <code>operator()</code> 的对象来处理你想要处理的事件子类型。
+根据当前活跃的事件子类型，将调用相应的回调函数。</p>
+<blockquote>
+<p>[!NOTE]
+你无需为所有可能的事件子类型都提供回调函数。</p>
+</blockquote>
+<p>它的代码如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span> onClose <span style="color:#f92672">=</span> [<span style="color:#f92672">&amp;</span>window](<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>Closed<span style="color:#f92672">&amp;</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    window.close();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span> onKeyPressed <span style="color:#f92672">=</span> [<span style="color:#f92672">&amp;</span>window](<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>KeyPressed<span style="color:#f92672">&amp;</span> keyPressed)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (keyPressed.scancode <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>Scancode<span style="color:#f92672">::</span>Escape)
+</span></span><span style="display:flex;"><span>        window.close();
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (window.isOpen())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    window.handleEvents(onClose, onKeyPressed);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 主循环的其他部分
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="closed-事件">Closed 事件<a hidden class="anchor" aria-hidden="true" href="#closed-事件">#</a></h2>
+<p>当用户希望通过窗口管理器提供的任何可能方式（“关闭”按钮、键盘快捷键等）关闭窗口时，会触发 <code>sf::Event::Closed</code> 事件。
+此事件仅代表一个关闭请求，这意味着在收到事件时窗口尚未关闭。</p>
+<p>通常，针对此事件，我们只需调用 <code>window.close()</code> 就能真正关闭窗口。
+但是，你可能还想先做些其他事情，例如保存当前的应用程序状态，或者询问用户要执行什么操作。
+如果你什么都不做，窗口将保持打开状态。</p>
+<p>此事件没有关联的事件数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>Closed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    window.close();
+</span></span></code></pre></div><h2 id="resized-事件">Resized 事件<a hidden class="anchor" aria-hidden="true" href="#resized-事件">#</a></h2>
+<p>当窗口被调整大小时（无论是通过用户操作还是通过调用 <code>window.setSize</code> 以编程方式触发），都会触发 <code>sf::Event::Resized</code> 事件。
+你可以使用此事件来调整渲染设置：如果你直接使用 OpenGL 则调整视口（viewport）；如果你使用 sfml-graphics，则调整当前视图（view）。</p>
+<p>与此事件关联的数据包含了窗口的新尺寸。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> resized <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>Resized<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new width: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> resized<span style="color:#f92672">-&gt;</span>size.x <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new height: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> resized<span style="color:#f92672">-&gt;</span>size.y <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="focuslost-与-focusgained-事件">FocusLost 与 FocusGained 事件<a hidden class="anchor" aria-hidden="true" href="#focuslost-与-focusgained-事件">#</a></h2>
+<p>当窗口失去或获得焦点时（即当用户切换当前活跃窗口时），会触发 <code>sf::Event::FocusLost</code> 和 <code>sf::Event::FocusGained</code> 事件。
+当窗口失去焦点时，它将不会接收到键盘事件。
+例如，如果你想在窗口处于非活跃状态时暂停游戏，就可以使用此事件。</p>
+<p>这两个事件都没有关联的事件数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>FocusLost<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    myGame.pause();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>FocusGained<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    myGame.resume();
+</span></span></code></pre></div><h2 id="textentered-事件">TextEntered 事件<a hidden class="anchor" aria-hidden="true" href="#textentered-事件">#</a></h2>
+<p>当键入一个字符时，会触发 <code>sf::Event::TextEntered</code> 事件。
+千万不要将它与 <code>KeyPressed</code> 事件混淆。
+<code>TextEntered</code> 会解析用户输入并生成合适的可打印字符。
+例如，在法语键盘上先按 &lsquo;^&rsquo; 再按 &rsquo;e&rsquo; 会产生两个 <code>KeyPressed</code> 事件，但只会产生一个包含 &lsquo;ê&rsquo; 字符的 <code>TextEntered</code> 事件。
+它适用于操作系统提供的所有输入法，即使是最特殊或最复杂的输入法也是如此。</p>
+<p>此事件通常用于捕获文本字段中的用户输入。</p>
+<p>与此事件关联的数据包含了所输入字符的 Unicode 值。
+你可以将此数据直接存入 <a href="../../../../documentation/3.1.0/classsf_1_1String.html" title="sf::String documentation"><code>sf::String</code></a> 中，或者在确保其位于 ASCII 范围（0 - 127）内之后，将其强制转换为 <code>char</code> 类型。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> textEntered <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>TextEntered<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (textEntered<span style="color:#f92672">-&gt;</span>unicode <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">128</span>)
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;ASCII character typed: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&gt;</span>(textEntered<span style="color:#f92672">-&gt;</span>unicode) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>请注意，由于它们属于 Unicode 标准的一部分，一些不可打印字符（如退格键）也会由此事件生成。
+在大多数情况下，你需要将它们过滤掉。</p>
+<blockquote>
+<p>[!WARNING]
+许多程序员喜欢使用 <code>KeyPressed</code> 事件来获取用户输入，并试图通过编写疯狂的算法来解析所有可能的按键组合以生成正确的字符。
+千万不要这么做！</p>
+</blockquote>
+<h2 id="keypressed-与-keyreleased-事件">KeyPressed 与 KeyReleased 事件<a hidden class="anchor" aria-hidden="true" href="#keypressed-与-keyreleased-事件">#</a></h2>
+<p>当按下或释放键盘按键时，会触发 <code>sf::Event::KeyPressed</code> 和 <code>sf::Event::KeyReleased</code> 事件。</p>
+<p>如果按住某个按键不放，系统将按照操作系统的默认延迟间隔持续生成多个 <code>KeyPressed</code> 事件（即与在文本编辑器中按住某个字母时适用的延迟相同）。
+要禁用重复的 <code>KeyPressed</code> 事件，你可以调用 <code>window.setKeyRepeatEnabled(false)</code>。
+另一方面，显而易见 <code>KeyReleased</code> 事件是永远无法重复的。</p>
+<p>如果你想在按下或释放按键时恰好触发一次操作（比如按空格键让角色跳跃，或者按 Esc 退出某事），那么这个事件就是你的最佳选择。</p>
+<p>有时，人们会试图直接对 <code>KeyPressed</code> 事件做出反应来实现平滑移动。
+这样做<strong>不会</strong>产生预期的效果，因为当你按住按键时，你只能得到寥寥几个事件（还记得上面提到的重复延迟吗？）。
+为了通过事件实现平滑移动，你必须使用一个布尔变量，在 <code>KeyPressed</code> 时将其设为 true，在 <code>KeyReleased</code> 时将其清空；然后，只要这个布尔变量为 true，你就可以（独立于事件）进行移动了。</p>
+<p>实现平滑移动的另一个（更简单的）解决方案，是使用 <a href="../../../../documentation/3.1.0/namespacesf_1_1Keyboard.html" title="sf::Keyboard documentation"><code>sf::Keyboard</code></a> 进行实时键盘输入监控（参阅<a href="../inputs/" title="Real-time inputs tutorial">相关的教程</a>）。</p>
+<p>与这些事件关联的数据包含了按下或释放按键的扫描码（scancode）和键码（key code），以及修饰键（alt、control、shift、system）的当前状态。</p>
+<p>扫描码对于键盘上的每个物理按键来说都是唯一的值，不受语言或布局的影响，而键码则表示基于用户所选布局的按键。
+例如，在美式键盘布局下，Z 键位于 X 键左侧的最底下一排。
+如果你引用 Z 键的扫描码，就可以在任何键盘上定位到这一个物理按键的位置。
+然而，在德语布局下，同一个物理按键的标签是 Y。
+因此，使用 Y 的键码可能会指向不同的物理按键位置，这取决于所选择的布局。</p>
+<p>如果按键的物理位置（例如使用 WASD 键进行移动）比受制于键盘布局的按键值更重要的话，强烈建议使用扫描码而不是键码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> keyPressed <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>KeyPressed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (keyPressed<span style="color:#f92672">-&gt;</span>scancode <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>Scan<span style="color:#f92672">::</span>Escape)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;the escape key was pressed&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;scancode: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(keyPressed<span style="color:#f92672">-&gt;</span>scancode) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;code: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(keyPressed<span style="color:#f92672">-&gt;</span>code) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;control: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> keyPressed<span style="color:#f92672">-&gt;</span>control <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;alt: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> keyPressed<span style="color:#f92672">-&gt;</span>alt <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;shift: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> keyPressed<span style="color:#f92672">-&gt;</span>shift <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;system: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> keyPressed<span style="color:#f92672">-&gt;</span>system <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;description: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>getDescription(keyPressed<span style="color:#f92672">-&gt;</span>scancode).toAnsiString() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;localize: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>localize(keyPressed<span style="color:#f92672">-&gt;</span>scancode)) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;delocalize: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(sf<span style="color:#f92672">::</span>Keyboard<span style="color:#f92672">::</span>delocalize(keyPressed<span style="color:#f92672">-&gt;</span>code)) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p>[!NOTE]
+请注意，某些按键对操作系统具有特殊含义，可能会导致意料之外的行为。
+例如 Windows 上的 F10 键会“窃取”焦点，而在使用 Visual Studio 时，F12 键会启动调试器。</p>
+</blockquote>
+<h2 id="mousewheelscrolled-事件">MouseWheelScrolled 事件<a hidden class="anchor" aria-hidden="true" href="#mousewheelscrolled-事件">#</a></h2>
+<p>当鼠标滚轮向上或向下滚动时，或者如果鼠标支持横向滚动时，也会触发 <code>sf::Event::MouseWheelScrolled</code> 事件。</p>
+<p>与此事件关联的数据包含了滚轮滚动的刻度数、滚轮滚动的方向以及当前鼠标光标的位置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> mouseWheelScrolled <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseWheelScrolled<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (mouseWheelScrolled<span style="color:#f92672">-&gt;</span>wheel)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> sf<span style="color:#f92672">::</span>Mouse<span style="color:#f92672">::</span>Wheel<span style="color:#f92672">::</span>Vertical:
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;wheel type: vertical&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> sf<span style="color:#f92672">::</span>Mouse<span style="color:#f92672">::</span>Wheel<span style="color:#f92672">::</span>Horizontal:
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;wheel type: horizontal&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;wheel movement: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseWheelScrolled<span style="color:#f92672">-&gt;</span>delta <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;mouse x: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseWheelScrolled<span style="color:#f92672">-&gt;</span>position.x <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;mouse y: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseWheelScrolled<span style="color:#f92672">-&gt;</span>position.y <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mousebuttonpressed-与-mousebuttonreleased-事件">MouseButtonPressed 与 MouseButtonReleased 事件<a hidden class="anchor" aria-hidden="true" href="#mousebuttonpressed-与-mousebuttonreleased-事件">#</a></h2>
+<p>当鼠标按键被按下或释放时，会触发 <code>sf::Event::MouseButtonPressed</code> 和 <code>sf::Event::MouseButtonReleased</code> 事件。
+SFML 支持 5 个鼠标按键：左键、右键、中键（滚轮）、附加键 #1 和附加键 #2（侧键）。</p>
+<p>与这些事件关联的数据包含了按下或释放按键的代码，以及鼠标光标的当前位置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> mouseButtonPressed <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseButtonPressed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (mouseButtonPressed<span style="color:#f92672">-&gt;</span>button <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Mouse<span style="color:#f92672">::</span>Button<span style="color:#f92672">::</span>Right)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;the right button was pressed&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;mouse x: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseButtonPressed<span style="color:#f92672">-&gt;</span>position.x <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;mouse y: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseButtonPressed<span style="color:#f92672">-&gt;</span>position.y <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mousemoved-事件">MouseMoved 事件<a hidden class="anchor" aria-hidden="true" href="#mousemoved-事件">#</a></h2>
+<p>当鼠标在窗口内移动时，会触发 <code>sf::Event::MouseMoved</code> 事件。</p>
+<blockquote>
+<p>[!NOTE]
+即使窗口没有焦点，此事件也会被触发，但仅当鼠标在窗口的内部区域移动时有效，如果鼠标移动到标题栏或窗口边框上方，则不会触发。</p>
+</blockquote>
+<p>与此事件关联的数据包含了鼠标光标相对于窗口的当前位置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> mouseMoved <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseMoved<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new mouse x: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseMoved<span style="color:#f92672">-&gt;</span>position.x <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new mouse y: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseMoved<span style="color:#f92672">-&gt;</span>position.y <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="mousemovedraw-事件">MouseMovedRaw 事件<a hidden class="anchor" aria-hidden="true" href="#mousemovedraw-事件">#</a></h2>
+<p>只要鼠标在窗口内移动，甚至在鼠标移动距离微小到难以察觉时，也会触发 <code>sf::Event::MouseMovedRaw</code> 事件。</p>
+<p><code>sf::Event::MouseMoved</code> 的位置值受限于屏幕分辨率，而此事件的原始数据则不然。
+如果物理鼠标的移动量太小，甚至不足以让屏幕上的光标移动哪怕一个像素，那么将不会生成 <code>sf::Event::MouseMoved</code> 事件。
+相比之下，无论鼠标传感器的分辨率如何，任何鼠标生成的移动信息都会始终触发 <code>sf::Event::MouseMovedRaw</code> 事件。</p>
+<p>与此事件关联的数据包含了鼠标光标相对于窗口的位置变化量。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> mouseMovedRaw <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseMovedRaw<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new mouse x: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseMoved<span style="color:#f92672">-&gt;</span>delta.x <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new mouse y: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> mouseMoved<span style="color:#f92672">-&gt;</span>delta.y <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p>[!NOTE]
+目前，原始鼠标输入事件仅在 Windows 和 Linux 系统上生成。</p>
+</blockquote>
+<h2 id="mouseentered-与-mouseleft-事件">MouseEntered 与 MouseLeft 事件<a hidden class="anchor" aria-hidden="true" href="#mouseentered-与-mouseleft-事件">#</a></h2>
+<p>当鼠标光标进入或进入离开窗口时，会触发 <code>sf::Event::MouseEntered</code> 和 <code>sf::Event::MouseLeft</code> 事件。
+这两个事件没有关联的事件数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseEntered<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;the mouse cursor has entered the window&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (event<span style="color:#f92672">-&gt;</span>is<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>MouseLeft<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;the mouse cursor has left the window&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span></code></pre></div><h2 id="joystickbuttonpressed-与-joystickbuttonreleased-事件">JoystickButtonPressed 与 JoystickButtonReleased 事件<a hidden class="anchor" aria-hidden="true" href="#joystickbuttonpressed-与-joystickbuttonreleased-事件">#</a></h2>
+<p>当手柄（摇杆）按钮被按下或释放时，会触发 <code>sf::Event::JoystickButtonPressed</code> 和 <code>sf::Event::JoystickButtonReleased</code> 事件。</p>
+<p>SFML 支持最多 8 个手柄和 32 个按钮。</p>
+<p>与这些事件关联的数据包含了手柄的标识符以及按下或释放按钮的索引。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> joystickButtonPressed <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>JoystickButtonPressed<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;joystick button pressed!&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;joystick id: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickButtonPressed<span style="color:#f92672">-&gt;</span>joystickId <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;button: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickButtonPressed<span style="color:#f92672">-&gt;</span>button <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="joystickmoved-事件">JoystickMoved 事件<a hidden class="anchor" aria-hidden="true" href="#joystickmoved-事件">#</a></h2>
+<p>当手柄轴发生移动时，会触发 <code>sf::Event::JoystickMoved</code> 事件。
+手柄轴通常非常敏感。
+这就是为什么 SFML 使用检测阈值来避免大量 <code>JoystickMoved</code> 事件淹没你的事件循环的原因。
+你可以通过 <code>sf::Window::setJoystickThreshold</code> 函数来更改此阈值，以便接收更多或更少的手柄移动事件。</p>
+<p>SFML 支持 8 个手柄轴：X、Y、Z、R、U、V、POV X 和 POV Y。
+它们如何映射到你的手柄，取决于手柄驱动程序。</p>
+<p>与此事件关联的数据包含了手柄的标识符、轴的名称，以及它的当前位置（范围在 [-100, 100] 之间）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> joystickMoved <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>JoystickMoved<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (joystickMoved<span style="color:#f92672">-&gt;</span>axis <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Joystick<span style="color:#f92672">::</span>Axis<span style="color:#f92672">::</span>X)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;X axis moved!&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;joystick id: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickMoved<span style="color:#f92672">-&gt;</span>joystickId <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;new position: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickMoved<span style="color:#f92672">-&gt;</span>position <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="joystickconnected-与-joystickdisconnected-事件">JoystickConnected 与 JoystickDisconnected 事件<a hidden class="anchor" aria-hidden="true" href="#joystickconnected-与-joystickdisconnected-事件">#</a></h2>
+<p>当手柄连接或断开时，会触发 <code>sf::Event::JoystickConnected</code> 和 <code>sf::Event::JoystickDisconnected</code> 事件。</p>
+<p>与此事件关联的数据包含了已连接或已断开手柄的标识符。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> joystickConnected <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>JoystickConnected<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;joystick connected: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickConnected<span style="color:#f92672">-&gt;</span>joystickId <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> joystickDisconnected <span style="color:#f92672">=</span> event<span style="color:#f92672">-&gt;</span>getIf<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>JoystickDisconnected<span style="color:#f92672">&gt;</span>())
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;joystick disconnected: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> joystickDisconnected<span style="color:#f92672">-&gt;</span>joystickId <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/sfml/getting-started/visual-studio/">
+    <span class="title">« Prev</span>
+    <span>SFML 与 Visual Studio</span>
+  </a>
+  <a class="next" href="http://localhost:1313/sfml/migration/2-to-3/">
+    <span class="title">Next »</span>
+    <span>从 SFML 2 迁移到 SFML 3</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on x"
+            href="https://x.com/intent/tweet/?text=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f&amp;title=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3&amp;summary=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3&amp;source=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f&title=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3%20-%20http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on telegram"
+            href="https://telegram.me/share/url?text=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 事件详解 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%ba%8b%e4%bb%b6%e8%af%a6%e8%a7%a3&u=http%3a%2f%2flocalhost%3a1313%2fsfml%2fwindow%2fevents%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

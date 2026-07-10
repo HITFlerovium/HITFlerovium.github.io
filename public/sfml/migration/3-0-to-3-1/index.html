@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>SFML 3.0 到 3.1 迁移指南 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="从 SFML 3.0 迁移到 SFML 3.1
+欢迎来到 SFML 3.1！
+本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。
+依赖项
+我们引入了一系列新的依赖项以支持所有改进：
+
+FetchContent / 系统依赖
+
+HarfBuzz 用于复杂的文本布局
+SheenBidi 用于正确的双向文本渲染
+Mbed TLS 提供 TLS 支持
+libssh2 提供 SFTP 支持
+
+
+Header-only (仅头文件)
+
+cpp-unicodelib 提供完善的 Unicode 支持
+wepoll 用于改进 SocketSelector
+qoi 支持 QOI 图像格式
+
+
+
+废弃接口
+已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。
+建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。
+字体字距调节
+使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。
+请改用接受 char32_t 的重载版本。
+两者的行为完全一致——仅仅是参数类型发生了改变。
+v3.0:
+float kerning = font.getKerning(static_cast&lt;std::uint32_t&gt;(&#39;A&#39;),
+                                static_cast&lt;std::uint32_t&gt;(&#39;V&#39;),
+                                30);
+v3.1:
+float kerning = font.getKerning(U&#39;A&#39;, U&#39;V&#39;, 30);
+文本中的字符位置
+sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/migration/3-0-to-3-1/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/migration/3-0-to-3-1/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/migration/3-0-to-3-1/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="SFML 3.0 到 3.1 迁移指南">
+  <meta property="og:description" content="从 SFML 3.0 迁移到 SFML 3.1 欢迎来到 SFML 3.1！ 本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。
+依赖项 我们引入了一系列新的依赖项以支持所有改进：
+FetchContent / 系统依赖 HarfBuzz 用于复杂的文本布局 SheenBidi 用于正确的双向文本渲染 Mbed TLS 提供 TLS 支持 libssh2 提供 SFTP 支持 Header-only (仅头文件) cpp-unicodelib 提供完善的 Unicode 支持 wepoll 用于改进 SocketSelector qoi 支持 QOI 图像格式 废弃接口 已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。 建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。
+字体字距调节 使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。 请改用接受 char32_t 的重载版本。 两者的行为完全一致——仅仅是参数类型发生了改变。
+v3.0:
+float kerning = font.getKerning(static_cast&lt;std::uint32_t&gt;(&#39;A&#39;), static_cast&lt;std::uint32_t&gt;(&#39;V&#39;), 30); v3.1:
+float kerning = font.getKerning(U&#39;A&#39;, U&#39;V&#39;, 30); 文本中的字符位置 sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="sfml">
+    <meta property="article:published_time" content="2026-07-10T13:33:22+08:00">
+    <meta property="article:modified_time" content="2026-07-10T13:33:22+08:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="SFML 3.0 到 3.1 迁移指南">
+  <meta name="twitter:description" content="从 SFML 3.0 迁移到 SFML 3.1 欢迎来到 SFML 3.1！ 本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。
+依赖项 我们引入了一系列新的依赖项以支持所有改进：
+FetchContent / 系统依赖 HarfBuzz 用于复杂的文本布局 SheenBidi 用于正确的双向文本渲染 Mbed TLS 提供 TLS 支持 libssh2 提供 SFTP 支持 Header-only (仅头文件) cpp-unicodelib 提供完善的 Unicode 支持 wepoll 用于改进 SocketSelector qoi 支持 QOI 图像格式 废弃接口 已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。 建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。
+字体字距调节 使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。 请改用接受 char32_t 的重载版本。 两者的行为完全一致——仅仅是参数类型发生了改变。
+v3.0:
+float kerning = font.getKerning(static_cast&lt;std::uint32_t&gt;(&#39;A&#39;), static_cast&lt;std::uint32_t&gt;(&#39;V&#39;), 30); v3.1:
+float kerning = font.getKerning(U&#39;A&#39;, U&#39;V&#39;, 30); 文本中的字符位置 sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "版本迁移",
+      "item": "http://localhost:1313/sfml/migration/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "SFML 3.0 到 3.1 迁移指南",
+      "item": "http://localhost:1313/sfml/migration/3-0-to-3-1/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SFML 3.0 到 3.1 迁移指南",
+  "name": "SFML 3.0 到 3.1 迁移指南",
+  "description": "从 SFML 3.0 迁移到 SFML 3.1 欢迎来到 SFML 3.1！ 本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。\n依赖项 我们引入了一系列新的依赖项以支持所有改进：\nFetchContent / 系统依赖 HarfBuzz 用于复杂的文本布局 SheenBidi 用于正确的双向文本渲染 Mbed TLS 提供 TLS 支持 libssh2 提供 SFTP 支持 Header-only (仅头文件) cpp-unicodelib 提供完善的 Unicode 支持 wepoll 用于改进 SocketSelector qoi 支持 QOI 图像格式 废弃接口 已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。 建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。\n字体字距调节 使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。 请改用接受 char32_t 的重载版本。 两者的行为完全一致——仅仅是参数类型发生了改变。\nv3.0:\nfloat kerning = font.getKerning(static_cast\u0026lt;std::uint32_t\u0026gt;(\u0026#39;A\u0026#39;), static_cast\u0026lt;std::uint32_t\u0026gt;(\u0026#39;V\u0026#39;), 30); v3.1:\nfloat kerning = font.getKerning(U\u0026#39;A\u0026#39;, U\u0026#39;V\u0026#39;, 30); 文本中的字符位置 sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "从 SFML 3.0 迁移到 SFML 3.1 欢迎来到 SFML 3.1！ 本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。\n依赖项 我们引入了一系列新的依赖项以支持所有改进：\nFetchContent / 系统依赖 HarfBuzz 用于复杂的文本布局 SheenBidi 用于正确的双向文本渲染 Mbed TLS 提供 TLS 支持 libssh2 提供 SFTP 支持 Header-only (仅头文件) cpp-unicodelib 提供完善的 Unicode 支持 wepoll 用于改进 SocketSelector qoi 支持 QOI 图像格式 废弃接口 已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。 建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。\n字体字距调节 使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。 请改用接受 char32_t 的重载版本。 两者的行为完全一致——仅仅是参数类型发生了改变。\nv3.0:\nfloat kerning = font.getKerning(static_cast\u003cstd::uint32_t\u003e('A'), static_cast\u003cstd::uint32_t\u003e('V'), 30); v3.1:\nfloat kerning = font.getKerning(U'A', U'V', 30); 文本中的字符位置 sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。\n旧函数返回单个字符在全局空间中的位置。 新函数返回文本整形期间生成的完整 ShapedGlyph 对象列表，除了底层的 sf::Glyph 数据外，还允许您访问每个字形的局部位置、簇 ID、文本方向以及基线。\nstruct ShapedGlyph { Glyph glyph; // 字形数据 Vector2f position; // 在文本内的局部位置 std::uint32_t cluster; // 簇 ID（多个字形可能会共享同一个簇） TextDirection textDirection; // 周围文本序列的方向 float baseline; // 该字形所在行的基线 Y 位置 std::size_t vertexOffset; // 顶点缓冲区的起始偏移量 std::size_t vertexCount; // 该字形的顶点数量 }; 要进行迁移，请遍历这些整形后的字形并使用其 position 字段。\n注意：局部坐标与全局坐标\n请注意，getShapedGlyphs() 返回的是局部坐标，而 findCharacterPos() 返回的是全局坐标。 如果您需要全局坐标，请自行应用文本的变换。\nv3.0:\n// 查找第 5 个字符的位置（全局空间） sf::Vector2f pos = text.findCharacterPos(4); v3.1:\n// 查找属于第 5 个字符的字形的位置（局部空间） const auto\u0026 glyphs = text.getShapedGlyphs(); if (glyphs.size() \u003e 4) { sf::Vector2f localPos = glyphs[4].position; // 如果需要，可以转换为全局空间： sf::Vector2f globalPos = text.getTransform().transformPoint(localPos); } 多个 Unicode 码位可以组成一个单一的字位簇（例如：一个基本字符加上一个组合重音符号）。 当发生这种情况时，字形列表中的几个连续条目将共享同一个 cluster 值。 如果您正在实现一个文本光标，请将同一簇中的所有字形视为一个单独的单元。\n实时触摸输入 sf::Touch::isDown(unsigned int finger) 以及 sf::Touch::getPosition(unsigned int finger) 的两个重载均已废弃。 在 Android 平台上，当查询一个当前未按下的手指时，这些函数可能会导致崩溃；而事件驱动的方法则始终是安全的。\n请改用相关触摸事件的 position 成员：\n废弃的函数 替代方案 sf::Touch::isDown sf::Event::TouchBegan / sf::Event::TouchEnded sf::Touch::getPosition sf::Event::TouchBegan、sf::Event::TouchMoved 或 sf::Event::TouchEnded 的 position 字段 v3.0:\nif (sf::Touch::isDown(0)) { sf::Vector2i pos = sf::Touch::getPosition(0); // 使用 pos } v3.1:\n// 在您的事件循环中： window.handleEvents([\u0026](const sf::Event::TouchBegan\u0026 touch) { if (touch.finger == 0) { sf::Vector2i pos = touch.position; // 使用 pos } }, [\u0026](const sf::Event::TouchMoved\u0026 touch) { if (touch.finger == 0) { sf::Vector2i pos = touch.position; // 使用 pos } }); FTP 客户端 sf::Ftp 已被废弃，替代方案为全新的 sf::Sftp 类（参见下文的新特性）。 FTP 以明文形式传输凭据和数据，这使得 SFTP 成为任何新代码的强烈推荐选择。\n主机名解析 sf::IpAddress::resolve(std::string_view address) 已被废弃。 它只能解析为 IPv4 地址，并且缺乏对 DNS 服务器或超时的控制。\n请改用 sf::Dns::resolve()，它同时支持 IPv4 和 IPv6，并为您提供对查询的完全控制（参见下文的新特性）。\nv3.0:\nstd::optional\u003csf::IpAddress\u003e address = sf::IpAddress::resolve(\"www.sfml-dev.org\"); if (address) { // 使用 *address } v3.1:\nstd::optional\u003cstd::vector\u003csf::IpAddress\u003e\u003e addresses = sf::Dns::resolve(\"www.sfml-dev.org\"); if (addresses \u0026\u0026 !addresses-\u003eempty()) { sf::IpAddress address = addresses-\u003efront(); // 使用 address } 新特性 运行时版本查询 sf::version() 返回一个描述在运行时加载的 SFML 库的 const sf::Version\u0026。 当您的应用程序是动态链接，并且您想要验证运行时库是否与您编译时使用的头文件匹配时，这非常有用。\nconst sf::Version\u0026 v = sf::version(); // v.major, v.minor, v.patch - 数字组件 // v.isRelease - 对于开发构建为 false // v.string - 例如 \"3.1.0\" 或 \"3.1.0-dev\" if (v.major != SFML_VERSION_MAJOR || v.minor != SFML_VERSION_MINOR) { // 编译时和运行时的 SFML 版本不匹配 } 改进的文本布局与整形 SFML 3.1 引入了由 HarfBuzz、SheenBidi 和 cpp-unicodelib（Unicode 17.0）驱动的、支持 Unicode 的文本整形。 这意味着现在的字形是根据其对应书写系统的规则来定位的——包括连字替换、标记附加和双向重排——而不是像以前那样仅仅通过简单的字形表查找来逐个字符放置。\n对于绝大多数纯 ASCII 或拉丁文文本，视觉效果与以前完全一致。 当涉及到复杂书写系统（阿拉伯文、希伯来文、天城文、中日韩文字等）、连字、组合标记以及从右到左（RTL）或垂直文本时，这些改进就会显现出来。\n从右到左与双向文本 SFML 3.1 可以自动检测并处理从右到左（RTL）的书写系统（如阿拉伯文和希伯来文），以及在同一字符串中混合了 LTR 和 RTL 序列的双向（BiDi）文本。 无需任何配置：只需分配一个 Unicode 字符串，SFML 就会自动应用 Unicode 双向算法。\n// 纯 RTL - 阿拉伯文或希伯来文会自动从右向左渲染 sf::Text arabicText(font, U\"\\u0645\\u0631\\u062d\\u0628\\u0627\", 30); // \"مرحبا\" // 混合 BiDi - 同一个字符串中包含 LTR 的英文和 RTL 的希伯来文 sf::Text bidiText(font, U\"Hello \\u05e9\\u05dc\\u05d5\\u05dd World\", 30); getShapedGlyphs() 返回的列表中的每个 ShapedGlyph 都带有一个 textDirection 字段，该字段反映了该字形所属文本序列的解析方向：\nfor (const sf::Text::ShapedGlyph\u0026 g : text.getShapedGlyphs()) { if (g.textDirection == sf::Text::TextDirection::RightToLeft) { // 该字形属于一个从右到左的文本序列 } } 行对齐 默认情况下，每一行都会根据其主导书写系统的方向进行对齐：LTR 的行左对齐，RTL 的行右对齐。 您可以通过 setLineAlignment() 覆盖此行为：\n// 默认：感知书写系统方向的对齐方式 text.setLineAlignment(sf::Text::LineAlignment::Default); // 强制所有行从左侧开始，无论书写系统方向如何 text.setLineAlignment(sf::Text::LineAlignment::Left); // 居中所有行 text.setLineAlignment(sf::Text::LineAlignment::Center); // 强制所有行在右侧结束 text.setLineAlignment(sf::Text::LineAlignment::Right); 这对于用户界面布局非常有用，因为您希望无论内容语言是什么，都能保持一致的视觉对齐。\n垂直文本方向 setTextOrientation() 将布局轴从水平切换为垂直。 这主要针对原生包含了垂直度量字体的东亚书写系统（中文、日文、韩文）。\n// 水平布局（默认） text.setTextOrientation(sf::Text::TextOrientation::Default); // 垂直，从上到下 text.setTextOrientation(sf::Text::TextOrientation::TopToBottom); // 垂直，从下到上 text.setTextOrientation(sf::Text::TextOrientation::BottomToTop); 注意\n当选择了垂直方向时，步进宽度和基线位置将沿着垂直轴解释。 不提供原生垂直度量的字体将使用模拟值；对于所有书写系统来说，结果可能并不总是视觉上最理想的。\n簇分组 文本整形可以将多个输入的码位合并为一个单一的渲染字形（连字），或者将一个单一的码位分解为多个字形（基础字符 + 标记）。 簇分组控制着这种多对多映射是如何通过 getShapedGlyphs() 暴露出来的，当您需要将一个字形关联回输入字符串中的位置时（例如，放置一个文本光标），这一点就很重要。\n// 字符簇（默认）- 适用于大多数光标定位用例 text.setClusterGrouping(sf::Text::ClusterGrouping::Character); // 字位簇 - 将组合序列分组为一个簇 // （例如：一个基础字符 + 组合重音符号 = 一个簇） text.setClusterGrouping(sf::Text::ClusterGrouping::Grapheme); // 不分组 - 每个整形后的字形都会获得自己的簇值 text.setClusterGrouping(sf::Text::ClusterGrouping::None); 每个 ShapedGlyph 的 cluster 字段映射回输入字符串中的一个索引。 当连续的多个字形构成一个不可分割的单元（例如，跨越两个输入字符的连字）时，它们可能会共享同一个 cluster 值。 请将所有具有相同簇值的字形视为一个单独的光标停靠点。\n// 遍历整形后的字形并收集每个唯一簇的 x 位置 // （适用于为 LTR 文本构建光标位置表） std::map\u003cstd::uint32_t, float\u003e cursorPositions; for (const sf::Text::ShapedGlyph\u0026 g : text.getShapedGlyphs()) { cursorPositions.try_emplace(g.cluster, g.position.x); } 使用 GlyphPreProcessor 进行逐字形样式设置 setGlyphPreProcessor() 会安装一个回调函数，在几何体生成期间，每个字形都会触发该回调。 它允许您逐个字形地覆盖 style、fillColor、outlineColor 和 outlineThickness，从而无需管理多个 sf::Text 对象即可实现诸如语法高亮等效果。\n该回调接收整形后的字形（包括其 cluster 索引）以及逐字形渲染属性的可变引用：\n// 使用输入字符串中的码位索引范围为特定单词设置不同的颜色 // 对于输入 \"I like flowers, muffins and waffles.\" // \"muffins\" 跨越码位索引 16–22 text.setGlyphPreProcessor( [](const sf::Text::ShapedGlyph\u0026 glyph, std::uint32_t\u0026 /*style*/, sf::Color\u0026 fillColor, sf::Color\u0026 /*outlineColor*/, float\u0026 /*outlineThickness*/) { if (glyph.cluster \u003e= 16 \u0026\u0026 glyph.cluster \u003c= 22) { fillColor = sf::Color::Red; } }); 因为文本整形可能会将相邻的码位合并为连字（例如 fl → ﬂ），所以安全的逐词着色应该使用簇索引范围，而不是字形索引范围。 只要字形的 cluster 落在该单词的码位范围内，它就属于该单词，即使它是跨越了单词边界的连字。\n该回调按几何体生成的顺序被调用，即视觉顺序（而不是逻辑顺序）。 对于 RTL（从右到左）文本，这意味着随着回调的进行，簇值会递减。\n警告\n请勿在回调内部调用 getLocalBounds()；此时几何体仍在构建中。\nTLS / HTTPS 支持 sf::Http 现在支持 HTTPS。 将一个 https:// 的 URL 传递给 sf::Http::setHost()，SFML 将自动建立 TLS 加密连接。\nsf::Http http; http.setHost(\"https://www.sfml-dev.org\"); sf::Http::Request request(\"/\"); sf::Http::Response response = http.sendRequest(request); 如需禁用服务器证书验证（不推荐用于生产环境）：\nsf::Http::Response response = http.sendRequest(request, sf::Time::Zero, /* verifyServer */ false); DNS API 全新的 sf::Dns 命名空间提供了完整的 DNS 查询支持，取代了已废弃的 sf::IpAddress::resolve。\n解析主机名（A / AAAA 记录）：\n#include std::optional\u003cstd::vector\u003csf::IpAddress\u003e\u003e addresses = sf::Dns::resolve(\"www.sfml-dev.org\"); if (addresses) { for (const sf::IpAddress\u0026 addr : *addresses) { if (addr.isV4()) std::cout \u003c\u003c \"IPv4: \" \u003c\u003c addr.toString() \u003c\u003c '\\n'; else std::cout \u003c\u003c \"IPv6: \" \u003c\u003c addr.toString() \u003c\u003c '\\n'; } } 查询其他记录类型：\n// 域名服务器记录 std::vector\u003csf::String\u003e ns = sf::Dns::queryNs(\"sfml-dev.org\"); // 邮件交换记录 std::vector\u003csf::Dns::MxRecord\u003e mx = sf::Dns::queryMx(\"sfml-dev.org\"); // mx[i].exchange - 邮件服务器的主机名 // mx[i].preference - 值越低优先级越高 // 服务记录 std::vector\u003csf::Dns::SrvRecord\u003e srv = sf::Dns::querySrv(\"_irc._tcp.sfml-dev.org\"); // srv[i].target, srv[i].port, srv[i].weight, srv[i].priority // 文本记录 std::vector\u003cstd::vector\u003csf::String\u003e\u003e txt = sf::Dns::queryTxt(\"sfml-dev.org\"); 获取本机的公网 IP 地址：\n// IPv4 std::optional\u003csf::IpAddress\u003e pubV4 = sf::Dns::getPublicAddress(sf::seconds(5)); // IPv6 std::optional\u003csf::IpAddress\u003e pubV6 = sf::Dns::getPublicAddress(sf::seconds(5), sf::IpAddress::Type::IpV6); 所有 sf::Dns 函数都接受可选的自定义 DNS 服务器列表以及可选的超时参数。\nSFTP 客户端 全新的 sf::Sftp 类提供了一个完整的 SFTP（SSH 文件传输协议）客户端。 它同时支持用户名/密码和公钥身份验证，取代了已废弃的 sf::Ftp。\n连接并登录：\n#include sf::Sftp sftp; auto addresses = sf::Dns::resolve(\"sftp.example.com\"); sf::Sftp::Result result = sftp.connect(addresses-\u003efront()); if (result.getValue() != sf::Sftp::Result::Value::Ok) { return; // 连接失败 } // 密码认证 result = sftp.login(\"alice\", \"hunter2\"); // 或者公钥认证 result = sftp.login(\"alice\", std::string_view{publicKey}, std::string_view{privateKey}, \"passphrase\"); 文件操作：\n// 列出目录 sf::Sftp::ListingResult listing = sftp.getDirectoryListing(\"/home/alice\"); for (const auto\u0026 entry : listing.getListing()) { std::cout \u003c\u003c entry.name \u003c\u003c '\\n'; } // 通过回调下载文件 std::vector\u003cstd::uint8_t\u003e buffer; sftp.download(\"/home/alice/data.bin\", [\u0026buffer](const void* data, std::size_t size) { const auto* bytes = static_cast\u003cconst std::uint8_t*\u003e(data); buffer.insert(buffer.end(), bytes, bytes + size); return true; // 返回 false 即可中止 }); // 通过回调上传文件 std::string content = \"hello, world\"; std::size_t offset = 0; sftp.upload(\"/home/alice/hello.txt\", [\u0026content, \u0026offset](void* data, std::size_t\u0026 size) -\u003e bool { std::size_t remaining = content.size() - offset; if (remaining == 0) return false; // 提示数据结束 size = std::min(size, remaining); std::memcpy(data, content.data() + offset, size); offset += size; return true; }); // 其他操作 sftp.createDirectory(\"/home/alice/newdir\"); sftp.deleteFile(\"/home/alice/old.txt\"); sftp.rename(\"/home/alice/a.txt\", \"/home/alice/b.txt\"); sftp.disconnect(); sf::SocketSelector 回调 API sf::SocketSelector::add() 现在接受一个可选的就绪回调，支持可扩展的事件驱动设计，从而避免了每次调用 wait() 后都必须遍历所有套接字。 传统的 isReady() 轮询方法仍能正常使用。\n传统方法（依然有效）：\nselector.add(listener); selector.add(client); while (selector.wait()) { if (selector.isReady(listener)) { // 接受新连接 } if (selector.isReady(client)) { // 从客户端接收数据 } } 全新的回调方法：\nselector.add(listener, sf::SocketSelector::Receive, [\u0026](sf::SocketSelector::ReadinessType) { // 接受新连接 auto client = std::make_unique\u003csf::TcpSocket\u003e(); listener.accept(*client); selector.add(*client, sf::SocketSelector::Receive, [c = client.get()](sf::SocketSelector::ReadinessType) { // 从客户端接收数据 }); clients.push_back(std::move(client)); }); while (selector.wait()) { selector.dispatchReadyCallbacks(); } 在管理大量并发连接时，回调方法只需要检查就绪的套接字，而不像轮询方法那样需要遍历所有套接字。\nsf::Http::setHost 返回值 sf::Http::setHost 现在返回一个 bool 值，以指示提供的主机名是否被解析以及是否有效。\nv3.0:\nhttp.setHost(\"https://www.sfml-dev.org\"); // 此前返回值是 void v3.1:\nif (!http.setHost(\"https://www.sfml-dev.org\")) { // 主机名无法解析 } sf::Http::sendRequest 现为 const sf::Http::sendRequest 现在是一个 const 成员函数，这允许从 const sf::Http 对象或引用中发送 HTTP 请求。\n音频播放设备采样率 sf::PlaybackDevice::getDeviceSampleRate() 能够返回当前活动音频输出设备的原生采样率。 此功能可用于配置音频源以匹配设备的首选采样率，避免不必要的重采样。\nif (auto rate = sf::PlaybackDevice::getDeviceSampleRate()) { std::cout \u003c\u003c \"Device sample rate: \" \u003c\u003c *rate \u003c\u003c \" Hz\\n\"; } else { std::cout \u003c\u003c \"No playback device available\\n\"; } QOI 图像格式 SFML 3.1 增加了对 QOI 格式的支持。 你可以像使用其他受支持的格式一样加载和保存 QOI 文件。 加载时的格式检测是根据 .qoi 文件后缀名或文件的魔数自动完成的。\n// 加载 sf::Image image; if (!image.loadFromFile(\"texture.qoi\")) { return -1; } // 保存到文件 image.saveToFile(\"output.qoi\"); // 保存到内存 std::optional\u003cstd::vector\u003cstd::uint8_t\u003e\u003e data = image.saveToMemory(\"qoi\"); sf::String 支持传入 std::string_view sf::String 现在提供了接受 std::string_view、std::wstring_view 以及 std::u32string_view 的构造函数。 这消除了仅仅为了将其传递给 SFML 而特意构造一个 std::string 的需要。\nstd::string_view sv = \"hello, world\"; sf::String s(sv); // 不再需要使用临时的 std::string sf::Vector3u 类型别名 新增了 sf::Vector3u 作为 sf::Vector3 的类型别名，使其与现有的 sf::Vector2u 命名约定保持一致。\nsf::Vector3u size{800u, 600u, 32u}; ",
+  "wordCount" : "1067",
+  "inLanguage": "en",
+  "datePublished": "2026-07-10T13:33:22+08:00",
+  "dateModified": "2026-07-10T13:33:22+08:00",
+  "author":{
+    "@type": "Person",
+    "name": "Flerovium"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/sfml/migration/3-0-to-3-1/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Flerovium's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      SFML 3.0 到 3.1 迁移指南
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-07-10 13:33:22 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>Flerovium</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><h1 id="从-sfml-30-迁移到-sfml-31">从 SFML 3.0 迁移到 SFML 3.1<a hidden class="anchor" aria-hidden="true" href="#从-sfml-30-迁移到-sfml-31">#</a></h1>
+<p>欢迎来到 SFML 3.1！
+本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。</p>
+<h2 id="依赖项">依赖项<a hidden class="anchor" aria-hidden="true" href="#依赖项">#</a></h2>
+<p>我们引入了一系列新的依赖项以支持所有改进：</p>
+<ul>
+<li><strong>FetchContent / 系统依赖</strong>
+<ul>
+<li><a href="https://github.com/harfbuzz/harfbuzz">HarfBuzz</a> 用于复杂的文本布局</li>
+<li><a href="https://github.com/Tehreer/SheenBidi">SheenBidi</a> 用于正确的双向文本渲染</li>
+<li><a href="https://github.com/Mbed-TLS/mbedtls">Mbed TLS</a> 提供 TLS 支持</li>
+<li><a href="https://github.com/libssh2/libssh2">libssh2</a> 提供 SFTP 支持</li>
+</ul>
+</li>
+<li><strong>Header-only (仅头文件)</strong>
+<ul>
+<li><a href="https://github.com/yhirose/cpp-unicodelib">cpp-unicodelib</a> 提供完善的 Unicode 支持</li>
+<li><a href="https://github.com/piscisaureus/wepoll">wepoll</a> 用于改进 <code>SocketSelector</code></li>
+<li><a href="https://github.com/phoboslab/qoi">qoi</a> 支持 QOI 图像格式</li>
+</ul>
+</li>
+</ul>
+<h2 id="废弃接口">废弃接口<a hidden class="anchor" aria-hidden="true" href="#废弃接口">#</a></h2>
+<p>已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。
+建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。</p>
+<h3 id="字体字距调节">字体字距调节<a hidden class="anchor" aria-hidden="true" href="#字体字距调节">#</a></h3>
+<p>使用 <code>std::uint32_t</code> 表示 Unicode 码位的 <code>sf::Font::getKerning</code> 重载现已废弃。
+请改用接受 <code>char32_t</code> 的重载版本。
+两者的行为完全一致——仅仅是参数类型发生了改变。</p>
+<p>v3.0:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">float</span> kerning <span style="color:#f92672">=</span> font.getKerning(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#39;A&#39;</span>),
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#39;V&#39;</span>),
+</span></span><span style="display:flex;"><span>                                <span style="color:#ae81ff">30</span>);
+</span></span></code></pre></div><p>v3.1:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">float</span> kerning <span style="color:#f92672">=</span> font.getKerning(U<span style="color:#e6db74">&#39;A&#39;</span>, U<span style="color:#e6db74">&#39;V&#39;</span>, <span style="color:#ae81ff">30</span>);
+</span></span></code></pre></div><h3 id="文本中的字符位置">文本中的字符位置<a hidden class="anchor" aria-hidden="true" href="#文本中的字符位置">#</a></h3>
+<p><code>sf::Text::findCharacterPos(std::size_t index)</code> 已被废弃，替代方案为 <code>getShapedGlyphs()</code>。</p>
+<p>旧函数返回单个字符在全局空间中的位置。
+新函数返回文本整形期间生成的完整 <code>ShapedGlyph</code> 对象列表，除了底层的 <code>sf::Glyph</code> 数据外，还允许您访问每个字形的局部位置、簇 ID、文本方向以及基线。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">ShapedGlyph</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    Glyph         glyph;         <span style="color:#75715e">// 字形数据
+</span></span></span><span style="display:flex;"><span>    Vector2f      position;      <span style="color:#75715e">// 在文本内的局部位置
+</span></span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint32_t</span> cluster;       <span style="color:#75715e">// 簇 ID（多个字形可能会共享同一个簇）
+</span></span></span><span style="display:flex;"><span>    TextDirection textDirection; <span style="color:#75715e">// 周围文本序列的方向
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">float</span>         baseline;      <span style="color:#75715e">// 该字形所在行的基线 Y 位置
+</span></span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>size_t   vertexOffset;  <span style="color:#75715e">// 顶点缓冲区的起始偏移量
+</span></span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>size_t   vertexCount;   <span style="color:#75715e">// 该字形的顶点数量
+</span></span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>要进行迁移，请遍历这些整形后的字形并使用其 <code>position</code> 字段。</p>
+<blockquote>
+<p><strong>注意：局部坐标与全局坐标</strong></p>
+<p>请注意，<code>getShapedGlyphs()</code> 返回的是局部坐标，而 <code>findCharacterPos()</code> 返回的是全局坐标。
+如果您需要全局坐标，请自行应用文本的变换。</p>
+</blockquote>
+<p>v3.0:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 查找第 5 个字符的位置（全局空间）
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Vector2f pos <span style="color:#f92672">=</span> text.findCharacterPos(<span style="color:#ae81ff">4</span>);
+</span></span></code></pre></div><p>v3.1:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 查找属于第 5 个字符的字形的位置（局部空间）
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">&amp;</span> glyphs <span style="color:#f92672">=</span> text.getShapedGlyphs();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (glyphs.size() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Vector2f localPos <span style="color:#f92672">=</span> glyphs[<span style="color:#ae81ff">4</span>].position;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 如果需要，可以转换为全局空间：
+</span></span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Vector2f globalPos <span style="color:#f92672">=</span> text.getTransform().transformPoint(localPos);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>多个 Unicode 码位可以组成一个单一的字位簇（例如：一个基本字符加上一个组合重音符号）。
+当发生这种情况时，字形列表中的几个连续条目将共享同一个 <code>cluster</code> 值。
+如果您正在实现一个文本光标，请将同一簇中的所有字形视为一个单独的单元。</p>
+<h3 id="实时触摸输入">实时触摸输入<a hidden class="anchor" aria-hidden="true" href="#实时触摸输入">#</a></h3>
+<p><code>sf::Touch::isDown(unsigned int finger)</code> 以及 <code>sf::Touch::getPosition(unsigned int finger)</code> 的两个重载均已废弃。
+在 Android 平台上，当查询一个当前未按下的手指时，这些函数可能会导致崩溃；而事件驱动的方法则始终是安全的。</p>
+<p>请改用相关触摸事件的 <code>position</code> 成员：</p>
+<table>
+	<thead>
+			<tr>
+					<th>废弃的函数</th>
+					<th>替代方案</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>sf::Touch::isDown</code></td>
+					<td><code>sf::Event::TouchBegan</code> / <code>sf::Event::TouchEnded</code></td>
+			</tr>
+			<tr>
+					<td><code>sf::Touch::getPosition</code></td>
+					<td><code>sf::Event::TouchBegan</code>、<code>sf::Event::TouchMoved</code> 或 <code>sf::Event::TouchEnded</code> 的 <code>position</code> 字段</td>
+			</tr>
+	</tbody>
+</table>
+<p>v3.0:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (sf<span style="color:#f92672">::</span>Touch<span style="color:#f92672">::</span>isDown(<span style="color:#ae81ff">0</span>))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>Vector2i pos <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Touch<span style="color:#f92672">::</span>getPosition(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 pos
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>v3.1:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 在您的事件循环中：
+</span></span></span><span style="display:flex;"><span>window.handleEvents([<span style="color:#f92672">&amp;</span>](<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>TouchBegan<span style="color:#f92672">&amp;</span> touch)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (touch.finger <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        sf<span style="color:#f92672">::</span>Vector2i pos <span style="color:#f92672">=</span> touch.position;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 使用 pos
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>},
+</span></span><span style="display:flex;"><span>[<span style="color:#f92672">&amp;</span>](<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Event<span style="color:#f92672">::</span>TouchMoved<span style="color:#f92672">&amp;</span> touch)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (touch.finger <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        sf<span style="color:#f92672">::</span>Vector2i pos <span style="color:#f92672">=</span> touch.position;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 使用 pos
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><h3 id="ftp-客户端">FTP 客户端<a hidden class="anchor" aria-hidden="true" href="#ftp-客户端">#</a></h3>
+<p><code>sf::Ftp</code> 已被废弃，替代方案为全新的 <code>sf::Sftp</code> 类（参见下文的新特性）。
+FTP 以明文形式传输凭据和数据，这使得 SFTP 成为任何新代码的强烈推荐选择。</p>
+<h3 id="主机名解析">主机名解析<a hidden class="anchor" aria-hidden="true" href="#主机名解析">#</a></h3>
+<p><code>sf::IpAddress::resolve(std::string_view address)</code> 已被废弃。
+它只能解析为 IPv4 地址，并且缺乏对 DNS 服务器或超时的控制。</p>
+<p>请改用 <code>sf::Dns::resolve()</code>，它同时支持 IPv4 和 IPv6，并为您提供对查询的完全控制（参见下文的新特性）。</p>
+<p>v3.0:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&gt;</span> address <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">::</span>resolve(<span style="color:#e6db74">&#34;www.sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (address)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 *address
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>v3.1:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&gt;&gt;</span> addresses <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>resolve(<span style="color:#e6db74">&#34;www.sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (addresses <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>addresses<span style="color:#f92672">-&gt;</span>empty())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    sf<span style="color:#f92672">::</span>IpAddress address <span style="color:#f92672">=</span> addresses<span style="color:#f92672">-&gt;</span>front();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 address
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="新特性">新特性<a hidden class="anchor" aria-hidden="true" href="#新特性">#</a></h2>
+<h3 id="运行时版本查询">运行时版本查询<a hidden class="anchor" aria-hidden="true" href="#运行时版本查询">#</a></h3>
+<p><code>sf::version()</code> 返回一个描述在运行时加载的 SFML 库的 <code>const sf::Version&amp;</code>。
+当您的应用程序是动态链接，并且您想要验证运行时库是否与您编译时使用的头文件匹配时，这非常有用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Version<span style="color:#f92672">&amp;</span> v <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>version();
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// v.major, v.minor, v.patch - 数字组件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// v.isRelease               - 对于开发构建为 false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// v.string                  - 例如 &#34;3.1.0&#34; 或 &#34;3.1.0-dev&#34;
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (v.major <span style="color:#f92672">!=</span> SFML_VERSION_MAJOR <span style="color:#f92672">||</span> v.minor <span style="color:#f92672">!=</span> SFML_VERSION_MINOR)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 编译时和运行时的 SFML 版本不匹配
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="改进的文本布局与整形">改进的文本布局与整形<a hidden class="anchor" aria-hidden="true" href="#改进的文本布局与整形">#</a></h3>
+<p>SFML 3.1 引入了由 HarfBuzz、SheenBidi 和 cpp-unicodelib（Unicode 17.0）驱动的、支持 Unicode 的文本整形。
+这意味着现在的字形是根据其对应书写系统的规则来定位的——包括连字替换、标记附加和双向重排——而不是像以前那样仅仅通过简单的字形表查找来逐个字符放置。</p>
+<p>对于绝大多数纯 ASCII 或拉丁文文本，视觉效果与以前完全一致。
+当涉及到复杂书写系统（阿拉伯文、希伯来文、天城文、中日韩文字等）、连字、组合标记以及从右到左（RTL）或垂直文本时，这些改进就会显现出来。</p>
+<h4 id="从右到左与双向文本">从右到左与双向文本<a hidden class="anchor" aria-hidden="true" href="#从右到左与双向文本">#</a></h4>
+<p>SFML 3.1 可以自动检测并处理从右到左（RTL）的书写系统（如阿拉伯文和希伯来文），以及在同一字符串中混合了 LTR 和 RTL 序列的双向（BiDi）文本。
+无需任何配置：只需分配一个 Unicode 字符串，SFML 就会自动应用 Unicode 双向算法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 纯 RTL - 阿拉伯文或希伯来文会自动从右向左渲染
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Text arabicText(font, <span style="color:#e6db74">U</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\u0645\u0631\u062d\u0628\u0627</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">30</span>); <span style="color:#75715e">// &#34;مرحبا&#34;
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 混合 BiDi - 同一个字符串中包含 LTR 的英文和 RTL 的希伯来文
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Text bidiText(font, <span style="color:#e6db74">U</span><span style="color:#e6db74">&#34;Hello </span><span style="color:#ae81ff">\u05e9\u05dc\u05d5\u05dd</span><span style="color:#e6db74"> World&#34;</span>, <span style="color:#ae81ff">30</span>);
+</span></span></code></pre></div><p><code>getShapedGlyphs()</code> 返回的列表中的每个 <code>ShapedGlyph</code> 都带有一个 <code>textDirection</code> 字段，该字段反映了该字形所属文本序列的解析方向：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ShapedGlyph<span style="color:#f92672">&amp;</span> g : text.getShapedGlyphs())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (g.textDirection <span style="color:#f92672">==</span> sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>TextDirection<span style="color:#f92672">::</span>RightToLeft)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 该字形属于一个从右到左的文本序列
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="行对齐">行对齐<a hidden class="anchor" aria-hidden="true" href="#行对齐">#</a></h4>
+<p>默认情况下，每一行都会根据其主导书写系统的方向进行对齐：LTR 的行左对齐，RTL 的行右对齐。
+您可以通过 <code>setLineAlignment()</code> 覆盖此行为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 默认：感知书写系统方向的对齐方式
+</span></span></span><span style="display:flex;"><span>text.setLineAlignment(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>LineAlignment<span style="color:#f92672">::</span>Default);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 强制所有行从左侧开始，无论书写系统方向如何
+</span></span></span><span style="display:flex;"><span>text.setLineAlignment(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>LineAlignment<span style="color:#f92672">::</span>Left);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 居中所有行
+</span></span></span><span style="display:flex;"><span>text.setLineAlignment(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>LineAlignment<span style="color:#f92672">::</span>Center);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 强制所有行在右侧结束
+</span></span></span><span style="display:flex;"><span>text.setLineAlignment(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>LineAlignment<span style="color:#f92672">::</span>Right);
+</span></span></code></pre></div><p>这对于用户界面布局非常有用，因为您希望无论内容语言是什么，都能保持一致的视觉对齐。</p>
+<h4 id="垂直文本方向">垂直文本方向<a hidden class="anchor" aria-hidden="true" href="#垂直文本方向">#</a></h4>
+<p><code>setTextOrientation()</code> 将布局轴从水平切换为垂直。
+这主要针对原生包含了垂直度量字体的东亚书写系统（中文、日文、韩文）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 水平布局（默认）
+</span></span></span><span style="display:flex;"><span>text.setTextOrientation(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>TextOrientation<span style="color:#f92672">::</span>Default);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 垂直，从上到下
+</span></span></span><span style="display:flex;"><span>text.setTextOrientation(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>TextOrientation<span style="color:#f92672">::</span>TopToBottom);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 垂直，从下到上
+</span></span></span><span style="display:flex;"><span>text.setTextOrientation(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>TextOrientation<span style="color:#f92672">::</span>BottomToTop);
+</span></span></code></pre></div><blockquote>
+<p><strong>注意</strong></p>
+<p>当选择了垂直方向时，步进宽度和基线位置将沿着垂直轴解释。
+不提供原生垂直度量的字体将使用模拟值；对于所有书写系统来说，结果可能并不总是视觉上最理想的。</p>
+</blockquote>
+<h4 id="簇分组">簇分组<a hidden class="anchor" aria-hidden="true" href="#簇分组">#</a></h4>
+<p>文本整形可以将多个输入的码位合并为一个单一的渲染字形（连字），或者将一个单一的码位分解为多个字形（基础字符 + 标记）。
+簇分组控制着这种多对多映射是如何通过 <code>getShapedGlyphs()</code> 暴露出来的，当您需要将一个字形关联回输入字符串中的位置时（例如，放置一个文本光标），这一点就很重要。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 字符簇（默认）- 适用于大多数光标定位用例
+</span></span></span><span style="display:flex;"><span>text.setClusterGrouping(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ClusterGrouping<span style="color:#f92672">::</span>Character);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 字位簇 - 将组合序列分组为一个簇
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// （例如：一个基础字符 + 组合重音符号 = 一个簇）
+</span></span></span><span style="display:flex;"><span>text.setClusterGrouping(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ClusterGrouping<span style="color:#f92672">::</span>Grapheme);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 不分组 - 每个整形后的字形都会获得自己的簇值
+</span></span></span><span style="display:flex;"><span>text.setClusterGrouping(sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ClusterGrouping<span style="color:#f92672">::</span>None);
+</span></span></code></pre></div><p>每个 <code>ShapedGlyph</code> 的 <code>cluster</code> 字段映射回输入字符串中的一个索引。
+当连续的多个字形构成一个不可分割的单元（例如，跨越两个输入字符的连字）时，它们可能会共享同一个 <code>cluster</code> 值。
+请将所有具有相同簇值的字形视为一个单独的光标停靠点。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 遍历整形后的字形并收集每个唯一簇的 x 位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// （适用于为 LTR 文本构建光标位置表）
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint32_t</span>, <span style="color:#66d9ef">float</span><span style="color:#f92672">&gt;</span> cursorPositions;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ShapedGlyph<span style="color:#f92672">&amp;</span> g : text.getShapedGlyphs())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    cursorPositions.try_emplace(g.cluster, g.position.x);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="使用-glyphpreprocessor-进行逐字形样式设置">使用 <code>GlyphPreProcessor</code> 进行逐字形样式设置<a hidden class="anchor" aria-hidden="true" href="#使用-glyphpreprocessor-进行逐字形样式设置">#</a></h4>
+<p><code>setGlyphPreProcessor()</code> 会安装一个回调函数，在几何体生成期间，每个字形都会触发该回调。
+它允许您逐个字形地覆盖 <code>style</code>、<code>fillColor</code>、<code>outlineColor</code> 和 <code>outlineThickness</code>，从而无需管理多个 <code>sf::Text</code> 对象即可实现诸如语法高亮等效果。</p>
+<p>该回调接收整形后的字形（包括其 <code>cluster</code> 索引）以及逐字形渲染属性的可变引用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 使用输入字符串中的码位索引范围为特定单词设置不同的颜色
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// 对于输入 &#34;I like flowers, muffins and waffles.&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// &#34;muffins&#34; 跨越码位索引 16–22
+</span></span></span><span style="display:flex;"><span>text.setGlyphPreProcessor(
+</span></span><span style="display:flex;"><span>    [](<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>Text<span style="color:#f92672">::</span>ShapedGlyph<span style="color:#f92672">&amp;</span> glyph,
+</span></span><span style="display:flex;"><span>       std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&amp;</span> <span style="color:#75715e">/*style*/</span>,
+</span></span><span style="display:flex;"><span>       sf<span style="color:#f92672">::</span>Color<span style="color:#f92672">&amp;</span>     fillColor,
+</span></span><span style="display:flex;"><span>       sf<span style="color:#f92672">::</span>Color<span style="color:#f92672">&amp;</span>     <span style="color:#75715e">/*outlineColor*/</span>,
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">float</span><span style="color:#f92672">&amp;</span>         <span style="color:#75715e">/*outlineThickness*/</span>)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (glyph.cluster <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">&amp;&amp;</span> glyph.cluster <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">22</span>)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            fillColor <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Color<span style="color:#f92672">::</span>Red;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><p>因为文本整形可能会将相邻的码位合并为连字（例如 <code>fl</code> → <code>ﬂ</code>），所以安全的逐词着色应该使用簇索引范围，而不是字形索引范围。
+只要字形的 <code>cluster</code> 落在该单词的码位范围内，它就属于该单词，即使它是跨越了单词边界的连字。</p>
+<p>该回调按几何体生成的顺序被调用，即<strong>视觉顺序</strong>（而不是逻辑顺序）。
+对于 RTL（从右到左）文本，这意味着随着回调的进行，簇值会递减。</p>
+<blockquote>
+<p><strong>警告</strong></p>
+<p>请勿在回调内部调用 <code>getLocalBounds()</code>；此时几何体仍在构建中。</p>
+</blockquote>
+<h3 id="tls--https-支持">TLS / HTTPS 支持<a hidden class="anchor" aria-hidden="true" href="#tls--https-支持">#</a></h3>
+<p><code>sf::Http</code> 现在支持 HTTPS。
+将一个 <code>https://</code> 的 URL 传递给 <code>sf::Http::setHost()</code>，SFML 将自动建立 TLS 加密连接。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Http http;
+</span></span><span style="display:flex;"><span>http.setHost(<span style="color:#e6db74">&#34;https://www.sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Http<span style="color:#f92672">::</span>Request request(<span style="color:#e6db74">&#34;/&#34;</span>);
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Http<span style="color:#f92672">::</span>Response response <span style="color:#f92672">=</span> http.sendRequest(request);
+</span></span></code></pre></div><p>如需禁用服务器证书验证（不推荐用于生产环境）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Http<span style="color:#f92672">::</span>Response response <span style="color:#f92672">=</span> http.sendRequest(request, sf<span style="color:#f92672">::</span>Time<span style="color:#f92672">::</span>Zero, <span style="color:#75715e">/* verifyServer */</span> false);
+</span></span></code></pre></div><h3 id="dns-api">DNS API<a hidden class="anchor" aria-hidden="true" href="#dns-api">#</a></h3>
+<p>全新的 <code>sf::Dns</code> 命名空间提供了完整的 DNS 查询支持，取代了已废弃的 <code>sf::IpAddress::resolve</code>。</p>
+<p><strong>解析主机名（A / AAAA 记录）：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;SFML/Network/Dns.hpp&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&gt;&gt;</span> addresses <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>resolve(<span style="color:#e6db74">&#34;www.sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (addresses)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&amp;</span> addr : <span style="color:#f92672">*</span>addresses)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (addr.isV4())
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;IPv4: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> addr.toString() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;\n&#39;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;IPv6: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> addr.toString() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;\n&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>查询其他记录类型：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 域名服务器记录
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>String<span style="color:#f92672">&gt;</span> ns <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>queryNs(<span style="color:#e6db74">&#34;sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 邮件交换记录
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>MxRecord<span style="color:#f92672">&gt;</span> mx <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>queryMx(<span style="color:#e6db74">&#34;sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// mx[i].exchange - 邮件服务器的主机名
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// mx[i].preference - 值越低优先级越高
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 服务记录
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>SrvRecord<span style="color:#f92672">&gt;</span> srv <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>querySrv(<span style="color:#e6db74">&#34;_irc._tcp.sfml-dev.org&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// srv[i].target, srv[i].port, srv[i].weight, srv[i].priority
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 文本记录
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>String<span style="color:#f92672">&gt;&gt;</span> txt <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>queryTxt(<span style="color:#e6db74">&#34;sfml-dev.org&#34;</span>);
+</span></span></code></pre></div><p><strong>获取本机的公网 IP 地址：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// IPv4
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&gt;</span> pubV4 <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>getPublicAddress(sf<span style="color:#f92672">::</span>seconds(<span style="color:#ae81ff">5</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// IPv6
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">&gt;</span> pubV6 <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>getPublicAddress(sf<span style="color:#f92672">::</span>seconds(<span style="color:#ae81ff">5</span>), sf<span style="color:#f92672">::</span>IpAddress<span style="color:#f92672">::</span>Type<span style="color:#f92672">::</span>IpV6);
+</span></span></code></pre></div><p>所有 <code>sf::Dns</code> 函数都接受可选的自定义 DNS 服务器列表以及可选的超时参数。</p>
+<h3 id="sftp-客户端">SFTP 客户端<a hidden class="anchor" aria-hidden="true" href="#sftp-客户端">#</a></h3>
+<p>全新的 <code>sf::Sftp</code> 类提供了一个完整的 SFTP（SSH 文件传输协议）客户端。
+它同时支持用户名/密码和公钥身份验证，取代了已废弃的 <code>sf::Ftp</code>。</p>
+<p><strong>连接并登录：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;SFML/Network/Sftp.hpp&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Sftp sftp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> addresses <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>Dns<span style="color:#f92672">::</span>resolve(<span style="color:#e6db74">&#34;sftp.example.com&#34;</span>);
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Sftp<span style="color:#f92672">::</span>Result result <span style="color:#f92672">=</span> sftp.connect(addresses<span style="color:#f92672">-&gt;</span>front());
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (result.getValue() <span style="color:#f92672">!=</span> sf<span style="color:#f92672">::</span>Sftp<span style="color:#f92672">::</span>Result<span style="color:#f92672">::</span>Value<span style="color:#f92672">::</span>Ok)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>; <span style="color:#75715e">// 连接失败
+</span></span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 密码认证
+</span></span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> sftp.login(<span style="color:#e6db74">&#34;alice&#34;</span>, <span style="color:#e6db74">&#34;hunter2&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 或者公钥认证
+</span></span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> sftp.login(<span style="color:#e6db74">&#34;alice&#34;</span>,
+</span></span><span style="display:flex;"><span>                    std<span style="color:#f92672">::</span>string_view{publicKey},
+</span></span><span style="display:flex;"><span>                    std<span style="color:#f92672">::</span>string_view{privateKey},
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;passphrase&#34;</span>);
+</span></span></code></pre></div><p><strong>文件操作：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 列出目录
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Sftp<span style="color:#f92672">::</span>ListingResult listing <span style="color:#f92672">=</span> sftp.getDirectoryListing(<span style="color:#e6db74">&#34;/home/alice&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">&amp;</span> entry : listing.getListing())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> entry.name <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;\n&#39;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 通过回调下载文件
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">&gt;</span> buffer;
+</span></span><span style="display:flex;"><span>sftp.download(<span style="color:#e6db74">&#34;/home/alice/data.bin&#34;</span>,
+</span></span><span style="display:flex;"><span>    [<span style="color:#f92672">&amp;</span>buffer](<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> data, std<span style="color:#f92672">::</span>size_t size)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> bytes <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">*&gt;</span>(data);
+</span></span><span style="display:flex;"><span>        buffer.insert(buffer.end(), bytes, bytes <span style="color:#f92672">+</span> size);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> true; <span style="color:#75715e">// 返回 false 即可中止
+</span></span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 通过回调上传文件
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>string content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello, world&#34;</span>;
+</span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>size_t offset <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>sftp.upload(<span style="color:#e6db74">&#34;/home/alice/hello.txt&#34;</span>,
+</span></span><span style="display:flex;"><span>    [<span style="color:#f92672">&amp;</span>content, <span style="color:#f92672">&amp;</span>offset](<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> data, std<span style="color:#f92672">::</span>size_t<span style="color:#f92672">&amp;</span> size) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>size_t remaining <span style="color:#f92672">=</span> content.size() <span style="color:#f92672">-</span> offset;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (remaining <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> false; <span style="color:#75715e">// 提示数据结束
+</span></span></span><span style="display:flex;"><span>        size <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>min(size, remaining);
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>memcpy(data, content.data() <span style="color:#f92672">+</span> offset, size);
+</span></span><span style="display:flex;"><span>        offset <span style="color:#f92672">+=</span> size;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> true;
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 其他操作
+</span></span></span><span style="display:flex;"><span>sftp.createDirectory(<span style="color:#e6db74">&#34;/home/alice/newdir&#34;</span>);
+</span></span><span style="display:flex;"><span>sftp.deleteFile(<span style="color:#e6db74">&#34;/home/alice/old.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>sftp.rename(<span style="color:#e6db74">&#34;/home/alice/a.txt&#34;</span>, <span style="color:#e6db74">&#34;/home/alice/b.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>sftp.disconnect();
+</span></span></code></pre></div><h3 id="sfsocketselector-回调-api"><code>sf::SocketSelector</code> 回调 API<a hidden class="anchor" aria-hidden="true" href="#sfsocketselector-回调-api">#</a></h3>
+<p><code>sf::SocketSelector::add()</code> 现在接受一个可选的就绪回调，支持可扩展的事件驱动设计，从而避免了每次调用 <code>wait()</code> 后都必须遍历所有套接字。
+传统的 <code>isReady()</code> 轮询方法仍能正常使用。</p>
+<p><strong>传统方法（依然有效）：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>selector.add(listener);
+</span></span><span style="display:flex;"><span>selector.add(client);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (selector.wait())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (selector.isReady(listener))
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 接受新连接
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (selector.isReady(client))
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 从客户端接收数据
+</span></span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>全新的回调方法：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>selector.add(listener, sf<span style="color:#f92672">::</span>SocketSelector<span style="color:#f92672">::</span>Receive, [<span style="color:#f92672">&amp;</span>](sf<span style="color:#f92672">::</span>SocketSelector<span style="color:#f92672">::</span>ReadinessType)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 接受新连接
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">auto</span> client <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>sf<span style="color:#f92672">::</span>TcpSocket<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>    listener.accept(<span style="color:#f92672">*</span>client);
+</span></span><span style="display:flex;"><span>    selector.add(<span style="color:#f92672">*</span>client, sf<span style="color:#f92672">::</span>SocketSelector<span style="color:#f92672">::</span>Receive,
+</span></span><span style="display:flex;"><span>        [c <span style="color:#f92672">=</span> client.get()](sf<span style="color:#f92672">::</span>SocketSelector<span style="color:#f92672">::</span>ReadinessType)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 从客户端接收数据
+</span></span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    clients.push_back(std<span style="color:#f92672">::</span>move(client));
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (selector.wait())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    selector.dispatchReadyCallbacks();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在管理大量并发连接时，回调方法只需要检查就绪的套接字，而不像轮询方法那样需要遍历所有套接字。</p>
+<h4 id="sfhttpsethost-返回值"><code>sf::Http::setHost</code> 返回值<a hidden class="anchor" aria-hidden="true" href="#sfhttpsethost-返回值">#</a></h4>
+<p><code>sf::Http::setHost</code> 现在返回一个 <code>bool</code> 值，以指示提供的主机名是否被解析以及是否有效。</p>
+<p>v3.0:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>http.setHost(<span style="color:#e6db74">&#34;https://www.sfml-dev.org&#34;</span>); <span style="color:#75715e">// 此前返回值是 void
+</span></span></span></code></pre></div><p>v3.1:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>http.setHost(<span style="color:#e6db74">&#34;https://www.sfml-dev.org&#34;</span>))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 主机名无法解析
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="sfhttpsendrequest-现为-const"><code>sf::Http::sendRequest</code> 现为 <code>const</code><a hidden class="anchor" aria-hidden="true" href="#sfhttpsendrequest-现为-const">#</a></h4>
+<p><code>sf::Http::sendRequest</code> 现在是一个 <code>const</code> 成员函数，这允许从 <code>const sf::Http</code> 对象或引用中发送 HTTP 请求。</p>
+<h3 id="音频播放设备采样率">音频播放设备采样率<a hidden class="anchor" aria-hidden="true" href="#音频播放设备采样率">#</a></h3>
+<p><code>sf::PlaybackDevice::getDeviceSampleRate()</code> 能够返回当前活动音频输出设备的原生采样率。
+此功能可用于配置音频源以匹配设备的首选采样率，避免不必要的重采样。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> rate <span style="color:#f92672">=</span> sf<span style="color:#f92672">::</span>PlaybackDevice<span style="color:#f92672">::</span>getDeviceSampleRate())
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Device sample rate: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#f92672">*</span>rate <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; Hz</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;No playback device available</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="qoi-图像格式">QOI 图像格式<a hidden class="anchor" aria-hidden="true" href="#qoi-图像格式">#</a></h3>
+<p>SFML 3.1 增加了对 <a href="https://qoiformat.org/">QOI</a> 格式的支持。
+你可以像使用其他受支持的格式一样加载和保存 QOI 文件。
+加载时的格式检测是根据 <code>.qoi</code> 文件后缀名或文件的魔数自动完成的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// 加载
+</span></span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Image image;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>image.loadFromFile(<span style="color:#e6db74">&#34;texture.qoi&#34;</span>))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 保存到文件
+</span></span></span><span style="display:flex;"><span>image.saveToFile(<span style="color:#e6db74">&#34;output.qoi&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 保存到内存
+</span></span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>optional<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">uint8_t</span><span style="color:#f92672">&gt;&gt;</span> data <span style="color:#f92672">=</span> image.saveToMemory(<span style="color:#e6db74">&#34;qoi&#34;</span>);
+</span></span></code></pre></div><h3 id="sfstring-支持传入-stdstring_view"><code>sf::String</code> 支持传入 <code>std::string_view</code><a hidden class="anchor" aria-hidden="true" href="#sfstring-支持传入-stdstring_view">#</a></h3>
+<p><code>sf::String</code> 现在提供了接受 <code>std::string_view</code>、<code>std::wstring_view</code> 以及 <code>std::u32string_view</code> 的构造函数。
+这消除了仅仅为了将其传递给 SFML 而特意构造一个 <code>std::string</code> 的需要。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>string_view sv <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello, world&#34;</span>;
+</span></span><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>String s(sv); <span style="color:#75715e">// 不再需要使用临时的 std::string
+</span></span></span></code></pre></div><h3 id="sfvector3u-类型别名"><code>sf::Vector3u</code> 类型别名<a hidden class="anchor" aria-hidden="true" href="#sfvector3u-类型别名">#</a></h3>
+<p>新增了 <code>sf::Vector3u</code> 作为 <code>sf::Vector3&lt;unsigned int&gt;</code> 的类型别名，使其与现有的 <code>sf::Vector2u</code> 命名约定保持一致。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>sf<span style="color:#f92672">::</span>Vector3u size{<span style="color:#ae81ff">800u</span>, <span style="color:#ae81ff">600u</span>, <span style="color:#ae81ff">32u</span>};
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="next" href="http://localhost:1313/sfml/getting-started/visual-studio/">
+    <span class="title">Next »</span>
+    <span>SFML 与 Visual Studio</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on x"
+            href="https://x.com/intent/tweet/?text=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f&amp;title=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97&amp;summary=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97&amp;source=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f&title=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on whatsapp"
+            href="https://api.whatsapp.com/send?text=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97%20-%20http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on telegram"
+            href="https://telegram.me/share/url?text=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97&amp;url=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share SFML 3.0 到 3.1 迁移指南 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=SFML%203.0%20%e5%88%b0%203.1%20%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97&u=http%3a%2f%2flocalhost%3a1313%2fsfml%2fmigration%2f3-0-to-3-1%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

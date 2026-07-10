@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>起步教程 on Flerovium&#39;s Blog</title>
+    <link>http://localhost:1313/sfml/getting-started/</link>
+    <description>Recent content in 起步教程 on Flerovium&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 10 Jul 2026 10:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/sfml/getting-started/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SFML 与 Visual Studio</title>
+      <link>http://localhost:1313/sfml/getting-started/visual-studio/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/getting-started/visual-studio/</guid>
+      <description>&lt;h1 id=&#34;sfml-与-visual-studio&#34;&gt;SFML 与 Visual Studio&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;如果你正在使用带有 Visual Studio IDE 以及 Visual C++ 编译器的环境来开发 SFML，那么这篇教程应该是你的首选阅读材料。
+它将向你解释如何配置你的 SFML 项目。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!NOTE]
+&lt;a href=&#34;../cmake/&#34;&gt;CMake 模板&lt;/a&gt;是开始使用 SFML 的推荐方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;安装-sfml&#34;&gt;安装 SFML&lt;/h2&gt;
+&lt;p&gt;首先，你必须从&lt;a href=&#34;../../../../download/&#34; title=&#34;Go to the download page&#34;&gt;下载页面&lt;/a&gt;下载 SFML SDK。&lt;/p&gt;
+&lt;p&gt;然后，你可以将 SFML 压缩包解压到你喜欢的任何位置。
+不推荐将头文件和库文件直接复制到你的 Visual Studio 安装目录中。更好的做法是将各种库保存在它们各自独立的位置，特别是当你打算使用同一个库的多个版本，或者使用多个编译器时。&lt;/p&gt;
+&lt;h2 id=&#34;创建并配置-sfml-项目&#34;&gt;创建并配置 SFML 项目&lt;/h2&gt;
+&lt;p&gt;第一件事是选择创建什么类型的项目。
+推荐选择“空项目”。
+对话框窗口还提供了几个其他选项来定制项目：只有当你懂得如何使用预编译头文件时，才选择“控制台应用程序”或“Windows 应用程序”。&lt;/p&gt;
+&lt;p&gt;为了本教程的演示目的，你应该创建一个 &lt;code&gt;main.cpp&lt;/code&gt; 文件并将其添加到项目中，这样我们就能访问 C++ 的各项设置（否则 Visual Studio 不知道你在这个项目中打算使用哪种语言）。
+稍后我们会说明在其中填写什么内容。&lt;/p&gt;
+&lt;p&gt;首先我们需要配置编译器使用 SFML 3 所要求的 C++17 语言标准。&lt;/p&gt;
+&lt;p&gt;在项目的属性中，转到“C/C++”下的“语言”选项卡，将“C++ 语言标准”下拉菜单修改为“ISO C++ 17 标准”：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;设置 C++17 语言标准的对话框截图&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/sfml/getting-started/vc-standard.png&#34; title=&#34;设置 C++17 语言标准的对话框截图&#34;&gt;&lt;/p&gt;
+&lt;p&gt;现在我们需要告诉编译器去哪里寻找 SFML 的头文件（.hpp 文件），并告诉链接器去哪里寻找 SFML 的库文件（.lib 文件）。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>使用 CMake 项目模板的 SFML</title>
+      <link>http://localhost:1313/sfml/getting-started/cmake/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/getting-started/cmake/</guid>
+      <description>&lt;h1 id=&#34;使用-cmake-项目模板的-sfml&#34;&gt;使用 CMake 项目模板的 SFML&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;本教程适用于任何操作系统、任何 IDE 以及任何编译器。
+它将向你解释如何构建一个能够与 SFML 的任意发布版本、分支或 Git 提交配合使用的项目。
+这种方法的独特性在于，它消除了发生链接器错误的可能性，并使未来升级 SFML 版本变得尽可能简单。
+它甚至包含了一个 CI 流水线，能够自动验证你的项目是否能继续在 Windows、Linux 和 macOS 上成功编译。&lt;/p&gt;
+&lt;h2 id=&#34;创建你自己的-github-项目&#34;&gt;创建你自己的 GitHub 项目&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/SFML/cmake-sfml-project&#34; title=&#34;CMake SFML Project Template Repository&#34;&gt;https://github.com/SFML/cmake-sfml-project&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;上述 GitHub 仓库就是 GitHub 所称的&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template&#34; title=&#34;GitHub documentation about repository templates&#34;&gt;仓库模板&lt;/a&gt;。
+查阅 GitHub 关于仓库模板的官方文档，了解如何利用此模板创建你自己的 GitHub 项目。
+这一步骤可确保你的代码安全地存放在远程位置，从而避免意外丢失。&lt;/p&gt;
+&lt;h2 id=&#34;自定义-cmake-项目与可执行文件的名称&#34;&gt;自定义 CMake 项目与可执行文件的名称&lt;/h2&gt;
+&lt;p&gt;开箱即用时，本项目为项目名称和可执行文件名称使用了占位符。
+这些名称可以是你想要的任何名字，并且它们不必保持一致。
+项目名称定义在 &lt;code&gt;CMakeLists.txt&lt;/code&gt; 文件顶部的 &lt;code&gt;project()&lt;/code&gt; 调用中。&lt;/p&gt;
+&lt;p&gt;可执行文件的名称则定义在 &lt;code&gt;add_executable()&lt;/code&gt; 调用中。
+请务必替换掉所有旧可执行文件名称的实例。
+在可执行文件被创建之后，该名称还会被多次使用。&lt;/p&gt;
+&lt;h2 id=&#34;添加你自己的源文件&#34;&gt;添加你自己的源文件&lt;/h2&gt;
+&lt;p&gt;项目初始时唯一的 C++ 源文件是 &lt;code&gt;src/main.cpp&lt;/code&gt;。
+你可以根据自己项目的需要，重命名、移除或添加新的源文件。
+只需确保所有的 &lt;code&gt;.cpp&lt;/code&gt; 文件都被包含在 &lt;code&gt;add_executable&lt;/code&gt; 调用中，以此来避免链接器错误。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

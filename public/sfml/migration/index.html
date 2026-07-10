@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>版本迁移 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="版本迁移 - Flerovium&#39;s Blog">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/migration/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/sfml/migration/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/migration/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/migration/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="版本迁移">
+  <meta property="og:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="版本迁移">
+  <meta name="twitter:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "版本迁移",
+      "item": "http://localhost:1313/sfml/migration/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    版本迁移
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">SFML 3.0 到 3.1 迁移指南
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从 SFML 3.0 迁移到 SFML 3.1 欢迎来到 SFML 3.1！ 本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。
+依赖项 我们引入了一系列新的依赖项以支持所有改进：
+FetchContent / 系统依赖 HarfBuzz 用于复杂的文本布局 SheenBidi 用于正确的双向文本渲染 Mbed TLS 提供 TLS 支持 libssh2 提供 SFTP 支持 Header-only (仅头文件) cpp-unicodelib 提供完善的 Unicode 支持 wepoll 用于改进 SocketSelector qoi 支持 QOI 图像格式 废弃接口 已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。 建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。
+字体字距调节 使用 std::uint32_t 表示 Unicode 码位的 sf::Font::getKerning 重载现已废弃。 请改用接受 char32_t 的重载版本。 两者的行为完全一致——仅仅是参数类型发生了改变。
+v3.0:
+float kerning = font.getKerning(static_cast&lt;std::uint32_t&gt;(&#39;A&#39;), static_cast&lt;std::uint32_t&gt;(&#39;V&#39;), 30); v3.1:
+float kerning = font.getKerning(U&#39;A&#39;, U&#39;V&#39;, 30); 文本中的字符位置 sf::Text::findCharacterPos(std::size_t index) 已被废弃，替代方案为 getShapedGlyphs()。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 13:33:22 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to SFML 3.0 到 3.1 迁移指南" href="http://localhost:1313/sfml/migration/3-0-to-3-1/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从 SFML 2 迁移到 SFML 3
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>从 SFML 2 迁移到 SFML 3 欢迎来到 SFML 3！ SFML 团队付出了巨大的努力，旨在提供一个既能让现有用户感到熟悉，又带来了重大改进的库。 本文档将指导您如何将现有的 SFML 2 应用程序升级至 SFML 3。
+SFML 3 最大的变化之一是将 C&#43;&#43; 标准提升到了 C&#43;&#43;17，从而将 SFML 带入了现代 C&#43;&#43; 的世界！ 这一改变不仅促成了大量的内部改进，也为优化 API 提供了新的机遇，这些我们都会在本文档中逐一探讨。
+编译器要求 随着标准从 C&#43;&#43;03 升级到 C&#43;&#43;17，您可能也需要升级编译器。 在 SFML 3 发布之前的几年里，所有主流编译器均已广泛支持 C&#43;&#43;17，因此您目前正在使用的编译器极有可能已经支持。 如果您确实需要升级，以下是最低的编译器版本要求：
+编译器 版本 MSVC 16 (VS 2019) GCC 9 Clang 9 AppleClang 12 CMake 目标 SFML 3 采用了现代 CMake 库目标的命名惯例，即在目标名称前添加一个命名空间。 这些命名空间明确告诉 CMake “这是一个目标”，而像 sfml-graphics 这样的名称，既可能是一个目标，也可能是磁盘上的一个预编译库，比如 libsfml-graphics.so。 消除这种歧义后，在因为（例如）忘记调用 find_package 而找不到某个目标时，CMake 可以提供更有用的错误信息。 此外，调用 find_package 时使用的组件名称现在也改为了首字母大写。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 从 SFML 2 迁移到 SFML 3" href="http://localhost:1313/sfml/migration/2-to-3/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

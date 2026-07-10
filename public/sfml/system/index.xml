@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>System 系统模块 on Flerovium&#39;s Blog</title>
+    <link>http://localhost:1313/sfml/system/</link>
+    <description>Recent content in System 系统模块 on Flerovium&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 10 Jul 2026 10:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/sfml/system/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>处理时间</title>
+      <link>http://localhost:1313/sfml/system/time/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/time/</guid>
+      <description>&lt;h1 id=&#34;处理时间&#34;&gt;处理时间&lt;/h1&gt;
+&lt;h2 id=&#34;sfml-中的时间&#34;&gt;SFML 中的时间&lt;/h2&gt;
+&lt;p&gt;与许多其他库将时间表示为 uint32 类型的毫秒数或是 float 类型的秒数不同，SFML 没有对时间值强加任何特定的单位或类型。
+相反，它通过一个灵活的类将这个选择权交给了用户：&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt;。
+所有操作时间值的 SFML 类和函数都使用这个类。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 代表的是一个时间段（换句话说，就是两个事件之间流逝的时间）。
+它&lt;strong&gt;不是&lt;/strong&gt;一个用于表示当前年/月/日/时/分/秒的时间戳（日期时间类）。
+它仅仅是一个代表一定时长的时间值，至于如何解释它，则取决于它被使用的上下文。&lt;/p&gt;
+&lt;h2 id=&#34;转换时间&#34;&gt;转换时间&lt;/h2&gt;
+&lt;p&gt;一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 值可以从不同的源单位构造而来：秒、毫秒和微秒。
+我们提供了一组自由函数（free function）来将它们各自转变为一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 对象：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;microseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;milliseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time t3 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;seconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.01f&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;请注意，这三个时间值是完全相等的。&lt;/p&gt;
+&lt;p&gt;类似地，一个 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Time.html&#34; title=&#34;sf::Time documentation&#34;&gt;&lt;code&gt;sf::Time&lt;/code&gt;&lt;/a&gt; 也可以被转换回秒、毫秒或微秒：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ...;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int64_t&lt;/span&gt; usec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asMicroseconds();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int32_t&lt;/span&gt; msec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asMilliseconds();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt;        sec  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; time.asSeconds();
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过以下两种方式，SFML 支持与 C++ 标准库中的 &lt;code&gt;std::chrono::duration&lt;/code&gt; 进行转换。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个接受任意 &lt;code&gt;std::chrono::duration&lt;/code&gt; 特化类型的隐式构造函数。&lt;/li&gt;
+&lt;li&gt;一个向任意 &lt;code&gt;std::chrono::duration&lt;/code&gt; 特化类型的隐式转换运算符。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Time time &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;chrono&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;milliseconds(&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// (1) 从 std::chrono::milliseconds 隐式构造
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;this_thread&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;sleep_for(time); &lt;span style=&#34;color:#75715e&#34;&gt;// (2) 隐式转换为 std::chrono::nanoseconds
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这两种转换机制允许该类与使用 &lt;code&gt;&amp;lt;chrono&amp;gt;&lt;/code&gt; 头文件的接口实现无缝的互操作。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>处理角度</title>
+      <link>http://localhost:1313/sfml/system/angle/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/angle/</guid>
+      <description>&lt;h1 id=&#34;处理角度&#34;&gt;处理角度&lt;/h1&gt;
+&lt;h2 id=&#34;sfml-中的角度&#34;&gt;SFML 中的角度&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1Angle.html&#34; title=&#34;sf::Angle documentation&#34;&gt;&lt;code&gt;sf::Angle&lt;/code&gt;&lt;/a&gt; 以一种与单位无关的方式来表示角度，这使得你可以无论是从度数还是从弧度的角度来考量它。
+SFML 中定义角度遵循&lt;a href=&#34;https://en.wikipedia.org/wiki/Right-hand_rule&#34;&gt;右手定则&lt;/a&gt;。
+这意味着如果窗口中 X 轴向右，Y 轴向下，那么正角度对应的是顺时针旋转。
+所有与角度相关的 SFML 类都使用 &lt;code&gt;sf::Angle&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;所有的 &lt;code&gt;sf::Angle&lt;/code&gt; 函数都启用了 &lt;code&gt;constexpr&lt;/code&gt;，因此这里展示的所有操作都可以在编译期完成。&lt;/p&gt;
+&lt;h2 id=&#34;构造角度&#34;&gt;构造角度&lt;/h2&gt;
+&lt;p&gt;有两个用于构造角度的工厂函数：&lt;code&gt;sf::degrees&lt;/code&gt; 和 &lt;code&gt;sf::radians&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;degrees(&lt;span style=&#34;color:#ae81ff&#34;&gt;180&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;radians(&lt;span style=&#34;color:#ae81ff&#34;&gt;3.1415f&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这两个函数可以分别从度数或弧度构建出近似相等的角度，这样你在编写自己的代码时就无需再去费心考虑单位问题了。
+请根据你的需要随意选用这两个函数。
+&lt;code&gt;sf::Angle&lt;/code&gt; 会在内部处理好任何必需的单位转换。&lt;/p&gt;
+&lt;h2 id=&#34;操作角度&#34;&gt;操作角度&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;sf::Angle&lt;/code&gt; 提供了一系列的运算符来进行算术操作。
+你可以对角度进行加、减、乘、除运算。
+同时还提供了取模、相等、不相等以及大小比较等运算符。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle1 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;degrees(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle1 &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2.f&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// 20 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;Angle angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; angle1 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; sf&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;radians(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5f&lt;/span&gt;); &lt;span style=&#34;color:#75715e&#34;&gt;// 48.6 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle2 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;angle2; &lt;span style=&#34;color:#75715e&#34;&gt;// -48.6 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;angle2 &lt;span style=&#34;color:#f92672&#34;&gt;/=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3.f&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// -16.2 度
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; equal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (angle1 &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; angle2); &lt;span style=&#34;color:#75715e&#34;&gt;// false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; inequal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (angle1 &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; angle2); &lt;span style=&#34;color:#75715e&#34;&gt;// true
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;sf::Angle&lt;/code&gt; 可以存在于 [-pi, pi) 或 [0, 2pi) 范围之外。
+例如，一个角度的值可能是 720 度。
+如果你希望获取一个新角度，使其值等效地被限制（折叠）在一个更小的范围内，有两个函数可以做到这一点：&lt;code&gt;sf::Angle::wrapSigned&lt;/code&gt; 和 &lt;code&gt;sf::Angle::wrapUnsigned&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>用户数据流</title>
+      <link>http://localhost:1313/sfml/system/stream/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/system/stream/</guid>
+      <description>&lt;h1 id=&#34;用户数据流&#34;&gt;用户数据流&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;SFML 拥有几种资源类：图像、字体、声音等。
+在大多数程序中，这些资源都将借助于它们的 &lt;code&gt;{load|open}FromFile&lt;/code&gt; 函数或相应的构造函数从文件中加载。
+在其他少数情况下，资源可能会被直接打包进可执行文件或一个大型数据文件中，并通过 &lt;code&gt;{load|open}FromMemory&lt;/code&gt; 从内存中加载。
+这些函数涵盖了&lt;strong&gt;几乎&lt;/strong&gt;所有可能的用例——但并非全部。&lt;/p&gt;
+&lt;p&gt;有时你会想要从一些非同寻常的地方加载文件，比如一个被压缩或加密的压缩包中，再比如一个远程的网络地址。
+针对这些特殊情况，SFML 提供了第三种加载选项：&lt;code&gt;loadFromStream&lt;/code&gt; 或 &lt;code&gt;openFromStream&lt;/code&gt;。
+该函数使用一个抽象的 &lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1InputStream.html&#34; title=&#34;sf::InputStream documentation&#34;&gt;&lt;code&gt;sf::InputStream&lt;/code&gt;&lt;/a&gt; 接口来读取数据，这允许你提供一个与 SFML 兼容的自定义流类的实现。&lt;/p&gt;
+&lt;p&gt;在这篇教程中，你将学习如何编写和使用你自己的派生输入流。&lt;/p&gt;
+&lt;h2 id=&#34;那标准流呢&#34;&gt;那标准流呢？&lt;/h2&gt;
+&lt;p&gt;像许多其他语言一样，C++ 已经拥有了一个用于输入数据流的类：&lt;code&gt;std::istream&lt;/code&gt;。
+事实上它有两个。
+&lt;code&gt;std::istream&lt;/code&gt; 仅仅是一个前端。
+负责自定义数据的抽象接口是 &lt;code&gt;std::streambuf&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;不幸的是，这些类对用户并不十分友好，如果你想实现一些不那么简单的东西，它们会变得非常复杂。
+&lt;a href=&#34;http://www.boost.org/doc/libs/1_49_0/libs/iostreams/doc/index.html&#34; title=&#34;Boost.Iostreams&#34;&gt;Boost.Iostreams&lt;/a&gt; 库试图为标准流提供一个更简单的接口，但是 Boost 是一个庞大的依赖库，而 SFML 无法去依赖它。&lt;/p&gt;
+&lt;p&gt;这就是为什么 SFML 提供了自己的流接口，期望它能&lt;strong&gt;更简单且更快速&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;inputstream&#34;&gt;InputStream&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;../../../../documentation/3.1.0/classsf_1_1InputStream.html&#34; title=&#34;sf::InputStream documentation&#34;&gt;&lt;code&gt;sf::InputStream&lt;/code&gt;&lt;/a&gt; 类声明了四个虚函数：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;InputStream&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt;InputStream() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; read(&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; data, std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t size) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; seek(std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t position) &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; tell() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;virtual&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;optional&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;size_t&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; getSize() &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;read&lt;/strong&gt; 必须从流中提取 &lt;em&gt;size&lt;/em&gt; 字节的数据，并将它们复制到所提供的 &lt;em&gt;data&lt;/em&gt; 地址处。
+它返回读取的字节数，或者在发生错误时返回 &lt;code&gt;std::nullopt&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,79 @@
+
+                
+                  
+
+
+  
+  
+
+
+<h1 id="handling-angles">Handling Angles</h1>
+<h2 id="angles-in-sfml">Angles in SFML</h2>
+<p><a href="../../../../documentation/3.1.0/classsf_1_1Angle.html" title="sf::Angle documentation"><code>sf::Angle</code></a> represents an angle in a unit-agnostic manner so that you can reason about angles in terms of degrees or radians.
+SFML defines angles as following the <a href="https://en.wikipedia.org/wiki/Right-hand_rule">right-hand rule</a>.
+This means that if the X-axis points to the right in the window and the Y-axis points down, then a positive angle rotates clockwise.
+All SFML classes that work with angles use <code>sf::Angle</code></p>
+<p>All <code>sf::Angle</code> functions are <code>constexpr</code>-enabled so anything shown here can be done at compile-time.</p>
+<h2 id="constructing-angles">Constructing angles</h2>
+<p>There are two factory functions for constructing an angle: <code>sf::degrees</code> and <code>sf::radians</code>.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">degrees</span><span class="p">(</span><span class="mi">180</span><span class="p">);</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">radians</span><span class="p">(</span><span class="mf">3.1415f</span><span class="p">);</span>
+</span></code></pre></div>
+<p>These two functions construct approximately equal angles from either degrees or radians so that you don't have to think about units in your own code.
+Feel free to use either function as you see fit.
+<code>sf::Angle</code> will handle any necessary unit conversions internally.</p>
+<h2 id="manipulating-angles">Manipulating angles</h2>
+<p><code>sf::Angle</code> provides a collection of operators for arithmetic operations.
+You can add, subtract, multiply, and divide angles.
+There are also modulo, equality, inequality, and comparison operators.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">degrees</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">angle1</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mf">2.f</span><span class="p">;</span><span class="w"> </span><span class="c1">// 20 degrees</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">radians</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">);</span><span class="w"> </span><span class="c1">// 48.6 degrees</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">angle2</span><span class="p">;</span><span class="w"> </span><span class="c1">// -48.6 degrees</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">angle2</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mf">3.f</span><span class="p">;</span><span class="w"> </span><span class="c1">// -16.2 degrees</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kt">bool</span><span class="w"> </span><span class="n">equal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">angle1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">angle2</span><span class="p">);</span><span class="w"> </span><span class="c1">// false</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="kt">bool</span><span class="w"> </span><span class="n">inequal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">angle1</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">angle2</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+</span></code></pre></div>
+<p><code>sf::Angle</code>s can exist outside range [-pi, pi) or [0, 2pi).
+An angle may have a value of 720 degrees, for example.
+If you would like to get a new angle wrapped to its equivalent value within a smaller range, there are two functions for doing so, <code>sf::Angle::wrapSigned</code> and <code>sf::Angle::wrapUnsigned</code>.</p>
+<ul>
+<li><code>wrapSigned</code> will return a new angle wrapped to the range [-pi, pi).</li>
+<li><code>wrapUnsigned</code> will return a new angle wrapped to the range [0, 2pi).</li>
+</ul>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">degrees</span><span class="p">(</span><span class="mi">540</span><span class="p">).</span><span class="n">wrapUnsigned</span><span class="p">();</span><span class="w"> </span><span class="c1">// 180 degrees</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">radians</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">3.1415f</span><span class="p">).</span><span class="n">wrapSigned</span><span class="p">();</span><span class="w"> </span><span class="c1">// 0 degrees</span>
+</span></code></pre></div>
+<p>After transformation the angles will occupy the same location on the unit circle.</p>
+<h2 id="user-defined-literals">User defined literals</h2>
+<p>C++ user-defined literals provide a convenient shorthand for writing angles.
+These literals exist in the <code>sf::Literals</code> namespace.
+Bring that namespace into the current scope to access them.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">sf</span><span class="o">::</span><span class="nn">Literals</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="n">_deg</span><span class="p">;</span><span class="w"> </span><span class="c1">// 45 degrees</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3.1415</span><span class="n">_rad</span><span class="p">;</span><span class="w"> </span><span class="c1">// 225 degrees</span>
+</span></code></pre></div>
+<h2 id="accessing-the-underlying-value">Accessing the underlying value</h2>
+<p>If you would like to format an angle as text or pass the value to a function like <code>std::sin</code>, there are two functions for accessing the angle as a raw <code>float</code>: <code>sf::Angle::asDegrees</code> and <code>sf::Angle::asRadians</code>.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">radians</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">angle1</span><span class="p">.</span><span class="n">asDegrees</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">sf</span><span class="o">::</span><span class="n">Angle</span><span class="w"> </span><span class="n">angle2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">degrees</span><span class="p">(</span><span class="mi">270</span><span class="p">);</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">.</span><span class="n">asRadians</span><span class="p">())</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              

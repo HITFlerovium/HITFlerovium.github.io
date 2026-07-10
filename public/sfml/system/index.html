@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>System 系统模块 | Flerovium&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="System 系统模块 - Flerovium&#39;s Blog">
+<meta name="author" content="Flerovium">
+<link rel="canonical" href="http://localhost:1313/sfml/system/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.89ca4972ab5e6aaa05e9a0dae0c4bb64b26585bc79e36f5cf33614eea0283abe.css" integrity="sha256-icpJcqteaqoF6aDa4MS7ZLJlhbx5429c8zYU7qAoOr4=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/sfml/system/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/sfml/system/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/sfml/system/">
+  <meta property="og:site_name" content="Flerovium&#39;s Blog">
+  <meta property="og:title" content="System 系统模块">
+  <meta property="og:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="System 系统模块">
+  <meta name="twitter:description" content="C&#43;&#43; 学习记录，算法日常与 SFML 官方文档中文版">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Sfml",
+      "item": "http://localhost:1313/sfml/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "System 系统模块",
+      "item": "http://localhost:1313/sfml/system/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Flerovium&#39;s Blog (Alt + H)">Flerovium&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="http://localhost:1313/" title="主页">
+                    <span>主页</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/sfml/" title="SFML自制中文文档">
+                    <span>SFML自制中文文档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts/" title="个人博客">
+                    <span>个人博客</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    System 系统模块
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">处理时间
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>处理时间 SFML 中的时间 与许多其他库将时间表示为 uint32 类型的毫秒数或是 float 类型的秒数不同，SFML 没有对时间值强加任何特定的单位或类型。 相反，它通过一个灵活的类将这个选择权交给了用户：sf::Time。 所有操作时间值的 SFML 类和函数都使用这个类。
+sf::Time 代表的是一个时间段（换句话说，就是两个事件之间流逝的时间）。 它不是一个用于表示当前年/月/日/时/分/秒的时间戳（日期时间类）。 它仅仅是一个代表一定时长的时间值，至于如何解释它，则取决于它被使用的上下文。
+转换时间 一个 sf::Time 值可以从不同的源单位构造而来：秒、毫秒和微秒。 我们提供了一组自由函数（free function）来将它们各自转变为一个 sf::Time 对象：
+sf::Time t1 = sf::microseconds(10000); sf::Time t2 = sf::milliseconds(10); sf::Time t3 = sf::seconds(0.01f); 请注意，这三个时间值是完全相等的。
+类似地，一个 sf::Time 也可以被转换回秒、毫秒或微秒：
+sf::Time time = ...; std::int64_t usec = time.asMicroseconds(); std::int32_t msec = time.asMilliseconds(); float sec = time.asSeconds(); 通过以下两种方式，SFML 支持与 C&#43;&#43; 标准库中的 std::chrono::duration 进行转换。
+一个接受任意 std::chrono::duration 特化类型的隐式构造函数。 一个向任意 std::chrono::duration 特化类型的隐式转换运算符。 sf::Time time = std::chrono::milliseconds(100); // (1) 从 std::chrono::milliseconds 隐式构造 std::this_thread::sleep_for(time); // (2) 隐式转换为 std::chrono::nanoseconds 这两种转换机制允许该类与使用 &lt;chrono&gt; 头文件的接口实现无缝的互操作。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 处理时间" href="http://localhost:1313/sfml/system/time/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">处理角度
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>处理角度 SFML 中的角度 sf::Angle 以一种与单位无关的方式来表示角度，这使得你可以无论是从度数还是从弧度的角度来考量它。 SFML 中定义角度遵循右手定则。 这意味着如果窗口中 X 轴向右，Y 轴向下，那么正角度对应的是顺时针旋转。 所有与角度相关的 SFML 类都使用 sf::Angle。
+所有的 sf::Angle 函数都启用了 constexpr，因此这里展示的所有操作都可以在编译期完成。
+构造角度 有两个用于构造角度的工厂函数：sf::degrees 和 sf::radians。
+sf::Angle angle1 = sf::degrees(180); sf::Angle angle2 = sf::radians(3.1415f); 这两个函数可以分别从度数或弧度构建出近似相等的角度，这样你在编写自己的代码时就无需再去费心考虑单位问题了。 请根据你的需要随意选用这两个函数。 sf::Angle 会在内部处理好任何必需的单位转换。
+操作角度 sf::Angle 提供了一系列的运算符来进行算术操作。 你可以对角度进行加、减、乘、除运算。 同时还提供了取模、相等、不相等以及大小比较等运算符。
+sf::Angle angle1 = sf::degrees(10); angle1 *= 2.f; // 20 度 sf::Angle angle2 = angle1 &#43; sf::radians(0.5f); // 48.6 度 angle2 = -angle2; // -48.6 度 angle2 /= 3.f; // -16.2 度 bool equal = (angle1 == angle2); // false bool inequal = (angle1 != angle2); // true sf::Angle 可以存在于 [-pi, pi) 或 [0, 2pi) 范围之外。 例如，一个角度的值可能是 720 度。 如果你希望获取一个新角度，使其值等效地被限制（折叠）在一个更小的范围内，有两个函数可以做到这一点：sf::Angle::wrapSigned 和 sf::Angle::wrapUnsigned。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 处理角度" href="http://localhost:1313/sfml/system/angle/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">用户数据流
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>用户数据流 简介 SFML 拥有几种资源类：图像、字体、声音等。 在大多数程序中，这些资源都将借助于它们的 {load|open}FromFile 函数或相应的构造函数从文件中加载。 在其他少数情况下，资源可能会被直接打包进可执行文件或一个大型数据文件中，并通过 {load|open}FromMemory 从内存中加载。 这些函数涵盖了几乎所有可能的用例——但并非全部。
+有时你会想要从一些非同寻常的地方加载文件，比如一个被压缩或加密的压缩包中，再比如一个远程的网络地址。 针对这些特殊情况，SFML 提供了第三种加载选项：loadFromStream 或 openFromStream。 该函数使用一个抽象的 sf::InputStream 接口来读取数据，这允许你提供一个与 SFML 兼容的自定义流类的实现。
+在这篇教程中，你将学习如何编写和使用你自己的派生输入流。
+那标准流呢？ 像许多其他语言一样，C&#43;&#43; 已经拥有了一个用于输入数据流的类：std::istream。 事实上它有两个。 std::istream 仅仅是一个前端。 负责自定义数据的抽象接口是 std::streambuf。
+不幸的是，这些类对用户并不十分友好，如果你想实现一些不那么简单的东西，它们会变得非常复杂。 Boost.Iostreams 库试图为标准流提供一个更简单的接口，但是 Boost 是一个庞大的依赖库，而 SFML 无法去依赖它。
+这就是为什么 SFML 提供了自己的流接口，期望它能更简单且更快速。
+InputStream sf::InputStream 类声明了四个虚函数：
+class InputStream { public: virtual ~InputStream() = default; virtual std::optional&lt;std::size_t&gt; read(void* data, std::size_t size) = 0; virtual std::optional&lt;std::size_t&gt; seek(std::size_t position) = 0; virtual std::optional&lt;std::size_t&gt; tell() = 0; virtual std::optional&lt;std::size_t&gt; getSize() = 0; }; read 必须从流中提取 size 字节的数据，并将它们复制到所提供的 data 地址处。 它返回读取的字节数，或者在发生错误时返回 std::nullopt。
+...</p>
+  </div>
+  <footer class="entry-footer">
+
+<span title='2026-07-10 10:00:00 +0800 CST'>July 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>Flerovium</span></footer>
+  <a class="entry-link" aria-label="post link to 用户数据流" href="http://localhost:1313/sfml/system/stream/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Flerovium&#39;s Blog</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

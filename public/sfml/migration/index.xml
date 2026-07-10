@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>版本迁移 on Flerovium&#39;s Blog</title>
+    <link>http://localhost:1313/sfml/migration/</link>
+    <description>Recent content in 版本迁移 on Flerovium&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 10 Jul 2026 13:33:22 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/sfml/migration/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SFML 3.0 到 3.1 迁移指南</title>
+      <link>http://localhost:1313/sfml/migration/3-0-to-3-1/</link>
+      <pubDate>Fri, 10 Jul 2026 13:33:22 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/migration/3-0-to-3-1/</guid>
+      <description>&lt;h1 id=&#34;从-sfml-30-迁移到-sfml-31&#34;&gt;从 SFML 3.0 迁移到 SFML 3.1&lt;/h1&gt;
+&lt;p&gt;欢迎来到 SFML 3.1！
+本次发布带来了在文本布局、网络、音频设备管理等方面的重大改进。&lt;/p&gt;
+&lt;h2 id=&#34;依赖项&#34;&gt;依赖项&lt;/h2&gt;
+&lt;p&gt;我们引入了一系列新的依赖项以支持所有改进：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;FetchContent / 系统依赖&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/harfbuzz/harfbuzz&#34;&gt;HarfBuzz&lt;/a&gt; 用于复杂的文本布局&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Tehreer/SheenBidi&#34;&gt;SheenBidi&lt;/a&gt; 用于正确的双向文本渲染&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Mbed-TLS/mbedtls&#34;&gt;Mbed TLS&lt;/a&gt; 提供 TLS 支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/libssh2/libssh2&#34;&gt;libssh2&lt;/a&gt; 提供 SFTP 支持&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Header-only (仅头文件)&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yhirose/cpp-unicodelib&#34;&gt;cpp-unicodelib&lt;/a&gt; 提供完善的 Unicode 支持&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/piscisaureus/wepoll&#34;&gt;wepoll&lt;/a&gt; 用于改进 &lt;code&gt;SocketSelector&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/phoboslab/qoi&#34;&gt;qoi&lt;/a&gt; 支持 QOI 图像格式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;废弃接口&#34;&gt;废弃接口&lt;/h2&gt;
+&lt;p&gt;已废弃的函数仍然可用且功能完整，不过您可能会收到编译器警告。
+建议迁移到下面描述的替代方案，因为它们通常能提供显著的改进。&lt;/p&gt;
+&lt;h3 id=&#34;字体字距调节&#34;&gt;字体字距调节&lt;/h3&gt;
+&lt;p&gt;使用 &lt;code&gt;std::uint32_t&lt;/code&gt; 表示 Unicode 码位的 &lt;code&gt;sf::Font::getKerning&lt;/code&gt; 重载现已废弃。
+请改用接受 &lt;code&gt;char32_t&lt;/code&gt; 的重载版本。
+两者的行为完全一致——仅仅是参数类型发生了改变。&lt;/p&gt;
+&lt;p&gt;v3.0:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt; kerning &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; font.getKerning(&lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32_t&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;A&amp;#39;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#66d9ef&#34;&gt;static_cast&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;uint32_t&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;V&amp;#39;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;v3.1:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;float&lt;/span&gt; kerning &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; font.getKerning(U&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;A&amp;#39;&lt;/span&gt;, U&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;V&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;30&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;文本中的字符位置&#34;&gt;文本中的字符位置&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;sf::Text::findCharacterPos(std::size_t index)&lt;/code&gt; 已被废弃，替代方案为 &lt;code&gt;getShapedGlyphs()&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>从 SFML 2 迁移到 SFML 3</title>
+      <link>http://localhost:1313/sfml/migration/2-to-3/</link>
+      <pubDate>Fri, 10 Jul 2026 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/sfml/migration/2-to-3/</guid>
+      <description>&lt;h1 id=&#34;从-sfml-2-迁移到-sfml-3&#34;&gt;从 SFML 2 迁移到 SFML 3&lt;/h1&gt;
+&lt;p&gt;欢迎来到 SFML 3！
+SFML 团队付出了巨大的努力，旨在提供一个既能让现有用户感到熟悉，又带来了重大改进的库。
+本文档将指导您如何将现有的 SFML 2 应用程序升级至 SFML 3。&lt;/p&gt;
+&lt;p&gt;SFML 3 最大的变化之一是将 C++ 标准提升到了 C++17，从而将 SFML 带入了现代 C++ 的世界！
+这一改变不仅促成了大量的内部改进，也为优化 API 提供了新的机遇，这些我们都会在本文档中逐一探讨。&lt;/p&gt;
+&lt;h2 id=&#34;编译器要求&#34;&gt;编译器要求&lt;/h2&gt;
+&lt;p&gt;随着标准从 C++03 升级到 C++17，您可能也需要升级编译器。
+在 SFML 3 发布之前的几年里，所有主流编译器均已广泛支持 C++17，因此您目前正在使用的编译器极有可能已经支持。
+如果您确实需要升级，以下是最低的编译器版本要求：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;编译器&lt;/th&gt;
+					&lt;th&gt;版本&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;MSVC&lt;/td&gt;
+					&lt;td&gt;16 (VS 2019)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;GCC&lt;/td&gt;
+					&lt;td&gt;9&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Clang&lt;/td&gt;
+					&lt;td&gt;9&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;AppleClang&lt;/td&gt;
+					&lt;td&gt;12&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;cmake-目标&#34;&gt;CMake 目标&lt;/h2&gt;
+&lt;p&gt;SFML 3 采用了现代 CMake 库目标的命名惯例，即在目标名称前添加一个命名空间。
+这些命名空间明确告诉 CMake “这是一个目标”，而像 &lt;code&gt;sfml-graphics&lt;/code&gt; 这样的名称，既可能是一个目标，也可能是磁盘上的一个预编译库，比如 &lt;code&gt;libsfml-graphics.so&lt;/code&gt;。
+消除这种歧义后，在因为（例如）忘记调用 &lt;code&gt;find_package&lt;/code&gt; 而找不到某个目标时，CMake 可以提供更有用的错误信息。
+此外，调用 &lt;code&gt;find_package&lt;/code&gt; 时使用的组件名称现在也改为了首字母大写。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
